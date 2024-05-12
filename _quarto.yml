@@ -3,7 +3,7 @@ project:
 
 website:
   title: "Olamide Adu"
-  site-url: blog.olamideadu.com
+  site-url: https://blog.olamideadu.com
   navbar:
     right:
       - about.qmd

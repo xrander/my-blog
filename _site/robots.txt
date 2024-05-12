@@ -1,1 +1,1 @@
-Sitemap: blog.olamideadu.com/sitemap.xml
+Sitemap: https://blog.olamideadu.com/sitemap.xml

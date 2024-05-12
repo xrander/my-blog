@@ -3,14 +3,16 @@ project:
 
 website:
   title: "Olamide Adu"
-  site-url: blog.olamideadu.com
+  site-url: https://blog.olamideadu.com
+  description: "This is Olamide Adu's Personal Blog."
   navbar:
     right:
-      - about.qmd
+      - text: Blog
+        href: blog.qmd
       - icon: github
-        href: https://github.com/
-      - icon: twitter
-        href: https://twitter.com
+        href: https://github.com/xrander
+      - icon: linkedin
+        href: https://www.linkedin.com/in/olamide-adu
 format:
   html:
     theme: cosmo
