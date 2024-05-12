@@ -3,7 +3,7 @@
     "path": "~/Documents/Data Science/Blog/index.qmd",
     "project_path": "index.qmd",
     "type": "quarto_markdown",
-    "hash": "1098582527",
+    "hash": "0",
     "contents": "",
     "dirty": false,
     "created": 1715019998688.0,
@@ -16,16 +16,16 @@
         "Source": "Source",
         "docOutlineVisible": "1",
         "rmdVisualCollapsedChunks": "",
-        "cursorPosition": "4,17",
+        "cursorPosition": "6,17",
         "scrollLine": "0",
         "rmdVisualModeLocation": "261:0"
     },
     "folds": "",
-    "lastKnownWriteTime": 1715504418,
+    "lastKnownWriteTime": 1715516996,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1715504418,
+    "last_content_update": 1715516996,
     "read_only": false,
     "read_only_alternatives": []
 }
