@@ -1,0 +1,33 @@
+name: Deploy Quarto Blog
+
+on:
+  push:
+   branches:
+    - main
+
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    steps:
+     - uses: actions/checkout@v2
+
+     - name: Set up Quarto
+       run: |
+        sudo apt-get install -y pandoc
+        wget https://github.com/quarto-dev/quarto-cli/releases/download/v1.4.554/quarto-1.4.554-linux-amd64.deb
+        sudo dpkg -i quarto-1.4.554
+
+     - name: Install R
+       run: |
+        sudo apt-get install -y r-base
+
+     - name: Render Quarto Site
+       run: |
+        quarto render
+
+     - name: Deploy to Github Pages
+       uses: peaceiris/actions-gh-pages@v3
+       with:
+        github _token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./site
