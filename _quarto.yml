@@ -1,20 +1,21 @@
 project:
   type: website
+  output-dir: _site
 
 website:
   title: "Olamide Adu"
   site-url: blog.olamideadu.com
   navbar:
     right:
-      - about.qmd
+      - index.qmd
       - icon: github
         href: https://github.com/
       - icon: twitter
         href: https://twitter.com
+    left: 
+      - blog.qmd
 format:
   html:
     theme: cosmo
     css: styles.css
-
-editor: visual
 

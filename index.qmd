@@ -1,5 +1,5 @@
 ---
-title: "About"
+title: "About Olamide Adu"
 image: profile.jpg
 about:
   template: jolla
@@ -12,4 +12,5 @@ about:
       href: https://github.com/xrander
 ---
 
-About this blog
+Olamide Adu is a Data Scientist with background in Forestry and Sustainable Nature Management. He finished his studies in the Euroforester Program from the Swedish University of Agricultural Sciences in 2023. He has a passion for Data Science and is a big lover of the R Language.
+
