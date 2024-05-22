@@ -145,6 +145,9 @@ agencies |>
 ```{r}
 #| label: fig-plot
 #| fig-cap: Agencies of The Global Environment Facility since its establishment in 1991
+#| message: false
+#| warning: false
+
 
 agen_year <- gef |> 
   filter(approval_fy >= 1991) |> 
@@ -174,8 +177,7 @@ agen_year |>
     logo = "Logo"
   ) |> 
   fmt_image(
-    column = logo,
-    width = 50
+    column = logo
   ) |> 
   cols_align(
     columns = logo,
@@ -184,108 +186,9 @@ agen_year |>
   opt_stylize(
     style = 2,
     color = "gray"
-  ) 
+  ) |> 
+    as_raw_html()
 ```
 
 
 It's good to get an ideal of the total funds connected to the GEF either through their direct grants or cofinanced for each year.
-
-```{r}
-gef |> 
-  summarize(
-    .by = approval_fy,
-    cofinanced = sum(cofinancing, na.rm = TRUE),
-    gef_grant = sum(gef_grant, na.rm = TRUE)
-  ) |> 
-  pivot_longer(
-    cols = cofinanced:gef_grant, 
-    names_to = "type",
-    values_to = "amount"
-  ) |> 
-  filter(approval_fy >= 1991) |> 
-  ggplot(aes(approval_fy, amount/1e6, col = type, group = type)) +
-  geom_line() +
-  labs(
-    x = "Year",
-    y = "Amount in Million Dollars"
-  )
-  scale_y_continuous(labels = label_comma())
-```
-
-
-Let's investigate the countries that have benefited from GEF funding schemes. Since multiple countries are supported at once, we will investigate funds for instances where we have only a single country
-```{r}
-#| label: divide-countries
-single_country <- gef |> 
-  filter(!str_detect(countries, ","))
-
-multi_country <- gef |> 
-  filter(str_detect(countries, ","))
-```
-
-
-```{r}
-single_country |> 
-  summarize(
-    .by = c(countries, agencies),
-    gef_grant = sum(gef_grant, na.rm = T),
-    cofinanced = sum(cofinancing, na.rm = T)
-  ) |> 
-  pivot_longer(
-    cols = gef_grant:cofinanced,
-    names_to = "financed_by",
-    values_to = "grant_amount"
-  ) |> 
-  filter(grant_amount > 0 & countries != "Global") |> 
-  group_by(financed_by) |> 
-  slice_max(grant_amount, n = 20)
-  ggplot(
-     aes(grant_amount, fct_reorder(countries, grant_amount))
-   ) +
-  geom_col() 
-```
-
-
-```{r}
-gef |> 
-  summarize(
-    .by = countries,
-    gef_grant = sum(gef_grant, na.rm = T),
-    cofinanced = sum(cofinancing, na.rm = T)
-  ) |> 
-  pivot_longer(
-    cols = c(gef_grant, cofinanced),
-    names_to = "financer",
-    values_to = "grant"
-  ) |> 
-  filter(grant > 0) |> 
-  mutate(
-    countries = case_when(
-      str_detect(countries, ",") ~ "Multiple Countries",
-      .default = countries
-    )
-  )  |> 
-  pull(countries) |> 
-  table()
-  
-  ggplot(aes(cofinanced)) +
-  geom_bar()
-
-```
-
-
-It will be nice to see how much GEF have distributed to each countries since its establishment in 1990
-```{r}
-grant_to_partners <- gef |> 
-  summarize(
-    .by = c(agencies, approval_fy),
-    grant_received = sum(gef_grant, na.rm = TRUE)
-  ) |> 
-  filter(grant_received > 0) |> 
-  arrange(approval_fy, desc(grant_contribution))
-
-grant_to_partners |> 
-  ggplot(aes(approval_fy, grant_received))
-
-```
-
