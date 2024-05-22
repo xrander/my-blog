@@ -6,7 +6,6 @@ website:
   title: ""
   navbar:
     right:
-      - index.qmd
       - icon: github
         href: https://github.com/
       - icon: twitter
