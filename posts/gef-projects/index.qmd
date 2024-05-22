@@ -1,0 +1,291 @@
+---
+title: "What about our Climate Funds"
+author: "Olamide Adu"
+date: "2024-05-21"
+description: "where are the climate and biodiversity funds going to"
+image: image.webp
+categories: [news, exploratory data analysis]
+---
+
+## Brief Intro
+
+The Global Environment Facility, an organization cofounded by the World Bank, the United Nations Environmental Programme, and the United Nations Development Programme, supports developing countries effort to address global environmental challenges.
+
+The Global Environment Facility (GEF) works with developing countries to find solutions to issues like climate change, biodiversity loss, and pollution. They provide funding and expertise to help these countries implement sustainable development practices.
+
+## AIM
+The aim of this work is to give detailed exploratory data analysis of GEF and its work. With this short work, we will:
+
+- Find the agencies through which GEF funds are transferred to government agencies, civil society organization, research institutions and so on.
+
+- Investigate which countries have received the highest funds.
+
+- Investigate the trend of funds associated to the different focal areas of GEF missions
+
+- Estimate the co-financing funds and grant funds according to the different agencies
+
+- Evaluate the amount of for the categories of trust funds set up within the organization
+
+- Investigate the number of projects that has moved pass the enabling activity stage
+
+## Explore Data
+Let's start by loading the data.
+```{r}
+#| message: false
+#| label: tbl-import-data
+#| tbl-cap: GEF data preview
+
+  
+library(pacman)
+p_load(tidyverse, janitor, gt, countrycode, scales, ggimage)
+
+
+gef <- read_csv("projects.csv") |> clean_names()
+
+col_names <- str_to_upper(str_replace_all(names(gef), "_", " "))
+
+head(gef) |> 
+  gt() |> 
+  cols_label(
+    title = col_names[1],
+    id = col_names[2],
+    countries = col_names[3],
+    focal_areas = col_names[4],
+    type = col_names[5],
+    agencies = col_names[6],
+    gef_grant = col_names[7],
+    cofinancing = col_names[8],
+    status = col_names[9],
+    approval_fy = col_names[10],
+    funding_source_indexed_field = col_names[11],
+    non_grant_instrument_indexed_field = col_names[12],
+    capacity_building_initiative_for_transparency = col_names[13],
+    gef_period = col_names[14]
+  ) |> 
+  tab_header(md("**GEF Data Preview**")) |> 
+  cols_width(
+    title ~ px(140),
+    agencies ~ px(140)
+  ) |> 
+  fmt_currency(columns = gef_grant, currency = "USD") |> 
+  tab_style(
+    style = cell_text(size = px(12)),
+    locations = cells_body(columns = everything())
+  ) |> 
+  tab_style(
+    style = cell_text(size = px(14)),
+    locations = cells_column_labels(columns = everything())
+  ) |> 
+  opt_stylize(style = 6, color = 'gray') |> 
+  as_raw_html()
+```
+
+### Agencies Supporting the GEF
+Let us get the list of the organizations that are partners with the GEF.
+```{r}
+#| label: tbl-agencies
+#| tbl-cap: Partner organizations of the Global Environment Facility
+#| message: false
+#| warning: false
+
+icons <- list.files("agencies", full.names = TRUE)
+agencies_abr <- c(
+  "AFDB", "ADB", "BBF", "Con Int", "DBLA", "DBSA",
+  "EBRD", "FAO","FECO", "GEF", "IADB", "IFC", "IFAD",
+  "IUCN", "MEPC", "WB", "UNDP", "UNEP", "UNIDO",
+  "WADB", "WWF"
+)
+
+agencies <- gef |> 
+  select(agencies) |> 
+  separate_longer_delim(agencies, delim = ",") |> 
+  mutate(
+    agencies = str_trim(agencies)
+  ) |> 
+  distinct() |> 
+  arrange(agencies) 
+
+agencies <- agencies |>  
+  bind_cols(list(agencies_abr, icons)) |> 
+  set_names(c("agencies", "abbr", "logo"))
+  
+agencies |> 
+  gt() |> 
+  cols_label(
+    agencies = "Partners",
+    abbr = "Abbreviation",
+    logo = "Logo"
+  ) |> 
+  tab_header(
+    title = "AGENCIES SUPPORTING GEF"
+  ) |> 
+  text_transform(
+    fn = function(x){
+      local_image(
+        filename = icons,
+        height = 50
+      )
+    },
+    locations = cells_body(
+      columns = logo
+    )
+  ) |> 
+  cols_align(
+    columns = logo,
+    align = "center"
+  ) |> 
+  opt_stylize(
+    style = 6,
+    color = "gray"
+  ) |> 
+  as_raw_html()
+```
+
+@tbl-agencies shows the GEF, it will be nice to see when each of this organization first appeared on the GEF project database after its establishment in 1991.
+```{r}
+#| label: fig-plot
+#| fig-cap: Agencies of The Global Environment Facility since its establishment in 1991
+
+agen_year <- gef |> 
+  filter(approval_fy >= 1991) |> 
+  select(agencies, approval_fy) |> 
+  separate_longer_delim(agencies, delim = ",") |> 
+  mutate(
+    agencies = str_trim(agencies)
+  ) |> 
+  group_by(agencies) |> 
+  slice_min(approval_fy, n = 1) |> 
+  distinct() |> 
+  ungroup() |> 
+  arrange(agencies)
+
+agen_year <- agen_year |> 
+  bind_cols(list(agencies_abr, icons)) |> 
+  set_names(c("agencies", "year", "abbr", "logo"))
+
+agen_year |> 
+  arrange(year) |> 
+  relocate(year) |> 
+  gt() |> 
+  cols_label(
+    agencies = "Agencies",
+    year = "Year",
+    abbr = "Abbreviation",
+    logo = "Logo"
+  ) |> 
+  fmt_image(
+    column = logo,
+    width = 50
+  ) |> 
+  cols_align(
+    columns = logo,
+    align = "center"
+  ) |> 
+  opt_stylize(
+    style = 2,
+    color = "gray"
+  ) 
+```
+
+
+It's good to get an ideal of the total funds connected to the GEF either through their direct grants or cofinanced for each year.
+
+```{r}
+gef |> 
+  summarize(
+    .by = approval_fy,
+    cofinanced = sum(cofinancing, na.rm = TRUE),
+    gef_grant = sum(gef_grant, na.rm = TRUE)
+  ) |> 
+  pivot_longer(
+    cols = cofinanced:gef_grant, 
+    names_to = "type",
+    values_to = "amount"
+  ) |> 
+  filter(approval_fy >= 1991) |> 
+  ggplot(aes(approval_fy, amount/1e6, col = type, group = type)) +
+  geom_line() +
+  labs(
+    x = "Year",
+    y = "Amount in Million Dollars"
+  )
+  scale_y_continuous(labels = label_comma())
+```
+
+
+Let's investigate the countries that have benefited from GEF funding schemes. Since multiple countries are supported at once, we will investigate funds for instances where we have only a single country
+```{r}
+#| label: divide-countries
+single_country <- gef |> 
+  filter(!str_detect(countries, ","))
+
+multi_country <- gef |> 
+  filter(str_detect(countries, ","))
+```
+
+
+```{r}
+single_country |> 
+  summarize(
+    .by = c(countries, agencies),
+    gef_grant = sum(gef_grant, na.rm = T),
+    cofinanced = sum(cofinancing, na.rm = T)
+  ) |> 
+  pivot_longer(
+    cols = gef_grant:cofinanced,
+    names_to = "financed_by",
+    values_to = "grant_amount"
+  ) |> 
+  filter(grant_amount > 0 & countries != "Global") |> 
+  group_by(financed_by) |> 
+  slice_max(grant_amount, n = 20)
+  ggplot(
+     aes(grant_amount, fct_reorder(countries, grant_amount))
+   ) +
+  geom_col() 
+```
+
+
+```{r}
+gef |> 
+  summarize(
+    .by = countries,
+    gef_grant = sum(gef_grant, na.rm = T),
+    cofinanced = sum(cofinancing, na.rm = T)
+  ) |> 
+  pivot_longer(
+    cols = c(gef_grant, cofinanced),
+    names_to = "financer",
+    values_to = "grant"
+  ) |> 
+  filter(grant > 0) |> 
+  mutate(
+    countries = case_when(
+      str_detect(countries, ",") ~ "Multiple Countries",
+      .default = countries
+    )
+  )  |> 
+  pull(countries) |> 
+  table()
+  
+  ggplot(aes(cofinanced)) +
+  geom_bar()
+
+```
+
+
+It will be nice to see how much GEF have distributed to each countries since its establishment in 1990
+```{r}
+grant_to_partners <- gef |> 
+  summarize(
+    .by = c(agencies, approval_fy),
+    grant_received = sum(gef_grant, na.rm = TRUE)
+  ) |> 
+  filter(grant_received > 0) |> 
+  arrange(approval_fy, desc(grant_contribution))
+
+grant_to_partners |> 
+  ggplot(aes(approval_fy, grant_received))
+
+```
+

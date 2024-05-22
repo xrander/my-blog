@@ -7,9 +7,12 @@ listing:
     - "title"
   type: default
   categories: true
-  image-placeholder: img_place.png
+  fields: [image, date, title, description, categories,author]
+  image-placeholder: header.lpg
   sort-ui: false
   filter-ui: false
 page-layout: full
 title-block-banner: true
 ---
+
+## Recent Post by Adu Grand

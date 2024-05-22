@@ -2,9 +2,9 @@
   {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "About Olamide Adu",
+    "title": "About Me",
     "section": "",
-    "text": "Olamide Adu is a Data Scientist with background in Forestry and Sustainable Nature Management. He finished his studies in the Euroforester Program from the Swedish University of Agricultural Sciences in 2023. He has a passion for Data Science and is a big lover of the R Language."
+    "text": "Olamide Adu is a Data Scientist with a background in Forestry and Sustainable Nature Management. He is a graduate of the Euroforester Program from the Swedish University of Agricultural Sciences in 2023. He has a passion for Data Science and is a big lover of the R Language. He is adept at using R, loves learning and likes to give back to his community in any way he can."
   },
   {
     "objectID": "posts/welcome/index.html",
@@ -18,7 +18,7 @@
     "href": "blog.html",
     "title": "Blog",
     "section": "",
-    "text": "Post With Code\n\n\n\n\n\n\nnews\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\nMay 6, 2024\n\n\nHarlow Malloc\n\n\n\n\n\n\n\n\n\n\n\n\nWelcome To My Blog\n\n\n\n\n\n\nnews\n\n\n\n\n\n\n\n\n\nMay 3, 2024\n\n\nTristan O’Malley\n\n\n\n\n\n\nNo matching items"
+    "text": "No matching items"
   },
   {
     "objectID": "readme.html",
@@ -33,5 +33,75 @@
     "title": "Post With Code",
     "section": "",
     "text": "This is a post with executable code.\n\n1 + 1\n\n[1] 2\n\n\nThis is one of the drab shit ever, but I’d like to think it works just fine.\n\nlibrary(ggplot2)\n\nmtcars |&gt; \n  ggplot(aes(mpg, disp)) +\n  geom_point()"
+  },
+  {
+    "objectID": "posts/option-add-use-in-tuning-different-grid-for-different-models/index.html",
+    "href": "posts/option-add-use-in-tuning-different-grid-for-different-models/index.html",
+    "title": "Welcome To My Blog",
+    "section": "",
+    "text": "This is the first post in a Quarto blog. Welcome!\n\nSince this post doesn’t specify an explicit image, the first image in the post will be used in the listing page of posts."
+  },
+  {
+    "objectID": "index.html#education",
+    "href": "index.html#education",
+    "title": "About Me",
+    "section": "Education",
+    "text": "Education\n\nSwedish University of Agricultural Sciences | Alnarp, Skåne, Sweden  MSc in Forest Sciences | August 2022 - Sept 2023\nUniversity of Copenhagen | Frederiksberg, Copenhagen, Denmark  MSc in Forest Sciences | August 2021 - July 2022\nThe Federal University of Technology, Akure | Akure South, Ondo, Nigeria  B. Agric. Tech. in Forestry and Wood Technology | January 2015 - December 2019"
+  },
+  {
+    "objectID": "index.html#experiences",
+    "href": "index.html#experiences",
+    "title": "About Me",
+    "section": "Experiences",
+    "text": "Experiences\n\nSwedish University of Agricultural Sciences | Data Analyst | November 2022 - January 2023\nHP Tech Venture Group LLC | Summer Research Analyst (Externship) | January 2022 - July 2022\nFederal College of Education, Pankshin | Teaching Assistant | March 2020 - February 2021"
+  },
+  {
+    "objectID": "index.html#languages",
+    "href": "index.html#languages",
+    "title": "About Me",
+    "section": "Languages",
+    "text": "Languages\n\nR\nPython\nJavascript"
+  },
+  {
+    "objectID": "index.html#honors-and-awards",
+    "href": "index.html#honors-and-awards",
+    "title": "About Me",
+    "section": "Honors and Awards",
+    "text": "Honors and Awards\n\nErasmus Mundus Joint Masters Degree Scholarship (€49000) | 2021 - 2023\nDean’s List Award of Excellence | 2015 - 2019"
+  },
+  {
+    "objectID": "posts/collinearity-logistic-regression-for-online-visits-sales-data/index.html",
+    "href": "posts/collinearity-logistic-regression-for-online-visits-sales-data/index.html",
+    "title": "Colliniearity and Logistic Regression of Online Sales Data",
+    "section": "",
+    "text": "This is a draft"
+  },
+  {
+    "objectID": "posts/gef-projects/index.html",
+    "href": "posts/gef-projects/index.html",
+    "title": "What about our Climate Funds",
+    "section": "",
+    "text": "The Global Environment Facility, an organization cofounded by the World Bank, the United Nations Environmental Programme, and the United Nations Development Programme, supports developing countries effort to address global environmental challenges.\nThe Global Environment Facility (GEF) works with developing countries to find solutions to issues like climate change, biodiversity loss, and pollution. They provide funding and expertise to help these countries implement sustainable development practices."
+  },
+  {
+    "objectID": "posts/gef-projects/index.html#brief-intro",
+    "href": "posts/gef-projects/index.html#brief-intro",
+    "title": "What about our Climate Funds",
+    "section": "",
+    "text": "The Global Environment Facility, an organization cofounded by the World Bank, the United Nations Environmental Programme, and the United Nations Development Programme, supports developing countries effort to address global environmental challenges.\nThe Global Environment Facility (GEF) works with developing countries to find solutions to issues like climate change, biodiversity loss, and pollution. They provide funding and expertise to help these countries implement sustainable development practices."
+  },
+  {
+    "objectID": "posts/gef-projects/index.html#aim",
+    "href": "posts/gef-projects/index.html#aim",
+    "title": "What about our Climate Funds",
+    "section": "AIM",
+    "text": "AIM\nThe aim of this work is to give detailed exploratory data analysis of GEF and its work. After this, a shiny dashboard will be made which will give insights in an interactive way."
+  },
+  {
+    "objectID": "posts/gef-projects/index.html#explore-data",
+    "href": "posts/gef-projects/index.html#explore-data",
+    "title": "What about our Climate Funds",
+    "section": "Explore Data",
+    "text": "Explore Data\nLet’s start by loading the data.\n\nlibrary(pacman)\np_load(tidyverse, janitor, gt)\n\n\ngef &lt;- read_csv(\"projects.csv\") |&gt; clean_names()\n\ncol_names &lt;- str_to_upper(str_replace_all(names(gef), \"_\", \" \"))\n\nhead(gef) |&gt; \n  gt() |&gt; \n  cols_label(\n    title = col_names[1],\n    id = col_names[2],\n    countries = col_names[3],\n    focal_areas = col_names[4],\n    type = col_names[5],\n    agencies = col_names[6],\n    gef_grant = col_names[7],\n    cofinancing = col_names[8],\n    status = col_names[9],\n    approval_fy = col_names[10],\n    funding_source_indexed_field = col_names[11],\n    non_grant_instrument_indexed_field = col_names[12],\n    capacity_building_initiative_for_transparency = col_names[13],\n    gef_period = col_names[14]\n  ) |&gt; \n  tab_header(md(\"**GEF Data Preview**\")) |&gt; \n  cols_width(\n    title ~ px(140),\n    agencies ~ px(140)\n  ) |&gt; \n  fmt_currency(columns = gef_grant, currency = \"USD\") |&gt; \n  tab_style(\n    style = cell_text(size = px(12)),\n    locations = cells_body(columns = everything())\n  ) |&gt; \n  tab_style(\n    style = cell_text(size = px(14)),\n    locations = cells_column_labels(columns = everything())\n  ) |&gt; \n  opt_stylize(style = 6, color = 'gray') |&gt; \n  as_raw_html()\n\n\n\nTable 1: GEF data preview\n\n\n\n\n\n  \n  \n\n\n\nGEF Data Preview\n\n\nTITLE\nID\nCOUNTRIES\nFOCAL AREAS\nTYPE\nAGENCIES\nGEF GRANT\nCOFINANCING\nSTATUS\nAPPROVAL FY\nFUNDING SOURCE INDEXED FIELD\nNON GRANT INSTRUMENT INDEXED FIELD\nCAPACITY BUILDING INITIATIVE FOR TRANSPARENCY\nGEF PERIOD\n\n\n\n\nFirst and Second Biennial Transparency Report and Fifth National Communication (1BTR + 5NC & 2BTR)\n11649\nTogo\nClimate Change\nEnabling Activity\nUnited Nations Development Programme\n$1,233,000.00\nNA\nProject Approved\n2024\nGEF Trust Fund\nNo\nNo\nGEF - 8\n\n\nDevelopment of the First Biennial Transparency Report and the Fourth National Communication and Second Biennial Transparency Report as combined report under the UNFCCC (1BTR - 4NC/2BTR)\n11646\nGuatemala\nClimate Change\nEnabling Activity\nUnited Nations Development Programme\n$1,233,000.00\nNA\nProject Approved\n2024\nGEF Trust Fund\nNo\nNo\nGEF - 8\n\n\nSupport for the development of protected areas for the conservation of biodiversity\n11642\nSenegal\nBiodiversity\nGBFF\nUnited Nations Development Programme\nNA\nNA\nConcept Approved\n1970\nGBFF\nNo\nNo\nGEF - 8\n\n\nStrengthening the protected area system in Angola through innovation and capacity development\n11640\nAngola\nBiodiversity\nGBFF\nUnited Nations Development Programme\nNA\nNA\nConcept Approved\n1970\nGBFF\nNo\nNo\nGEF - 8\n\n\nEnhancing co-benefits of conservation/protected area management through an inclusive wildlife-based ecotourism strategy (ECOTOURISM)\n11638\nIndonesia\nBiodiversity\nGBFF\nUnited Nations Development Programme\nNA\nNA\nConcept Approved\n1970\nGBFF\nNo\nNo\nGEF - 8\n\n\nSustainable Management and Restoration of Threatened Ecological Corridors in Kenya\n11636\nKenya\nBiodiversity\nGBFF\nThe World Bank\nNA\nNA\nConcept Approved\n1970\nGBFF\nNo\nNo\nGEF - 8\n\n\n\n\n\n\n\n\n\n\n\n\nAgencies Supporting the GEF\nLet us get the organizations supporting the GEF mission\n\nicons &lt;- list.files(\"agencies\", full.names = TRUE)\n\nagencies &lt;- gef |&gt; \n  select(agencies) |&gt; \n  separate_longer_delim(agencies, delim = \",\") |&gt; \n  mutate(\n    agencies = str_trim(agencies)\n  ) |&gt; \n  distinct() |&gt; \n  arrange(agencies) \n\nagencies |&gt;  \n  bind_cols(icons) |&gt; \n  set_names(c(\"agencies\", \"images\")) |&gt; \n  mutate(\n    images = str_glue(\n      '&lt;img height = 50 src = \"{images}\"&gt;&lt;/img&gt;'\n    )\n  ) |&gt; \n  gt() |&gt; \n  cols_label(\n    agencies = col_names[6]\n  ) |&gt; \n  fmt_markdown(\n    columns = images\n  )\n\n\n\n\n\n\n\n\n\n\n\n\nAGENCIES\nimages\n\n\n\n\nAfrican Development Bank\n&lt;img height = 50 src =\n\n\nAsian Development Bank\n&lt;img height = 50 src =\n\n\nBrazilian Biodiversity Fund\n&lt;img height = 50 src =\n\n\nConservation International\n&lt;img height = 50 src =\n\n\nDevelopment Bank of Latin America\n&lt;img height = 50 src =\n\n\nDevelopment Bank of Southern Africa\n&lt;img height = 50 src =\n\n\nEuropean Bank for Reconstruction and Development\n&lt;img height = 50 src =\n\n\nFood and Agriculture Organization\n&lt;img height = 50 src =\n\n\nForeign Economic Cooperation Office\n&lt;img height = 50 src =\n\n\nGEF Secretariat\n&lt;img height = 50 src =\n\n\nInter-American Development Bank\n&lt;img height = 50 src =\n\n\nInternational Finance Corporation\n&lt;img height = 50 src =\n\n\nInternational Fund for Agricultural Development\n&lt;img height = 50 src =\n\n\nInternational Union for Conservation of Nature\n&lt;img height = 50 src =\n\n\nMinistry of Environmental Protection of China\n&lt;img height = 50 src =\n\n\nThe World Bank\n&lt;img height = 50 src =\n\n\nUnited Nations Development Programme\n&lt;img height = 50 src =\n\n\nUnited Nations Environment Programme\n&lt;img height = 50 src =\n\n\nUnited Nations Industrial Development Organization\n&lt;img height = 50 src =\n\n\nWest African Development Bank\n&lt;img height = 50 src =\n\n\nWorld Wildlife Fund - US Chapter\n&lt;img height = 50 src =\n\n\n\n\n\n\n\n\n\nhead(gef)\n\n# A tibble: 6 × 14\n  title     id countries focal_areas type  agencies gef_grant cofinancing status\n  &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt;        &lt;dbl&gt;       &lt;dbl&gt; &lt;chr&gt; \n1 First… 11649 Togo      Climate Ch… Enab… United …   1233000          NA Proje…\n2 Devel… 11646 Guatemala Climate Ch… Enab… United …   1233000          NA Proje…\n3 Suppo… 11642 Senegal   Biodiversi… GBFF  United …        NA          NA Conce…\n4 Stren… 11640 Angola    Biodiversi… GBFF  United …        NA          NA Conce…\n5 Enhan… 11638 Indonesia Biodiversi… GBFF  United …        NA          NA Conce…\n6 Susta… 11636 Kenya     Biodiversi… GBFF  The Wor…        NA          NA Conce…\n# ℹ 5 more variables: approval_fy &lt;dbl&gt;, funding_source_indexed_field &lt;chr&gt;,\n#   non_grant_instrument_indexed_field &lt;chr&gt;,\n#   capacity_building_initiative_for_transparency &lt;chr&gt;, gef_period &lt;chr&gt;"
   }
 ]

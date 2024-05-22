@@ -1,8 +1,10 @@
 ---
-title: "About Olamide Adu"
-image: profile.jpg
+title: "About Me"
+image: avatar.jpg
 about:
-  template: jolla
+  template: trestles
+  image-shape: round
+  image-title: "adu-grand"
   links:
     - icon: linkedin
       text: LinkedIn
@@ -12,5 +14,37 @@ about:
       href: https://github.com/xrander
 ---
 
-Olamide Adu is a Data Scientist with background in Forestry and Sustainable Nature Management. He finished his studies in the Euroforester Program from the Swedish University of Agricultural Sciences in 2023. He has a passion for Data Science and is a big lover of the R Language.
+Olamide Adu is a Data Scientist with a background in Forestry and Sustainable Nature Management. He is a graduate of the Euroforester Program from the Swedish University of Agricultural Sciences in 2023. He has a passion for Data Science and is a big lover of the R Language. He is adept at using R, loves learning and likes to give back to his community in any way he can.
 
+## Education
+
+- **Swedish University of Agricultural Sciences** | Alnarp, Skåne, Sweden <br>
+  MSc in Forest Sciences | August 2022 - Sept 2023
+  
+- **University of Copenhagen** | Frederiksberg, Copenhagen, Denmark <br> 
+  MSc in Forest Sciences | August 2021 - July 2022
+  
+- **The Federal University of Technology, Akure** | Akure South, Ondo, Nigeria <br>
+  B. Agric. Tech. in Forestry and Wood Technology | January 2015 - December 2019
+
+## Experiences
+
+- **Swedish University of Agricultural Sciences** | Data Analyst | November 2022 - January 2023
+
+- HP Tech Venture Group LLC | Summer Research Analyst (Externship) | January 2022 - July 2022
+
+- Federal College of Education, Pankshin | Teaching Assistant | March 2020 - February 2021
+
+## Languages
+
+- R
+
+- Python
+
+- Javascript
+
+## Honors and Awards
+
+- Erasmus Mundus Joint Masters Degree Scholarship (€49000) | 2021 - 2023
+
+- Dean's List Award of Excellence | 2015 - 2019

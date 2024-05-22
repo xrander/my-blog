@@ -3,7 +3,7 @@ project:
   output-dir: _site
 
 website:
-  title: "Olamide Adu"
+  title: ""
   navbar:
     right:
       - index.qmd
@@ -15,6 +15,6 @@ website:
       - blog.qmd
 format:
   html:
-    theme: cosmo
+    theme: darkly
     css: styles.css
 
