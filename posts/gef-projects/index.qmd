@@ -56,15 +56,6 @@ gef <- read_csv("projects.csv") |> clean_names() |>
   filter(approval_fy >= 1991)
 
 col_names <- str_to_upper(str_replace_all(names(gef), "_", " "))
-gt_theme_style <- function(tbl){
-    tbl |> 
-    opt_stylize(
-      style = 2,
-      color = "gray"
-    ) |> 
-    as_raw_html()
-}
-
 
 head(gef) |> 
   gt() |> 
@@ -98,8 +89,7 @@ head(gef) |>
     style = cell_text(size = px(14)),
     locations = cells_column_labels(columns = everything())
   ) |> 
-  gt_theme_538() |> 
-  gt_theme_style()
+  gt_theme_538()
 ```
 
 ### Agencies Supporting the GEF
@@ -156,8 +146,7 @@ agencies |>
     columns = logo,
     align = "center"
   ) |> 
-  gt_theme_538() |> 
-  gt_theme_style()
+  gt_theme_538()
 
 ```
 
@@ -457,14 +446,13 @@ fund_countries |>
     total_amount = "Fund (Billion $)"
   ) |> 
   fmt_image(
-    columns = logo, width = 30, height = 50
+    columns = logo, width = 30, height = 30
   ) |> 
   tab_header(
     title = "Top Funded countries with involving the GEF",
     subtitle = "Funds can be by GEF, National Government and other interested parties"
   ) |> 
-  gt_theme_538() |> 
-  gt_theme_style()
+  gt_theme_538()
   
 ```
 
