@@ -2,37 +2,39 @@
 title: "What about our Climate Funds"
 author: "Olamide Adu"
 date: "2024-05-21"
-description: "where are the climate and biodiversity funds going to"
+description: "Unveiling the Global Environment Facility's Impact"
 image: image.webp
 categories: [news, exploratory data analysis]
+code-fold: true
+code-summary: "Show the code"
 ---
 
-## Brief Intro
+## Introduction
 
-The Global Environment Facility, an organization cofounded by the World Bank, the United Nations Environmental Programme, and the United Nations Development Programme, supports developing countries effort to address global environmental challenges.
-
-The Global Environment Facility (GEF) works with developing countries to find solutions to issues like climate change, biodiversity loss, and pollution. They provide funding and expertise to help these countries implement sustainable development practices.
+The Global Environment Facility (GEF), a partnership between the World Bank, the United Nations Environment Programme (UNEP), and the United Nations Development Programme (UNDP), plays a critical role in empowering developing countries to tackle pressing environmental issues. By providing both financial resources and technical expertise, the GEF supports these nations in implementing sustainable development practices that benefit the planet.
 
 ## Aim
-The aim of this work is to give detailed exploratory data analysis of GEF and its work. With this short work, we will:
 
-- Find the GEF agencies
+This analysis delves into the GEF's work, aiming to uncover insights through exploratory data analysis. We'll explore key aspects like:
 
-- Investigate the trend of the total funds associated to the GEF.
+- **Identifying GEF Agencies**: This will involve pinpointing the different entities involved within the GEF's structure.
 
-- Investigate the amount contributed by the GEF agencies to its mission.
+- **Funding Trends**: We'll analyze trends in the total funds associated with the GEF, revealing how resources have evolved over time.
 
-- Evaluate how much have been spent on the key areas the GEF is focusing
+- **GEF Agency Contributions**: This analysis will investigate the financial contributions of each agency to the GEF's mission.
 
-- Investigate which countries have received the highest funds in total for its projects.
+- **Focus Area Spending**: We'll assess how much funding has been allocated to the GEF's core areas of focus (e.g., climate change, biodiversity).
 
-- Investigate the top 3 funded countries in each continent.
+- **Top Recipient Countries**: This exploration will identify the countries receiving the highest total project funding.
 
-- Estimate the amount invested for capacity building
+- **Continental Funding Distribution**: We'll examine the top 3 funded countries within each continent, providing a more granular perspective.
 
-- Investigate the project status since its establishment. What proportion is completed, is in progress, or cancelled?
+- **Capacity Building Investment**: We'll estimate the resources invested in building the capacity of developing countries to address environmental challenges.
 
-- Investigate the amount spent on different project size and stage.
+- **Project Status**: This analysis will categorize projects based on their completion status (cancelled, approved, completed), revealing project success rates.
+
+- **Project Spending by Size and Stage**: We'll investigate how funding is distributed across projects of different sizes and stages (e.g., enabling activity and so on).
+
 
 ## Explore Data
 Let's start by loading the data.
@@ -166,7 +168,6 @@ agencies |>
 ```
 
 ## Trend of GEF Funds since establishment in 1991
-
 
 ```{r}
 #| label: fig-country-high-funding
@@ -313,7 +314,7 @@ gef |>
   
 ```
 
-@fig-top-player-environmental-players shows that the World Bank Group and UNDP has been the top cofinancer of GEF projects.
+@fig-top-environmental-players shows that the World Bank Group and UNDP has been the top cofinancer of GEF projects.
 
 ## What is the Main Areas That GEF Funds go to?
 

@@ -8,7 +8,7 @@
 
 <meta name="author" content="Olamide Adu">
 <meta name="dcterms.date" content="2024-05-21">
-<meta name="description" content="where are the climate and biodiversity funds going to">
+<meta name="description" content="Unveiling the Global Environment Facility’s Impact">
 
 <title>What about our Climate Funds</title>
 <style>
@@ -150,7 +150,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <h1 class="title">What about our Climate Funds</h1>
                   <div>
         <div class="description">
-          where are the climate and biodiversity funds going to
+          Unveiling the Global Environment Facility’s Impact
         </div>
       </div>
                           <div class="quarto-categories">
@@ -192,30 +192,31 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
-<section id="brief-intro" class="level2">
-<h2 class="anchored" data-anchor-id="brief-intro">Brief Intro</h2>
-<p>The Global Environment Facility, an organization cofounded by the World Bank, the United Nations Environmental Programme, and the United Nations Development Programme, supports developing countries effort to address global environmental challenges.</p>
-<p>The Global Environment Facility (GEF) works with developing countries to find solutions to issues like climate change, biodiversity loss, and pollution. They provide funding and expertise to help these countries implement sustainable development practices.</p>
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p>The Global Environment Facility (GEF), a partnership between the World Bank, the United Nations Environment Programme (UNEP), and the United Nations Development Programme (UNDP), plays a critical role in empowering developing countries to tackle pressing environmental issues. By providing both financial resources and technical expertise, the GEF supports these nations in implementing sustainable development practices that benefit the planet.</p>
 </section>
 <section id="aim" class="level2">
 <h2 class="anchored" data-anchor-id="aim">Aim</h2>
-<p>The aim of this work is to give detailed exploratory data analysis of GEF and its work. With this short work, we will:</p>
+<p>This analysis delves into the GEF’s work, aiming to uncover insights through exploratory data analysis. We’ll explore key aspects like:</p>
 <ul>
-<li><p>Find the GEF agencies</p></li>
-<li><p>Investigate the trend of the total funds associated to the GEF.</p></li>
-<li><p>Investigate the amount contributed by the GEF agencies to its mission.</p></li>
-<li><p>Evaluate how much have been spent on the key areas the GEF is focusing</p></li>
-<li><p>Investigate which countries have received the highest funds in total for its projects.</p></li>
-<li><p>Investigate the top 3 funded countries in each continent.</p></li>
-<li><p>Estimate the amount invested for capacity building</p></li>
-<li><p>Investigate the project status since its establishment. What proportion is completed, is in progress, or cancelled?</p></li>
-<li><p>Investigate the amount spent on different project size and stage.</p></li>
+<li><p><strong>Identifying GEF Agencies</strong>: This will involve pinpointing the different entities involved within the GEF’s structure.</p></li>
+<li><p><strong>Funding Trends</strong>: We’ll analyze trends in the total funds associated with the GEF, revealing how resources have evolved over time.</p></li>
+<li><p><strong>GEF Agency Contributions</strong>: This analysis will investigate the financial contributions of each agency to the GEF’s mission.</p></li>
+<li><p><strong>Focus Area Spending</strong>: We’ll assess how much funding has been allocated to the GEF’s core areas of focus (e.g., climate change, biodiversity).</p></li>
+<li><p><strong>Top Recipient Countries</strong>: This exploration will identify the countries receiving the highest total project funding.</p></li>
+<li><p><strong>Continental Funding Distribution</strong>: We’ll examine the top 3 funded countries within each continent, providing a more granular perspective.</p></li>
+<li><p><strong>Capacity Building Investment</strong>: We’ll estimate the resources invested in building the capacity of developing countries to address environmental challenges.</p></li>
+<li><p><strong>Project Status</strong>: This analysis will categorize projects based on their completion status (cancelled, approved, completed), revealing project success rates.</p></li>
+<li><p><strong>Project Spending by Size and Stage</strong>: We’ll investigate how funding is distributed across projects of different sizes and stages (e.g., enabling activity and so on).</p></li>
 </ul>
 </section>
 <section id="explore-data" class="level2">
 <h2 class="anchored" data-anchor-id="explore-data">Explore Data</h2>
 <p>Let’s start by loading the data.</p>
 <div class="cell" data-tbl-cap="GEF data preview">
+<details class="code-fold">
+<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pacman)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">p_load</span>(</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  tidyverse, janitor, gt, countrycode, scales, ggimage, ggthemes,</span>
@@ -228,8 +229,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">15</span>),</span>
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 <div id="tbl-preview-data" class="cell anchored">
+<details class="code-fold">
+<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>gef <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"projects.csv"</span>) <span class="sc">|&gt;</span> <span class="fu">clean_names</span>() <span class="sc">|&gt;</span> </span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(approval_fy <span class="sc">&gt;=</span> <span class="dv">1991</span>)</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -269,29 +273,30 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>    <span class="fu">everything</span>() <span class="sc">~</span> <span class="fu">px</span>(<span class="dv">50</span>)</span>
 <span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
 <span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt_theme_538</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <div>
-<div id="ftdngiscbk" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="rcdehtpmpq" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>@import url("https://fonts.googleapis.com/css2?family=Chivo:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Chivo:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Chivo:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Cairo:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
-#ftdngiscbk table {
+#rcdehtpmpq table {
   font-family: Cairo, system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#ftdngiscbk thead, #ftdngiscbk tbody, #ftdngiscbk tfoot, #ftdngiscbk tr, #ftdngiscbk td, #ftdngiscbk th {
+#rcdehtpmpq thead, #rcdehtpmpq tbody, #rcdehtpmpq tfoot, #rcdehtpmpq tr, #rcdehtpmpq td, #rcdehtpmpq th {
   border-style: none;
 }
 
-#ftdngiscbk p {
+#rcdehtpmpq p {
   margin: 0;
   padding: 0;
 }
 
-#ftdngiscbk .gt_table {
+#rcdehtpmpq .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -317,12 +322,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-left-color: #D3D3D3;
 }
 
-#ftdngiscbk .gt_caption {
+#rcdehtpmpq .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#ftdngiscbk .gt_title {
+#rcdehtpmpq .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -334,7 +339,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-bottom-width: 0;
 }
 
-#ftdngiscbk .gt_subtitle {
+#rcdehtpmpq .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -346,7 +351,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-top-width: 0;
 }
 
-#ftdngiscbk .gt_heading {
+#rcdehtpmpq .gt_heading {
   background-color: #FFFFFF;
   text-align: left;
   border-bottom-color: #FFFFFF;
@@ -358,13 +363,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-right-color: #D3D3D3;
 }
 
-#ftdngiscbk .gt_bottom_border {
+#rcdehtpmpq .gt_bottom_border {
   border-bottom-style: none;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#ftdngiscbk .gt_col_headings {
+#rcdehtpmpq .gt_col_headings {
   border-top-style: none;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -379,7 +384,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-right-color: #D3D3D3;
 }
 
-#ftdngiscbk .gt_col_heading {
+#rcdehtpmpq .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -399,7 +404,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   overflow-x: hidden;
 }
 
-#ftdngiscbk .gt_column_spanner_outer {
+#rcdehtpmpq .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -411,15 +416,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 4px;
 }
 
-#ftdngiscbk .gt_column_spanner_outer:first-child {
+#rcdehtpmpq .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#ftdngiscbk .gt_column_spanner_outer:last-child {
+#rcdehtpmpq .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#ftdngiscbk .gt_column_spanner {
+#rcdehtpmpq .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #000000;
@@ -431,11 +436,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   width: 100%;
 }
 
-#ftdngiscbk .gt_spanner_row {
+#rcdehtpmpq .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#ftdngiscbk .gt_group_heading {
+#rcdehtpmpq .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -461,7 +466,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   text-align: left;
 }
 
-#ftdngiscbk .gt_empty_group_heading {
+#rcdehtpmpq .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -476,15 +481,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   vertical-align: middle;
 }
 
-#ftdngiscbk .gt_from_md > :first-child {
+#rcdehtpmpq .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#ftdngiscbk .gt_from_md > :last-child {
+#rcdehtpmpq .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#ftdngiscbk .gt_row {
+#rcdehtpmpq .gt_row {
   padding-top: 3px;
   padding-bottom: 3px;
   padding-left: 5px;
@@ -503,7 +508,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   overflow-x: hidden;
 }
 
-#ftdngiscbk .gt_stub {
+#rcdehtpmpq .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -516,7 +521,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#ftdngiscbk .gt_stub_row_group {
+#rcdehtpmpq .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -530,15 +535,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   vertical-align: top;
 }
 
-#ftdngiscbk .gt_row_group_first td {
+#rcdehtpmpq .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#ftdngiscbk .gt_row_group_first th {
+#rcdehtpmpq .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#ftdngiscbk .gt_summary_row {
+#rcdehtpmpq .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -548,16 +553,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#ftdngiscbk .gt_first_summary_row {
+#rcdehtpmpq .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#ftdngiscbk .gt_first_summary_row.thick {
+#rcdehtpmpq .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#ftdngiscbk .gt_last_summary_row {
+#rcdehtpmpq .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -567,7 +572,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-bottom-color: #D3D3D3;
 }
 
-#ftdngiscbk .gt_grand_summary_row {
+#rcdehtpmpq .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -577,7 +582,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#ftdngiscbk .gt_first_grand_summary_row {
+#rcdehtpmpq .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -587,7 +592,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-top-color: #D3D3D3;
 }
 
-#ftdngiscbk .gt_last_grand_summary_row_top {
+#rcdehtpmpq .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -597,11 +602,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-bottom-color: #D3D3D3;
 }
 
-#ftdngiscbk .gt_striped {
+#rcdehtpmpq .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#ftdngiscbk .gt_table_body {
+#rcdehtpmpq .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -610,7 +615,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-bottom-color: #D3D3D3;
 }
 
-#ftdngiscbk .gt_footnotes {
+#rcdehtpmpq .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -624,7 +629,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-right-color: #D3D3D3;
 }
 
-#ftdngiscbk .gt_footnote {
+#rcdehtpmpq .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -633,7 +638,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#ftdngiscbk .gt_sourcenotes {
+#rcdehtpmpq .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -647,7 +652,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-right-color: #D3D3D3;
 }
 
-#ftdngiscbk .gt_sourcenote {
+#rcdehtpmpq .gt_sourcenote {
   font-size: 12px;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -655,63 +660,63 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#ftdngiscbk .gt_left {
+#rcdehtpmpq .gt_left {
   text-align: left;
 }
 
-#ftdngiscbk .gt_center {
+#rcdehtpmpq .gt_center {
   text-align: center;
 }
 
-#ftdngiscbk .gt_right {
+#rcdehtpmpq .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#ftdngiscbk .gt_font_normal {
+#rcdehtpmpq .gt_font_normal {
   font-weight: normal;
 }
 
-#ftdngiscbk .gt_font_bold {
+#rcdehtpmpq .gt_font_bold {
   font-weight: bold;
 }
 
-#ftdngiscbk .gt_font_italic {
+#rcdehtpmpq .gt_font_italic {
   font-style: italic;
 }
 
-#ftdngiscbk .gt_super {
+#rcdehtpmpq .gt_super {
   font-size: 65%;
 }
 
-#ftdngiscbk .gt_footnote_marks {
+#rcdehtpmpq .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#ftdngiscbk .gt_asterisk {
+#rcdehtpmpq .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#ftdngiscbk .gt_indent_1 {
+#rcdehtpmpq .gt_indent_1 {
   text-indent: 5px;
 }
 
-#ftdngiscbk .gt_indent_2 {
+#rcdehtpmpq .gt_indent_2 {
   text-indent: 10px;
 }
 
-#ftdngiscbk .gt_indent_3 {
+#rcdehtpmpq .gt_indent_3 {
   text-indent: 15px;
 }
 
-#ftdngiscbk .gt_indent_4 {
+#rcdehtpmpq .gt_indent_4 {
   text-indent: 20px;
 }
 
-#ftdngiscbk .gt_indent_5 {
+#rcdehtpmpq .gt_indent_5 {
   text-indent: 25px;
 }
 
@@ -770,6 +775,8 @@ tbody tr:last-child {
 <section id="agencies-supporting-the-gef" class="level2">
 <h2 class="anchored" data-anchor-id="agencies-supporting-the-gef">Agencies Supporting the GEF</h2>
 <div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>gef <span class="ot">&lt;-</span> gef <span class="sc">|&gt;</span> </span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="fu">c</span>(id, non_grant_instrument_indexed_field))</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -821,6 +828,7 @@ tbody tr:last-child {
 <span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a>    <span class="at">align =</span> <span class="st">"center"</span></span>
 <span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
 <span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt_theme_538</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div id="tbl-agencies" class="cell quarto-float anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-agencies-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -829,27 +837,27 @@ Table&nbsp;1: Partner organizations (Agencies) of the Global Environment Facilit
 <div aria-describedby="tbl-agencies-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
 <div>
-<div id="dsorxxbdme" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="mspqtemqos" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>@import url("https://fonts.googleapis.com/css2?family=Chivo:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Chivo:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Chivo:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Cairo:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
-#dsorxxbdme table {
+#mspqtemqos table {
   font-family: Cairo, system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#dsorxxbdme thead, #dsorxxbdme tbody, #dsorxxbdme tfoot, #dsorxxbdme tr, #dsorxxbdme td, #dsorxxbdme th {
+#mspqtemqos thead, #mspqtemqos tbody, #mspqtemqos tfoot, #mspqtemqos tr, #mspqtemqos td, #mspqtemqos th {
   border-style: none;
 }
 
-#dsorxxbdme p {
+#mspqtemqos p {
   margin: 0;
   padding: 0;
 }
 
-#dsorxxbdme .gt_table {
+#mspqtemqos .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -875,12 +883,12 @@ Table&nbsp;1: Partner organizations (Agencies) of the Global Environment Facilit
   border-left-color: #D3D3D3;
 }
 
-#dsorxxbdme .gt_caption {
+#mspqtemqos .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#dsorxxbdme .gt_title {
+#mspqtemqos .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -892,7 +900,7 @@ Table&nbsp;1: Partner organizations (Agencies) of the Global Environment Facilit
   border-bottom-width: 0;
 }
 
-#dsorxxbdme .gt_subtitle {
+#mspqtemqos .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -904,7 +912,7 @@ Table&nbsp;1: Partner organizations (Agencies) of the Global Environment Facilit
   border-top-width: 0;
 }
 
-#dsorxxbdme .gt_heading {
+#mspqtemqos .gt_heading {
   background-color: #FFFFFF;
   text-align: left;
   border-bottom-color: #FFFFFF;
@@ -916,13 +924,13 @@ Table&nbsp;1: Partner organizations (Agencies) of the Global Environment Facilit
   border-right-color: #D3D3D3;
 }
 
-#dsorxxbdme .gt_bottom_border {
+#mspqtemqos .gt_bottom_border {
   border-bottom-style: none;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#dsorxxbdme .gt_col_headings {
+#mspqtemqos .gt_col_headings {
   border-top-style: none;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -937,7 +945,7 @@ Table&nbsp;1: Partner organizations (Agencies) of the Global Environment Facilit
   border-right-color: #D3D3D3;
 }
 
-#dsorxxbdme .gt_col_heading {
+#mspqtemqos .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -957,7 +965,7 @@ Table&nbsp;1: Partner organizations (Agencies) of the Global Environment Facilit
   overflow-x: hidden;
 }
 
-#dsorxxbdme .gt_column_spanner_outer {
+#mspqtemqos .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -969,15 +977,15 @@ Table&nbsp;1: Partner organizations (Agencies) of the Global Environment Facilit
   padding-right: 4px;
 }
 
-#dsorxxbdme .gt_column_spanner_outer:first-child {
+#mspqtemqos .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#dsorxxbdme .gt_column_spanner_outer:last-child {
+#mspqtemqos .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#dsorxxbdme .gt_column_spanner {
+#mspqtemqos .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #000000;
@@ -989,11 +997,11 @@ Table&nbsp;1: Partner organizations (Agencies) of the Global Environment Facilit
   width: 100%;
 }
 
-#dsorxxbdme .gt_spanner_row {
+#mspqtemqos .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#dsorxxbdme .gt_group_heading {
+#mspqtemqos .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1019,7 +1027,7 @@ Table&nbsp;1: Partner organizations (Agencies) of the Global Environment Facilit
   text-align: left;
 }
 
-#dsorxxbdme .gt_empty_group_heading {
+#mspqtemqos .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1034,15 +1042,15 @@ Table&nbsp;1: Partner organizations (Agencies) of the Global Environment Facilit
   vertical-align: middle;
 }
 
-#dsorxxbdme .gt_from_md > :first-child {
+#mspqtemqos .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#dsorxxbdme .gt_from_md > :last-child {
+#mspqtemqos .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#dsorxxbdme .gt_row {
+#mspqtemqos .gt_row {
   padding-top: 3px;
   padding-bottom: 3px;
   padding-left: 5px;
@@ -1061,7 +1069,7 @@ Table&nbsp;1: Partner organizations (Agencies) of the Global Environment Facilit
   overflow-x: hidden;
 }
 
-#dsorxxbdme .gt_stub {
+#mspqtemqos .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1074,7 +1082,7 @@ Table&nbsp;1: Partner organizations (Agencies) of the Global Environment Facilit
   padding-right: 5px;
 }
 
-#dsorxxbdme .gt_stub_row_group {
+#mspqtemqos .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1088,15 +1096,15 @@ Table&nbsp;1: Partner organizations (Agencies) of the Global Environment Facilit
   vertical-align: top;
 }
 
-#dsorxxbdme .gt_row_group_first td {
+#mspqtemqos .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#dsorxxbdme .gt_row_group_first th {
+#mspqtemqos .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#dsorxxbdme .gt_summary_row {
+#mspqtemqos .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1106,16 +1114,16 @@ Table&nbsp;1: Partner organizations (Agencies) of the Global Environment Facilit
   padding-right: 5px;
 }
 
-#dsorxxbdme .gt_first_summary_row {
+#mspqtemqos .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#dsorxxbdme .gt_first_summary_row.thick {
+#mspqtemqos .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#dsorxxbdme .gt_last_summary_row {
+#mspqtemqos .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1125,7 +1133,7 @@ Table&nbsp;1: Partner organizations (Agencies) of the Global Environment Facilit
   border-bottom-color: #D3D3D3;
 }
 
-#dsorxxbdme .gt_grand_summary_row {
+#mspqtemqos .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1135,7 +1143,7 @@ Table&nbsp;1: Partner organizations (Agencies) of the Global Environment Facilit
   padding-right: 5px;
 }
 
-#dsorxxbdme .gt_first_grand_summary_row {
+#mspqtemqos .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1145,7 +1153,7 @@ Table&nbsp;1: Partner organizations (Agencies) of the Global Environment Facilit
   border-top-color: #D3D3D3;
 }
 
-#dsorxxbdme .gt_last_grand_summary_row_top {
+#mspqtemqos .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1155,11 +1163,11 @@ Table&nbsp;1: Partner organizations (Agencies) of the Global Environment Facilit
   border-bottom-color: #D3D3D3;
 }
 
-#dsorxxbdme .gt_striped {
+#mspqtemqos .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#dsorxxbdme .gt_table_body {
+#mspqtemqos .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1168,7 +1176,7 @@ Table&nbsp;1: Partner organizations (Agencies) of the Global Environment Facilit
   border-bottom-color: #D3D3D3;
 }
 
-#dsorxxbdme .gt_footnotes {
+#mspqtemqos .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1182,7 +1190,7 @@ Table&nbsp;1: Partner organizations (Agencies) of the Global Environment Facilit
   border-right-color: #D3D3D3;
 }
 
-#dsorxxbdme .gt_footnote {
+#mspqtemqos .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -1191,7 +1199,7 @@ Table&nbsp;1: Partner organizations (Agencies) of the Global Environment Facilit
   padding-right: 5px;
 }
 
-#dsorxxbdme .gt_sourcenotes {
+#mspqtemqos .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1205,7 +1213,7 @@ Table&nbsp;1: Partner organizations (Agencies) of the Global Environment Facilit
   border-right-color: #D3D3D3;
 }
 
-#dsorxxbdme .gt_sourcenote {
+#mspqtemqos .gt_sourcenote {
   font-size: 12px;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -1213,63 +1221,63 @@ Table&nbsp;1: Partner organizations (Agencies) of the Global Environment Facilit
   padding-right: 5px;
 }
 
-#dsorxxbdme .gt_left {
+#mspqtemqos .gt_left {
   text-align: left;
 }
 
-#dsorxxbdme .gt_center {
+#mspqtemqos .gt_center {
   text-align: center;
 }
 
-#dsorxxbdme .gt_right {
+#mspqtemqos .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#dsorxxbdme .gt_font_normal {
+#mspqtemqos .gt_font_normal {
   font-weight: normal;
 }
 
-#dsorxxbdme .gt_font_bold {
+#mspqtemqos .gt_font_bold {
   font-weight: bold;
 }
 
-#dsorxxbdme .gt_font_italic {
+#mspqtemqos .gt_font_italic {
   font-style: italic;
 }
 
-#dsorxxbdme .gt_super {
+#mspqtemqos .gt_super {
   font-size: 65%;
 }
 
-#dsorxxbdme .gt_footnote_marks {
+#mspqtemqos .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#dsorxxbdme .gt_asterisk {
+#mspqtemqos .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#dsorxxbdme .gt_indent_1 {
+#mspqtemqos .gt_indent_1 {
   text-indent: 5px;
 }
 
-#dsorxxbdme .gt_indent_2 {
+#mspqtemqos .gt_indent_2 {
   text-indent: 10px;
 }
 
-#dsorxxbdme .gt_indent_3 {
+#mspqtemqos .gt_indent_3 {
   text-indent: 15px;
 }
 
-#dsorxxbdme .gt_indent_4 {
+#mspqtemqos .gt_indent_4 {
   text-indent: 20px;
 }
 
-#dsorxxbdme .gt_indent_5 {
+#mspqtemqos .gt_indent_5 {
   text-indent: 25px;
 }
 
@@ -1409,6 +1417,8 @@ tbody tr:last-child {
 <section id="trend-of-gef-funds-since-establishment-in-1991" class="level2">
 <h2 class="anchored" data-anchor-id="trend-of-gef-funds-since-establishment-in-1991">Trend of GEF Funds since establishment in 1991</h2>
 <div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>gef <span class="sc">|&gt;</span> </span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">.by =</span> <span class="fu">c</span>(countries, approval_fy),</span>
@@ -1481,6 +1491,7 @@ tbody tr:last-child {
 <span id="cb4-70"><a href="#cb4-70" aria-hidden="true" tabindex="-1"></a>    ),</span>
 <span id="cb4-71"><a href="#cb4-71" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.margin =</span> <span class="fu">unit</span>(<span class="fu">c</span>(.<span class="dv">5</span>, .<span class="dv">5</span>, .<span class="dv">5</span>, .<span class="dv">5</span>), <span class="st">"cm"</span>)</span>
 <span id="cb4-72"><a href="#cb4-72" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <div id="fig-country-high-funding" class="quarto-figure quarto-figure-center quarto-float anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -1497,6 +1508,8 @@ Figure&nbsp;1: countries with the highest fundings
 <section id="who-is-responsible-for-financing-most-projects" class="level3">
 <h3 class="anchored" data-anchor-id="who-is-responsible-for-financing-most-projects">Who is responsible for financing most projects?</h3>
 <div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>my_icons <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">icons =</span> icons,</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">agencies_abr =</span> agencies_abr</span>
@@ -1548,6 +1561,7 @@ Figure&nbsp;1: countries with the highest fundings
 <span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">vjust =</span> <span class="dv">1</span>, <span class="at">hjust =</span> <span class="sc">-</span>.<span class="dv">1</span>),</span>
 <span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.margin =</span> <span class="fu">unit</span>(<span class="fu">c</span>(.<span class="dv">5</span>, <span class="dv">1</span>, .<span class="dv">5</span>, <span class="dv">1</span>), <span class="st">"cm"</span>)</span>
 <span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a>  ) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <div id="fig-top-environmental-players" class="quarto-figure quarto-figure-center quarto-float anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -1561,12 +1575,14 @@ Figure&nbsp;2: Top Environmental Players
 </div>
 </div>
 </div>
-<p><strong>?@fig-top-player-environmental-players</strong> shows that the World Bank Group and UNDP has been the top cofinancer of GEF projects.</p>
+<p><a href="#fig-top-environmental-players" class="quarto-xref">Figure&nbsp;2</a> shows that the World Bank Group and UNDP has been the top cofinancer of GEF projects.</p>
 </section>
 </section>
 <section id="what-is-the-main-areas-that-gef-funds-go-to" class="level2">
 <h2 class="anchored" data-anchor-id="what-is-the-main-areas-that-gef-funds-go-to">What is the Main Areas That GEF Funds go to?</h2>
 <div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>image <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">image =</span> <span class="fu">list</span>(</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">image_read_svg</span>(<span class="st">"focal_areas/biodiversity.svg"</span>),</span>
@@ -1633,6 +1649,7 @@ Figure&nbsp;2: Top Environmental Players
 <span id="cb6-64"><a href="#cb6-64" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="sc">-</span>.<span class="dv">7</span>),</span>
 <span id="cb6-65"><a href="#cb6-65" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="sc">-</span><span class="fl">1.12</span>),</span>
 <span id="cb6-66"><a href="#cb6-66" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <div id="fig-focus-areas" class="quarto-figure quarto-figure-center quarto-float anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -1650,6 +1667,8 @@ Figure&nbsp;3: The GEF focus areas spending
 <section id="top-funded-countries" class="level2">
 <h2 class="anchored" data-anchor-id="top-funded-countries">Top funded countries</h2>
 <div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>all_funds <span class="ot">&lt;-</span> gef <span class="sc">|&gt;</span> </span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(gef_grant, countries, cofinancing) <span class="sc">|&gt;</span> </span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">replace_na</span>(</span>
@@ -1695,12 +1714,18 @@ Figure&nbsp;3: The GEF focus areas spending
 <span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"Europe and Central Asia"</span>, <span class="st">"Latin America and Caribbean"</span></span>
 <span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a>                     )</span>
 <span id="cb7-45"><a href="#cb7-45" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 <div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>countries <span class="ot">&lt;-</span> <span class="fu">list.files</span>(<span class="at">path =</span> <span class="st">"countries/svg"</span>, <span class="at">full.names =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>country_logo <span class="ot">=</span> <span class="fu">tibble</span>(<span class="at">logo =</span> countries[<span class="fu">str_detect</span>(countries, <span class="st">"ch|in|me|br|ph|vn|id|za|/ng|pe"</span>)])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 <div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>fund_countries <span class="sc">|&gt;</span> </span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_max</span>(total_amount, <span class="at">n =</span> <span class="dv">10</span>) <span class="sc">|&gt;</span>  </span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(countries) <span class="sc">|&gt;</span> </span>
@@ -1734,6 +1759,7 @@ Figure&nbsp;3: The GEF focus areas spending
 <span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Funds can be by GEF, National Government and other interested parties"</span></span>
 <span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
 <span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt_theme_538</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div id="tbl-top-funded-country" class="cell quarto-float anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-top-funded-country-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -1742,27 +1768,27 @@ Table&nbsp;2: Top 10 most funded countries
 <div aria-describedby="tbl-top-funded-country-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
 <div>
-<div id="vwgtwuqjcf" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="cjqizgiizv" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>@import url("https://fonts.googleapis.com/css2?family=Chivo:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Chivo:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Chivo:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Cairo:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
-#vwgtwuqjcf table {
+#cjqizgiizv table {
   font-family: Cairo, system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#vwgtwuqjcf thead, #vwgtwuqjcf tbody, #vwgtwuqjcf tfoot, #vwgtwuqjcf tr, #vwgtwuqjcf td, #vwgtwuqjcf th {
+#cjqizgiizv thead, #cjqizgiizv tbody, #cjqizgiizv tfoot, #cjqizgiizv tr, #cjqizgiizv td, #cjqizgiizv th {
   border-style: none;
 }
 
-#vwgtwuqjcf p {
+#cjqizgiizv p {
   margin: 0;
   padding: 0;
 }
 
-#vwgtwuqjcf .gt_table {
+#cjqizgiizv .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -1788,12 +1814,12 @@ Table&nbsp;2: Top 10 most funded countries
   border-left-color: #D3D3D3;
 }
 
-#vwgtwuqjcf .gt_caption {
+#cjqizgiizv .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#vwgtwuqjcf .gt_title {
+#cjqizgiizv .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -1805,7 +1831,7 @@ Table&nbsp;2: Top 10 most funded countries
   border-bottom-width: 0;
 }
 
-#vwgtwuqjcf .gt_subtitle {
+#cjqizgiizv .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -1817,7 +1843,7 @@ Table&nbsp;2: Top 10 most funded countries
   border-top-width: 0;
 }
 
-#vwgtwuqjcf .gt_heading {
+#cjqizgiizv .gt_heading {
   background-color: #FFFFFF;
   text-align: left;
   border-bottom-color: #FFFFFF;
@@ -1829,13 +1855,13 @@ Table&nbsp;2: Top 10 most funded countries
   border-right-color: #D3D3D3;
 }
 
-#vwgtwuqjcf .gt_bottom_border {
+#cjqizgiizv .gt_bottom_border {
   border-bottom-style: none;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#vwgtwuqjcf .gt_col_headings {
+#cjqizgiizv .gt_col_headings {
   border-top-style: none;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1850,7 +1876,7 @@ Table&nbsp;2: Top 10 most funded countries
   border-right-color: #D3D3D3;
 }
 
-#vwgtwuqjcf .gt_col_heading {
+#cjqizgiizv .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1870,7 +1896,7 @@ Table&nbsp;2: Top 10 most funded countries
   overflow-x: hidden;
 }
 
-#vwgtwuqjcf .gt_column_spanner_outer {
+#cjqizgiizv .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1882,15 +1908,15 @@ Table&nbsp;2: Top 10 most funded countries
   padding-right: 4px;
 }
 
-#vwgtwuqjcf .gt_column_spanner_outer:first-child {
+#cjqizgiizv .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#vwgtwuqjcf .gt_column_spanner_outer:last-child {
+#cjqizgiizv .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#vwgtwuqjcf .gt_column_spanner {
+#cjqizgiizv .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #000000;
@@ -1902,11 +1928,11 @@ Table&nbsp;2: Top 10 most funded countries
   width: 100%;
 }
 
-#vwgtwuqjcf .gt_spanner_row {
+#cjqizgiizv .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#vwgtwuqjcf .gt_group_heading {
+#cjqizgiizv .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1932,7 +1958,7 @@ Table&nbsp;2: Top 10 most funded countries
   text-align: left;
 }
 
-#vwgtwuqjcf .gt_empty_group_heading {
+#cjqizgiizv .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1947,15 +1973,15 @@ Table&nbsp;2: Top 10 most funded countries
   vertical-align: middle;
 }
 
-#vwgtwuqjcf .gt_from_md > :first-child {
+#cjqizgiizv .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#vwgtwuqjcf .gt_from_md > :last-child {
+#cjqizgiizv .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#vwgtwuqjcf .gt_row {
+#cjqizgiizv .gt_row {
   padding-top: 3px;
   padding-bottom: 3px;
   padding-left: 5px;
@@ -1974,7 +2000,7 @@ Table&nbsp;2: Top 10 most funded countries
   overflow-x: hidden;
 }
 
-#vwgtwuqjcf .gt_stub {
+#cjqizgiizv .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1987,7 +2013,7 @@ Table&nbsp;2: Top 10 most funded countries
   padding-right: 5px;
 }
 
-#vwgtwuqjcf .gt_stub_row_group {
+#cjqizgiizv .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2001,15 +2027,15 @@ Table&nbsp;2: Top 10 most funded countries
   vertical-align: top;
 }
 
-#vwgtwuqjcf .gt_row_group_first td {
+#cjqizgiizv .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#vwgtwuqjcf .gt_row_group_first th {
+#cjqizgiizv .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#vwgtwuqjcf .gt_summary_row {
+#cjqizgiizv .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2019,16 +2045,16 @@ Table&nbsp;2: Top 10 most funded countries
   padding-right: 5px;
 }
 
-#vwgtwuqjcf .gt_first_summary_row {
+#cjqizgiizv .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#vwgtwuqjcf .gt_first_summary_row.thick {
+#cjqizgiizv .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#vwgtwuqjcf .gt_last_summary_row {
+#cjqizgiizv .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2038,7 +2064,7 @@ Table&nbsp;2: Top 10 most funded countries
   border-bottom-color: #D3D3D3;
 }
 
-#vwgtwuqjcf .gt_grand_summary_row {
+#cjqizgiizv .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2048,7 +2074,7 @@ Table&nbsp;2: Top 10 most funded countries
   padding-right: 5px;
 }
 
-#vwgtwuqjcf .gt_first_grand_summary_row {
+#cjqizgiizv .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2058,7 +2084,7 @@ Table&nbsp;2: Top 10 most funded countries
   border-top-color: #D3D3D3;
 }
 
-#vwgtwuqjcf .gt_last_grand_summary_row_top {
+#cjqizgiizv .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2068,11 +2094,11 @@ Table&nbsp;2: Top 10 most funded countries
   border-bottom-color: #D3D3D3;
 }
 
-#vwgtwuqjcf .gt_striped {
+#cjqizgiizv .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#vwgtwuqjcf .gt_table_body {
+#cjqizgiizv .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2081,7 +2107,7 @@ Table&nbsp;2: Top 10 most funded countries
   border-bottom-color: #D3D3D3;
 }
 
-#vwgtwuqjcf .gt_footnotes {
+#cjqizgiizv .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2095,7 +2121,7 @@ Table&nbsp;2: Top 10 most funded countries
   border-right-color: #D3D3D3;
 }
 
-#vwgtwuqjcf .gt_footnote {
+#cjqizgiizv .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -2104,7 +2130,7 @@ Table&nbsp;2: Top 10 most funded countries
   padding-right: 5px;
 }
 
-#vwgtwuqjcf .gt_sourcenotes {
+#cjqizgiizv .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2118,7 +2144,7 @@ Table&nbsp;2: Top 10 most funded countries
   border-right-color: #D3D3D3;
 }
 
-#vwgtwuqjcf .gt_sourcenote {
+#cjqizgiizv .gt_sourcenote {
   font-size: 12px;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -2126,63 +2152,63 @@ Table&nbsp;2: Top 10 most funded countries
   padding-right: 5px;
 }
 
-#vwgtwuqjcf .gt_left {
+#cjqizgiizv .gt_left {
   text-align: left;
 }
 
-#vwgtwuqjcf .gt_center {
+#cjqizgiizv .gt_center {
   text-align: center;
 }
 
-#vwgtwuqjcf .gt_right {
+#cjqizgiizv .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#vwgtwuqjcf .gt_font_normal {
+#cjqizgiizv .gt_font_normal {
   font-weight: normal;
 }
 
-#vwgtwuqjcf .gt_font_bold {
+#cjqizgiizv .gt_font_bold {
   font-weight: bold;
 }
 
-#vwgtwuqjcf .gt_font_italic {
+#cjqizgiizv .gt_font_italic {
   font-style: italic;
 }
 
-#vwgtwuqjcf .gt_super {
+#cjqizgiizv .gt_super {
   font-size: 65%;
 }
 
-#vwgtwuqjcf .gt_footnote_marks {
+#cjqizgiizv .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#vwgtwuqjcf .gt_asterisk {
+#cjqizgiizv .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#vwgtwuqjcf .gt_indent_1 {
+#cjqizgiizv .gt_indent_1 {
   text-indent: 5px;
 }
 
-#vwgtwuqjcf .gt_indent_2 {
+#cjqizgiizv .gt_indent_2 {
   text-indent: 10px;
 }
 
-#vwgtwuqjcf .gt_indent_3 {
+#cjqizgiizv .gt_indent_3 {
   text-indent: 15px;
 }
 
-#vwgtwuqjcf .gt_indent_4 {
+#cjqizgiizv .gt_indent_4 {
   text-indent: 20px;
 }
 
-#vwgtwuqjcf .gt_indent_5 {
+#cjqizgiizv .gt_indent_5 {
   text-indent: 25px;
 }
 
@@ -2270,6 +2296,8 @@ tbody tr:last-child {
 <section id="most-funded-countries-in-each-continent" class="level2">
 <h2 class="anchored" data-anchor-id="most-funded-countries-in-each-continent">Most Funded Countries in Each Continent</h2>
 <div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>continent <span class="ot">&lt;-</span> codelist <span class="sc">|&gt;</span> </span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(continent, country.name.en)</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -2299,8 +2327,11 @@ tbody tr:last-child {
 <span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>      <span class="at">.default =</span> continent</span>
 <span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>    )</span>
 <span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 <div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>fund_countries <span class="sc">|&gt;</span> </span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(continent) <span class="sc">|&gt;</span> </span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_max</span>(total_amount, <span class="at">n =</span> <span class="dv">3</span>) <span class="sc">|&gt;</span> </span>
@@ -2321,6 +2352,7 @@ tbody tr:last-child {
 <span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">columns =</span> total_amount</span>
 <span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
 <span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt_theme_538</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div id="tbl-funded-countries-continent" class="cell quarto-float anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-funded-countries-continent-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -2329,27 +2361,27 @@ Table&nbsp;3: Top Funded Countries Per Continent
 <div aria-describedby="tbl-funded-countries-continent-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
 <div>
-<div id="sgezypjdkz" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="baqvebfsis" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>@import url("https://fonts.googleapis.com/css2?family=Chivo:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Chivo:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Chivo:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Cairo:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
-#sgezypjdkz table {
+#baqvebfsis table {
   font-family: Cairo, system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#sgezypjdkz thead, #sgezypjdkz tbody, #sgezypjdkz tfoot, #sgezypjdkz tr, #sgezypjdkz td, #sgezypjdkz th {
+#baqvebfsis thead, #baqvebfsis tbody, #baqvebfsis tfoot, #baqvebfsis tr, #baqvebfsis td, #baqvebfsis th {
   border-style: none;
 }
 
-#sgezypjdkz p {
+#baqvebfsis p {
   margin: 0;
   padding: 0;
 }
 
-#sgezypjdkz .gt_table {
+#baqvebfsis .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -2375,12 +2407,12 @@ Table&nbsp;3: Top Funded Countries Per Continent
   border-left-color: #D3D3D3;
 }
 
-#sgezypjdkz .gt_caption {
+#baqvebfsis .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#sgezypjdkz .gt_title {
+#baqvebfsis .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -2392,7 +2424,7 @@ Table&nbsp;3: Top Funded Countries Per Continent
   border-bottom-width: 0;
 }
 
-#sgezypjdkz .gt_subtitle {
+#baqvebfsis .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -2404,7 +2436,7 @@ Table&nbsp;3: Top Funded Countries Per Continent
   border-top-width: 0;
 }
 
-#sgezypjdkz .gt_heading {
+#baqvebfsis .gt_heading {
   background-color: #FFFFFF;
   text-align: left;
   border-bottom-color: #FFFFFF;
@@ -2416,13 +2448,13 @@ Table&nbsp;3: Top Funded Countries Per Continent
   border-right-color: #D3D3D3;
 }
 
-#sgezypjdkz .gt_bottom_border {
+#baqvebfsis .gt_bottom_border {
   border-bottom-style: none;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#sgezypjdkz .gt_col_headings {
+#baqvebfsis .gt_col_headings {
   border-top-style: none;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2437,7 +2469,7 @@ Table&nbsp;3: Top Funded Countries Per Continent
   border-right-color: #D3D3D3;
 }
 
-#sgezypjdkz .gt_col_heading {
+#baqvebfsis .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2457,7 +2489,7 @@ Table&nbsp;3: Top Funded Countries Per Continent
   overflow-x: hidden;
 }
 
-#sgezypjdkz .gt_column_spanner_outer {
+#baqvebfsis .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2469,15 +2501,15 @@ Table&nbsp;3: Top Funded Countries Per Continent
   padding-right: 4px;
 }
 
-#sgezypjdkz .gt_column_spanner_outer:first-child {
+#baqvebfsis .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#sgezypjdkz .gt_column_spanner_outer:last-child {
+#baqvebfsis .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#sgezypjdkz .gt_column_spanner {
+#baqvebfsis .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #000000;
@@ -2489,11 +2521,11 @@ Table&nbsp;3: Top Funded Countries Per Continent
   width: 100%;
 }
 
-#sgezypjdkz .gt_spanner_row {
+#baqvebfsis .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#sgezypjdkz .gt_group_heading {
+#baqvebfsis .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2519,7 +2551,7 @@ Table&nbsp;3: Top Funded Countries Per Continent
   text-align: left;
 }
 
-#sgezypjdkz .gt_empty_group_heading {
+#baqvebfsis .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -2534,15 +2566,15 @@ Table&nbsp;3: Top Funded Countries Per Continent
   vertical-align: middle;
 }
 
-#sgezypjdkz .gt_from_md > :first-child {
+#baqvebfsis .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#sgezypjdkz .gt_from_md > :last-child {
+#baqvebfsis .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#sgezypjdkz .gt_row {
+#baqvebfsis .gt_row {
   padding-top: 3px;
   padding-bottom: 3px;
   padding-left: 5px;
@@ -2561,7 +2593,7 @@ Table&nbsp;3: Top Funded Countries Per Continent
   overflow-x: hidden;
 }
 
-#sgezypjdkz .gt_stub {
+#baqvebfsis .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2574,7 +2606,7 @@ Table&nbsp;3: Top Funded Countries Per Continent
   padding-right: 5px;
 }
 
-#sgezypjdkz .gt_stub_row_group {
+#baqvebfsis .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2588,15 +2620,15 @@ Table&nbsp;3: Top Funded Countries Per Continent
   vertical-align: top;
 }
 
-#sgezypjdkz .gt_row_group_first td {
+#baqvebfsis .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#sgezypjdkz .gt_row_group_first th {
+#baqvebfsis .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#sgezypjdkz .gt_summary_row {
+#baqvebfsis .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2606,16 +2638,16 @@ Table&nbsp;3: Top Funded Countries Per Continent
   padding-right: 5px;
 }
 
-#sgezypjdkz .gt_first_summary_row {
+#baqvebfsis .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#sgezypjdkz .gt_first_summary_row.thick {
+#baqvebfsis .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#sgezypjdkz .gt_last_summary_row {
+#baqvebfsis .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2625,7 +2657,7 @@ Table&nbsp;3: Top Funded Countries Per Continent
   border-bottom-color: #D3D3D3;
 }
 
-#sgezypjdkz .gt_grand_summary_row {
+#baqvebfsis .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2635,7 +2667,7 @@ Table&nbsp;3: Top Funded Countries Per Continent
   padding-right: 5px;
 }
 
-#sgezypjdkz .gt_first_grand_summary_row {
+#baqvebfsis .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2645,7 +2677,7 @@ Table&nbsp;3: Top Funded Countries Per Continent
   border-top-color: #D3D3D3;
 }
 
-#sgezypjdkz .gt_last_grand_summary_row_top {
+#baqvebfsis .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2655,11 +2687,11 @@ Table&nbsp;3: Top Funded Countries Per Continent
   border-bottom-color: #D3D3D3;
 }
 
-#sgezypjdkz .gt_striped {
+#baqvebfsis .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#sgezypjdkz .gt_table_body {
+#baqvebfsis .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2668,7 +2700,7 @@ Table&nbsp;3: Top Funded Countries Per Continent
   border-bottom-color: #D3D3D3;
 }
 
-#sgezypjdkz .gt_footnotes {
+#baqvebfsis .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2682,7 +2714,7 @@ Table&nbsp;3: Top Funded Countries Per Continent
   border-right-color: #D3D3D3;
 }
 
-#sgezypjdkz .gt_footnote {
+#baqvebfsis .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -2691,7 +2723,7 @@ Table&nbsp;3: Top Funded Countries Per Continent
   padding-right: 5px;
 }
 
-#sgezypjdkz .gt_sourcenotes {
+#baqvebfsis .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2705,7 +2737,7 @@ Table&nbsp;3: Top Funded Countries Per Continent
   border-right-color: #D3D3D3;
 }
 
-#sgezypjdkz .gt_sourcenote {
+#baqvebfsis .gt_sourcenote {
   font-size: 12px;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -2713,63 +2745,63 @@ Table&nbsp;3: Top Funded Countries Per Continent
   padding-right: 5px;
 }
 
-#sgezypjdkz .gt_left {
+#baqvebfsis .gt_left {
   text-align: left;
 }
 
-#sgezypjdkz .gt_center {
+#baqvebfsis .gt_center {
   text-align: center;
 }
 
-#sgezypjdkz .gt_right {
+#baqvebfsis .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#sgezypjdkz .gt_font_normal {
+#baqvebfsis .gt_font_normal {
   font-weight: normal;
 }
 
-#sgezypjdkz .gt_font_bold {
+#baqvebfsis .gt_font_bold {
   font-weight: bold;
 }
 
-#sgezypjdkz .gt_font_italic {
+#baqvebfsis .gt_font_italic {
   font-style: italic;
 }
 
-#sgezypjdkz .gt_super {
+#baqvebfsis .gt_super {
   font-size: 65%;
 }
 
-#sgezypjdkz .gt_footnote_marks {
+#baqvebfsis .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#sgezypjdkz .gt_asterisk {
+#baqvebfsis .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#sgezypjdkz .gt_indent_1 {
+#baqvebfsis .gt_indent_1 {
   text-indent: 5px;
 }
 
-#sgezypjdkz .gt_indent_2 {
+#baqvebfsis .gt_indent_2 {
   text-indent: 10px;
 }
 
-#sgezypjdkz .gt_indent_3 {
+#baqvebfsis .gt_indent_3 {
   text-indent: 15px;
 }
 
-#sgezypjdkz .gt_indent_4 {
+#baqvebfsis .gt_indent_4 {
   text-indent: 20px;
 }
 
-#sgezypjdkz .gt_indent_5 {
+#baqvebfsis .gt_indent_5 {
   text-indent: 25px;
 }
 
@@ -2878,6 +2910,8 @@ tbody tr:last-child {
 <section id="what-about-capacity-building" class="level2">
 <h2 class="anchored" data-anchor-id="what-about-capacity-building">What about Capacity Building</h2>
 <div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>gef <span class="sc">|&gt;</span> </span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(capacity_building_initiative_for_transparency <span class="sc">!=</span> <span class="st">"No"</span>) <span class="sc">|&gt;</span> </span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(capacity_building_initiative_for_transparency, approval_fy,</span>
@@ -2912,6 +2946,7 @@ tbody tr:last-child {
 <span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a>    ),</span>
 <span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.margin =</span> <span class="fu">unit</span>(<span class="fu">c</span>(.<span class="dv">5</span>, <span class="dv">1</span>, .<span class="dv">5</span>, <span class="dv">1</span>), <span class="st">"cm"</span>)</span>
 <span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <div id="fig-cap-building" class="quarto-figure quarto-figure-center quarto-float anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -2929,6 +2964,8 @@ Figure&nbsp;4: Amount Spent on Capacity Building
 <section id="project-status" class="level2">
 <h2 class="anchored" data-anchor-id="project-status">Project Status</h2>
 <div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>gef <span class="sc">|&gt;</span> </span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">status =</span> <span class="fu">str_remove_all</span>(status, <span class="st">"Project "</span>)</span>
@@ -2954,6 +2991,7 @@ Figure&nbsp;4: Amount Spent on Capacity Building
 <span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
 <span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>, <span class="at">hjust =</span> <span class="sc">-</span>.<span class="dv">1</span>)</span>
 <span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <div id="fig-proj-status" class="quarto-figure quarto-figure-center quarto-float anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -2971,6 +3009,8 @@ Figure&nbsp;5: Project status since 1991
 <section id="finance-involved-in-different-project-stage-per-year" class="level2">
 <h2 class="anchored" data-anchor-id="finance-involved-in-different-project-stage-per-year">Finance involved in Different Project Stage Per Year</h2>
 <div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>gef <span class="sc">|&gt;</span> </span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">.by =</span> <span class="fu">c</span>(approval_fy, type),</span>
@@ -2989,6 +3029,7 @@ Figure&nbsp;5: Project status since 1991
 <span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
 <span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> <span class="fu">label_dollar</span>()) <span class="sc">+</span></span>
 <span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>type, <span class="at">scales =</span> <span class="st">"free"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <div id="fig-project-stage-fund" class="quarto-figure quarto-figure-center quarto-float anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -3003,6 +3044,8 @@ Figure&nbsp;6: Trend of Funds for different project stage or type according to s
 </div>
 </div>
 <div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>gef <span class="sc">|&gt;</span> </span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">replace_na</span>(</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">list</span>(</span>
@@ -3021,6 +3064,7 @@ Figure&nbsp;6: Trend of Funds for different project stage or type according to s
 <span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
 <span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(gef_period, total_amount)) <span class="sc">+</span></span>
 <span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
