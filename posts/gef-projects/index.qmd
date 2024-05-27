@@ -13,26 +13,32 @@ The Global Environment Facility, an organization cofounded by the World Bank, th
 
 The Global Environment Facility (GEF) works with developing countries to find solutions to issues like climate change, biodiversity loss, and pollution. They provide funding and expertise to help these countries implement sustainable development practices.
 
-## AIM
+## Aim
 The aim of this work is to give detailed exploratory data analysis of GEF and its work. With this short work, we will:
 
-- Find the agencies through which GEF funds are transferred to government agencies, civil society organization, research institutions and so on.
+- Find the GEF agencies
 
-- Investigate which countries have received the highest funds.
+- Investigate the trend of the total funds associated to the GEF.
 
-- Investigate the trend of funds associated to the different focal areas of GEF missions
+- Investigate the amount contributed by the GEF agencies to its mission.
 
-- Estimate the co-financing funds and grant funds according to the different agencies
+- Evaluate how much have been spent on the key areas the GEF is focusing
 
-- Evaluate the amount of for the categories of trust funds set up within the organization
+- Investigate which countries have received the highest funds in total for its projects.
 
-- Investigate the number of projects that has moved pass the enabling activity stage
+- Investigate the top 3 funded countries in each continent.
+
+- Estimate the amount invested for capacity building
+
+- Investigate the project status since its establishment. What proportion is completed, is in progress, or cancelled?
+
+- Investigate the amount spent on different project size and stage.
 
 ## Explore Data
 Let's start by loading the data.
 ```{r}
 #| message: false
-#| label: tbl-import-data
+#| label: analysis-set-up
 #| tbl-cap: GEF data preview
 
   
@@ -52,12 +58,16 @@ theme_set(theme_hc() +
 
 
 ```{r}
+#| label: tbl-preview-data
+#| message: false
+#| warning: false
+
 gef <- read_csv("projects.csv") |> clean_names() |> 
   filter(approval_fy >= 1991)
 
 col_names <- str_to_upper(str_replace_all(names(gef), "_", " "))
 
-head(gef) |> 
+head(gef, n = 1) |> 
   gt() |> 
   cols_label(
     title = col_names[1],
@@ -76,10 +86,6 @@ head(gef) |>
     gef_period = col_names[14]
   ) |> 
   tab_header(md("**GEF Data Preview**")) |> 
-  cols_width(
-    title ~ px(140),
-    agencies ~ px(140)
-  ) |> 
   fmt_currency(columns = gef_grant, currency = "USD") |> 
   tab_style(
     style = cell_text(size = px(12)),
@@ -89,16 +95,24 @@ head(gef) |>
     style = cell_text(size = px(14)),
     locations = cells_column_labels(columns = everything())
   ) |> 
+  cols_width(
+    title ~ px(250),
+    agencies ~ px(260),
+    everything() ~ px(50)
+  ) |> 
   gt_theme_538()
 ```
 
-### Agencies Supporting the GEF
-Let us get the list of the organizations that are partners with the GEF.
+## Agencies Supporting the GEF
+
 ```{r}
 #| label: tbl-agencies
-#| tbl-cap: Partner organizations of the Global Environment Facility
+#| tbl-cap: Partner organizations (Agencies) of the Global Environment Facility
 #| message: false
 #| warning: false
+
+gef <- gef |> 
+  select(-c(id, non_grant_instrument_indexed_field))
 
 icons <- list.files("agencies", full.names = TRUE)
 agencies_abr <- c(
@@ -122,11 +136,12 @@ agencies <- agencies |>
   set_names(c("agencies", "abbr", "logo"))
   
 agencies |> 
+  relocate(logo) |> 
   gt() |> 
   cols_label(
     agencies = "Partners",
     abbr = "Abbreviation",
-    logo = "Logo"
+    logo = ""
   ) |> 
   tab_header(
     title = "AGENCIES SUPPORTING GEF"
@@ -150,12 +165,11 @@ agencies |>
 
 ```
 
-@tbl-agencies shows the GEF.
+## Trend of GEF Funds since establishment in 1991
 
-### Who is responsible for financing most projects?
 
 ```{r}
-#| label: fig-plot
+#| label: fig-country-high-funding
 #| fig-cap: countries with the highest fundings
 #| message: false
 #| warning: false
@@ -234,10 +248,14 @@ gef |>
   )
 ```
 
-Let's investigate a bit more to see the top cofinancer of GEF since establishment day.
+
+### Who is responsible for financing most projects?
+
 ```{r}
 #| label: fig-top-environmental-players
 #| fig-cap: "Top Environmental Players"
+#| fig-height: 6
+#| fig-width: 10
 #| warning: false
 #| message: false
 
@@ -248,7 +266,7 @@ my_icons <- tibble(
 
 my_icons <- my_icons |> 
   mutate(
-    icons = paste0("<img src =", icons, " width = '25'/> <br>**", agencies_abr, "**")
+    icons = paste0("<img src =", icons, " width = '25'/>\ <br>**", agencies_abr, "**")
   )
 
 gef |> 
@@ -287,9 +305,9 @@ gef |>
     axis.text.x = element_blank(),
     axis.title.x = element_blank(),
     axis.ticks = element_blank(),
-    axis.text.y = element_markdown(size = 10, color = "black"),
+    axis.text.y = element_markdown(size = 9, color = "black"),
     plot.subtitle = element_text(size = 11, color = "burlywood"),
-    plot.title = element_text(vjust = 1, hjust = -.2),
+    plot.title = element_text(vjust = 1, hjust = -.1),
     plot.margin = unit(c(.5, 1, .5, 1), "cm")
   ) 
   
@@ -297,8 +315,11 @@ gef |>
 
 @fig-top-player-environmental-players shows that the World Bank Group and UNDP has been the top cofinancer of GEF projects.
 
+## What is the Main Areas That GEF Funds go to?
+
 ```{r}
-#| label: fig-how-gef-
+#| label: fig-focus-areas
+#| fig-cap: The GEF focus areas spending
 
 image <- tibble(
   image = list(
@@ -321,7 +342,8 @@ gef |>
   ) |> 
   drop_na(focal_areas) |> 
   mutate(
-    total_amount = gef_grant + cofinancing
+    total_amount = gef_grant + cofinancing,
+    .keep = "unused"
   ) |> 
   summarize(
     .by = focal_areas,
@@ -344,7 +366,7 @@ gef |>
   arrange(focal_areas) |> 
   bind_cols(image) |> 
   ggplot(aes(fct_reorder(focal_areas, total_amount), total_amount, ,image = image)) +
-  geom_col(fill = "springgreen3", alpha = .2, col = "black") +
+  geom_col(fill = "springgreen", alpha = .5, col = "black") +
   geom_isotype_col(
     img_height = grid::unit(1.2, "cm"),
     img_width = grid::unit(1, "cm"),
@@ -363,12 +385,14 @@ gef |>
   theme(
     legend.position = "none",
     plot.title = element_text(hjust = -.7),
-    plot.subtitle = element_text(hjust = -1),
+    plot.subtitle = element_text(hjust = -1.12),
   )
 ```
+## Top funded countries
 
 ```{r}
-#| label: funding-region-countries
+#| label: get-funding-region-countries
+
 all_funds <- gef |> 
   select(gef_grant, countries, cofinancing) |> 
   replace_na(
@@ -377,9 +401,12 @@ all_funds <- gef |>
       cofinancing = 0
     )
   ) |> 
-  mutate(total_amount = gef_grant + cofinancing) |> 
+  mutate(
+    total_amount = gef_grant + cofinancing,
+    .keep = "unused"
+  ) |> 
   summarize(
-    .by = countries,
+    .by = c(countries),
     total_amount = sum(total_amount)
   ) |> 
   separate_longer_delim(
@@ -392,7 +419,7 @@ all_funds <- gef |>
     fund_amount = total_amount/n(),
   ) |> 
   summarize(
-    .by = countries,
+    .by = c(countries),
     total_amount = sum(fund_amount)
   ) |> 
   arrange(countries)
@@ -411,18 +438,22 @@ fund_region <- all_funds |>
                       "Europe and Central Asia", "Latin America and Caribbean"
                      )
   )
-  
 ```
 
 
-## Top funded countries
 ```{r}
+#| label: get-country-continent-match
+
+
 countries <- list.files(path = "countries/svg", full.names = TRUE)
 country_logo = tibble(logo = countries[str_detect(countries, "ch|in|me|br|ph|vn|id|za|/ng|pe")])
 ```
 
 
 ```{r}
+#| label: tbl-top-funded-country
+#| tbl-cap: Top 10 most funded countries
+
 fund_countries |> 
   slice_max(total_amount, n = 10) |>  
   arrange(countries) |> 
@@ -443,16 +474,199 @@ fund_countries |>
   cols_label(
     logo = "",
     countries = "Country",
-    total_amount = "Fund (Billion $)"
+    total_amount = "Funds (Billion)"
   ) |> 
   fmt_image(
     columns = logo, width = 30, height = 30
+  ) |> 
+  fmt_currency(
+    columns = total_amount
   ) |> 
   tab_header(
     title = "Top Funded countries with involving the GEF",
     subtitle = "Funds can be by GEF, National Government and other interested parties"
   ) |> 
   gt_theme_538()
+```
+
+## Most Funded Countries in Each Continent
+
+```{r}
+#| label: combine-continent-to-funded-countries-tbl
+continent <- codelist |> 
+  select(continent, country.name.en)
+
+fund_countries <- fund_countries |> 
+  left_join(continent, join_by(countries == country.name.en))
   
+europe <- c("Bosnia-Herzegovina", "Czech Republic", "Kosovo",
+            "Russian Federation", "Slovak Republic", "Türkiye")
+africa <- c("Cabo Verde", "Congo", "Congo DR", "Cote d'Ivoire",
+            "Sao Tome and Principe")
+asia <- c("Korea DPR", "Kyrgyz Republic", "Lao PDR", "Myanmar", 
+          "Palestinian Authority", "Republic Of Korea",
+          "Republic Of Korea", "Viet Nam")
+americas <- c("Antigua And Barbuda", "St. Kitts And Nevis",
+              "St. Vincent and Grenadines", "Trinidad and Tobago")
+oceania <- c("Timor Leste", "Micronesia")
+
+fund_countries <- fund_countries |> 
+  filter(countries != "Yugoslavia") |> 
+  mutate(
+    continent = case_when(
+      countries %in% europe ~ "Europe",
+      countries %in% africa ~ "Africa",
+      countries %in% asia ~ "Asia",
+      countries %in% americas ~ "Americas",
+      countries %in% oceania ~ "Oceania",
+      .default = continent
+    )
+  )
+```
+
+
+```{r}
+#| label: tbl-funded-countries-continent
+#| tbl-cap: Top Funded Countries Per Continent
+fund_countries |> 
+  group_by(continent) |> 
+  slice_max(total_amount, n = 3) |> 
+  ungroup() |> 
+  mutate(
+    continent = str_to_upper(continent),
+    total_amount = round(total_amount/1e6, 2)
+  ) |> 
+  gt(groupname_col = "continent") |> 
+  tab_header(
+    title = "Top Funded GEF (Co)Financed Countries per Continent"
+  ) |> 
+   cols_label(
+     countries = "Country",
+     total_amount = " Funds Received (millions)"
+  ) |> 
+  fmt_currency(
+    columns = total_amount
+  ) |> 
+  gt_theme_538()
+```
+
+## What about Capacity Building
+```{r}
+#| label: fig-cap-building
+#| fig-cap: Amount Spent on Capacity Building
+
+gef |> 
+  filter(capacity_building_initiative_for_transparency != "No") |> 
+  select(capacity_building_initiative_for_transparency, approval_fy,
+         "funding_source" = funding_source_indexed_field, cofinancing, gef_grant) |> 
+  replace_na(
+    list(
+      gef_grant = 0,
+      cofinancing = 0
+    )
+  ) |> 
+  mutate(
+    total_amount = cofinancing + gef_grant,
+    .keep = "unused"
+  ) |> 
+  select(-capacity_building_initiative_for_transparency) |> 
+  ggplot(aes(approval_fy, total_amount/1e6)) +
+  geom_col(aes(fill = funding_source)) +
+  scale_fill_tableau() +
+  labs(
+    x = "Year",
+    y = "Amount (Million)",
+    title = "Investment for Capacity Building"
+  ) +
+  scale_y_continuous(labels = label_dollar()) +
+  scale_x_continuous(breaks = seq(2017, 2024, 1)) +
+  facet_wrap(~funding_source, scales = "free_x") +
+  theme(
+    legend.position = "none",
+    axis.title.y = element_text(
+      vjust = 8,
+      margin = margin(t = 0, r = 0, b = 0, l = 1, unit = "cm")
+    ),
+    plot.margin = unit(c(.5, 1, .5, 1), "cm")
+  )
+```
+
+## Project Status
+```{r}
+#| label: fig-proj-status
+#| fig-cap: Project status since 1991
+
+gef |> 
+  mutate(
+    status = str_remove_all(status, "Project ")
+  ) |> 
+  summarize(
+    .by = c(approval_fy, status),
+    count = n()
+  ) |> 
+  ggplot(aes(approval_fy, count, fill = fct_reorder(status, count))) +
+  geom_col(position = "fill") +
+  labs(
+    x = "Year",
+    y = "Proportion",
+    fill = "Project Status:",
+    title = "State of GEF Projects",
+    subtitle = "Higher proportion of projects are either completed or approved.\n2020 is having 100% approval with no completed project yet"
+  ) +
+  scale_y_continuous(
+    breaks = seq(0, 1, .2),
+    labels = label_percent(scale = 100)
+  ) +
+  scale_fill_wsj() + 
+  theme(
+    plot.subtitle = element_text(size = 10, hjust = -.1)
+  )
+```
+
+## Finance involved in Different Project Stage Per Year
+```{r}
+#| label: fig-project-stage-fund
+#| fig-cap: Trend of Funds for different project stage or type according to size
+
+gef |> 
+  summarize(
+    .by = c(approval_fy, type),
+    gef_grant = sum(gef_grant, na.rm = TRUE),
+    cofinancing = sum(cofinancing, na.rm = TRUE)
+  ) |> 
+  mutate(
+    total_amount = gef_grant + cofinancing,
+    .keep = "unused"
+  ) |>
+  ggplot(aes(approval_fy, total_amount/1e6, col = type, fill = type)) +
+  geom_area(alpha = .3) +
+  labs(
+    x = "",
+    y = "Funds (millions)"
+  ) +
+  scale_y_continuous(labels = label_dollar()) +
+  facet_wrap(~type, scales = "free")
+  
+```
+
+```{r}
+gef |> 
+  replace_na(
+    list(
+      gef_grant = 0,
+      cofinancing = 0
+    )
+  ) |> 
+  filter(!is.na(gef_period)) |> 
+  mutate(
+    total_amount = gef_grant + cofinancing,
+    .keep = "unused"
+  ) |> 
+  summarize(
+    .by = c(gef_period, approval_fy),
+    total_amount = sum(total_amount)
+  ) |> 
+  ggplot(aes(gef_period, total_amount)) +
+  geom_col()
 ```
 
