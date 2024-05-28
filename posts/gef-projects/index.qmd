@@ -1,10 +1,11 @@
 ---
 title: "What about our Climate Funds"
 author: "Olamide Adu"
-date: "2024-05-21"
+date: "2024-05-28"
 description: "Unveiling the Global Environment Facility's Impact"
 image: image.webp
 categories: [news, exploratory data analysis]
+favicon: badger.png
 code-fold: true
 code-summary: "Show the code"
 ---
@@ -35,6 +36,9 @@ This analysis delves into the GEF's work, aiming to uncover insights through exp
 
 - **Project Spending by Size and Stage**: We'll investigate how funding is distributed across projects of different sizes and stages (e.g., enabling activity and so on).
 
+- **Total Funds Per GEF Replenishment Period**: This analysis will explore how much funding was available during each GEF replenishment cycle. The GEF operates on a cycle where donor countries pledge contributions every four years. Examining trends in total funds across these periods can reveal changes in donor commitment and resource availability for the GEF's work.
+
+- **Pinpoint the Single Most Funded Project**: This investigation will identify the individual project that has garnered the highest total funding from the GEF.
 
 ## Explore Data
 Let's start by loading the data.
@@ -236,7 +240,7 @@ gef |>
     fill = "gray"
   ) +
   scale_x_continuous(breaks = seq(1991, 2024, 4)) +
-  #scale_y_continuous(labels = label_comma()) +
+  scale_y_continuous(labels = label_dollar()) +
   scale_fill_economist() +
   scale_color_economist() +
   theme(
@@ -291,7 +295,7 @@ gef |>
   ggplot(aes(fund_amount, fct_reorder(icons, fund_amount))) +
   geom_col(fill = "springgreen4") +
   geom_label(
-    aes(label = paste0(fund_amount, " B")),
+    aes(label = paste0("$", fund_amount, " B")),
     fill = "burlywood1", 
     col = "gray2"
   ) +
@@ -646,7 +650,7 @@ gef |>
     y = "Funds (millions)"
   ) +
   scale_y_continuous(labels = label_dollar()) +
-  facet_wrap(~type, scales = "free")
+  facet_wrap(~type, scales = "free_y")
   
 ```
 
@@ -664,10 +668,115 @@ gef |>
     .keep = "unused"
   ) |> 
   summarize(
-    .by = c(gef_period, approval_fy),
+    .by = c(gef_period),
     total_amount = sum(total_amount)
   ) |> 
-  ggplot(aes(gef_period, total_amount)) +
-  geom_col()
+  mutate(
+    xmin = case_when(
+      gef_period == "Pilot Phase" ~ 1991,
+      str_match(gef_period, "\\d") == 1 ~ 1994,
+      str_match(gef_period, "\\d") == 2 ~ 1998,
+      str_match(gef_period, "\\d") == 3 ~ 2002,
+      str_match(gef_period, "\\d") == 4 ~ 2006,
+      str_match(gef_period, "\\d") == 5 ~ 2010,
+      str_match(gef_period, "\\d") == 6 ~ 2014,
+      str_match(gef_period, "\\d") == 7 ~ 2018,
+      str_match(gef_period, "\\d") == 8 ~ 2022,
+    ),
+    xmax = case_when(
+      gef_period == "Pilot Phase" ~ 1994 ,
+      str_match(gef_period, "\\d") == 1 ~ 1998,
+      str_match(gef_period, "\\d") == 2 ~ 2002,
+      str_match(gef_period, "\\d") == 3 ~ 2006,
+      str_match(gef_period, "\\d") == 4 ~ 2010,
+      str_match(gef_period, "\\d") == 5 ~ 2014,
+      str_match(gef_period, "\\d") == 6 ~ 2018,
+      str_match(gef_period, "\\d") == 7 ~ 2022,
+      str_match(gef_period, "\\d") == 8 ~ 2026,
+    ),
+    gef_period = case_when(
+      gef_period == "Pilot Phase" ~ "PP",
+      .default = gef_period
+    )
+  ) |> 
+  arrange(desc(gef_period)) |>
+  mutate(
+    year = c(1993, 2024, 2020, 2016, 2012, 2008, 2004, 2000, 1996)
+  ) |> 
+  ggplot(aes(year, total_amount/1e6)) +
+  geom_pointrange(aes(xmin = xmin, xmax = xmax), col = "coral2",) +
+  geom_text(
+    aes(x = xmin, y = total_amount/1e6, label = gef_period),
+    col = "gray17",
+    vjust = -.5,
+    hjust = -.2
+  ) +
+  labs(
+    x = "Years",
+    y = "Amount (Millions)",
+    title = "Donation + Expenses + Turnover of the Replenishment Periods"
+  ) +
+  scale_y_continuous(labels = label_dollar()) +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(vjust = 2)
+  )
 ```
 
+## Most Funded Project by the GEF
+```{r}
+gef |> 
+  replace_na(
+    list(
+      gef_grant = 0,
+      cofinancing = 0
+    )
+  ) |> 
+  mutate(total_amount = gef_grant + cofinancing) |> 
+  summarize(
+    .by = c(title, countries, approval_fy, status),
+    total_amount = round(sum(total_amount)/1e6, 2)
+  ) |> 
+  slice_max(total_amount, n = 10) |>
+  mutate(
+    countries = case_when(
+      str_detect(countries, ",") ~ "Some African Countries",
+      .default = countries
+    )
+  ) |> 
+  ggplot(aes(total_amount, fct_reorder(countries, total_amount))) +
+  geom_col(
+    aes(fill = status),
+    position = position_dodge(width = .91),
+    alpha = .7
+  ) +
+  ggrepel::geom_label_repel(
+    aes(label = str_wrap(title, width = 60), fill = status),
+    size = 2.5,
+    col = "white",
+    nudge_x= 7
+  ) +
+  scale_fill_stata() +
+  scale_x_continuous(labels = label_dollar()) +
+  labs(
+    x = "Project Amount (in Millions)",
+    y = "Regions",
+    title = "Most Funded Project and their Status"
+  )
+  
+```
+
+
+## Conclusion:
+
+This exploratory data analysis has provided valuable insights into the Global Environment Facility's (GEF) work and impact. By examining various aspects like funding trends, project focus areas, and recipient countries, we've gained a deeper understanding of how the GEF tackles global environmental challenges. The findings presented here is limited to the data provided. Limitations included is not limited to:
+
+-   difficulty stating who the specific donor nations are
+
+-   difficulty showing how funds were transferred from each replenishment period
+
+-   Project investment income
+
+-   Success of projects, especially for the completed ones.
+
+-   Tracking projects

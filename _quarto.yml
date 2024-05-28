@@ -4,7 +4,9 @@ project:
 
 website:
   title: ""
+  favicon: "image/badger.png"
   navbar:
+    logo: "image/badger.png"
     right:
       - icon: github
         href: https://github.com/

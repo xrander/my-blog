@@ -2,9 +2,7 @@
   {
     "listing": "/blog.html",
     "items": [
-      "/posts/collinearity-logistic-regression-for-online-visits-sales-data/index.html",
-      "/posts/gef-projects/index.html",
-      "/posts/option-add-use-in-tuning-different-grid-for-different-models/index.html"
+      "/posts/gef-projects/index.html"
     ]
   }
 ]
