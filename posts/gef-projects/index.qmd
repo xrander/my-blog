@@ -581,7 +581,8 @@ gef |>
   labs(
     x = "Year",
     y = "Amount (Million)",
-    title = "Investment for Capacity Building"
+    title = "Investment for Capacity Building",
+    caption = "By: Olamide Michael Adu"
   ) +
   scale_y_continuous(labels = label_dollar()) +
   scale_x_continuous(breaks = seq(2017, 2024, 1)) +
@@ -616,7 +617,8 @@ gef |>
     y = "Proportion",
     fill = "Project Status:",
     title = "State of GEF Projects",
-    subtitle = "Higher proportion of projects are either completed or approved.\n2020 is having 100% approval with no completed project yet"
+    subtitle = "Higher proportion of projects are either completed or approved.\n2020 is having 100% approval with no completed project yet",
+    caption = "By: Olamide Michael Adu"
   ) +
   scale_y_continuous(
     breaks = seq(0, 1, .2),
@@ -647,7 +649,9 @@ gef |>
   geom_area(alpha = .3) +
   labs(
     x = "",
-    y = "Funds (millions)"
+    y = "Funds (millions)",
+    title = "Financial trend of different project stage and size",
+    caption = "By: Olamide Michael Adu"
   ) +
   scale_y_continuous(labels = label_dollar()) +
   facet_wrap(~type, scales = "free_y")
@@ -655,6 +659,8 @@ gef |>
 ```
 
 ```{r}
+#| label: fig-replenishement
+#| fig-cap: Total amount of GEF's replenishment periods
 gef |> 
   replace_na(
     list(
@@ -714,7 +720,8 @@ gef |>
   labs(
     x = "Years",
     y = "Amount (Millions)",
-    title = "Donation + Expenses + Turnover of the Replenishment Periods"
+    title = "Donation + Expenses + Turnover of the Replenishment Periods",
+    caption = "By: Olamide Michael Adu"
   ) +
   scale_y_continuous(labels = label_dollar()) +
   theme(
@@ -725,6 +732,8 @@ gef |>
 
 ## Most Funded Project by the GEF
 ```{r}
+#| label: fig-most-funded project
+#| fig-cap: The GEF's most funded project
 gef |> 
   replace_na(
     list(
@@ -761,7 +770,8 @@ gef |>
   labs(
     x = "Project Amount (in Millions)",
     y = "Regions",
-    title = "Most Funded Project and their Status"
+    title = "Most Funded Project and their Status",
+    caption = "By: Olamide Michael Adu"
   )
   
 ```
