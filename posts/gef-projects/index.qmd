@@ -732,8 +732,10 @@ gef |>
 
 ## Most Funded Project by the GEF
 ```{r}
-#| label: fig-most-funded project
-#| fig-cap: The GEF's most funded project
+#| label: fig-most-funded
+#| fig-cap: "The GEF's most funded project"
+
+
 gef |> 
   replace_na(
     list(
