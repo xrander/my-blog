@@ -1,6 +1,7 @@
 ---
 title: "About Me"
-image: avatar.jpg
+image: image/avatar.jpg
+favicon: image/badger.png
 about:
   template: trestles
   image-shape: round
@@ -12,6 +13,9 @@ about:
     - icon: github
       text: Github
       href: https://github.com/xrander
+    - icon: twitter
+      text: Twitter
+      href: www.x.com/fp_talk
 ---
 
 Olamide Adu is a Data Scientist with a background in Forestry and Sustainable Nature Management. He is a graduate of the Euroforester Program from the Swedish University of Agricultural Sciences in 2023. He has a passion for Data Science and is a big lover of the R Language. He is adept at using R, loves learning and likes to give back to his community in any way he can.

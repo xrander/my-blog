@@ -9,9 +9,9 @@ website:
     logo: "image/badger.png"
     right:
       - icon: github
-        href: https://github.com/
+        href: https://github.com/xrander
       - icon: twitter
-        href: https://twitter.com
+        href: https://x.com/fp_talk
     left: 
       - blog.qmd
 format:
