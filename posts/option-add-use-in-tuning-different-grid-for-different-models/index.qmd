@@ -1,11 +1,229 @@
 ---
-title: "Welcome To My Blog"
-date: "2024-05-19"
-categories: [Machine Learning, Tuning, Classification, Modeling]
-draft: True
+title: "Managing Workflowset Models"
+subtitle: "Using `option-add` to Tune Different Model of Workflowset"
+date: "2024-06-11"
+categories: [Machine Learning, Tuning]
+draft: False 
+code-fold: true
+code-copy: hover
+code-summary: "Show the code"
+bibliography: references.bib
+image: image_2.jpeg
 ---
 
-This is the first post in a Quarto blog. Welcome!
+## Introduction
+
+![](https://www.tidymodels.org/images/tidymodels.png)
+
+The `tidymodels` package is a game-changer for the R ecosystem, providing a streamlined and intuitive approach to modeling. Built on the tidyverse foundation, it offers a cohesive framework that simplifies the journey from data wrangling to robust models. What makes `tidymodels` stand out is its consistent workflow, reducing the learning curve for data scientists and ensuring compatibility across different modeling packages【@kuhn2022tidy】.
+
+### Workflow
+
+The `workflows` package is one of the standout components of tidymodels, making the iterative machine learning process in R more manageable. By bundling model fitting and data preprocessing steps into a single coherent object, `workflows` simplifies the complexities of the machine learning pipeline, ensuring each step is clearly defined and reproducible. This iterative machine learning process, as covered in "Tidy Modeling with R"【@kuhn2022tidy】, is illustrated below:
+
+![Source: Tidy Modeling with R](https://www.tmwr.org/premade/modeling-process.svg)
+
+### Workflowsets
+
+The focus of this post, the `workflowsets` package, builds on the `workflows` package by extending its capabilities to handle multiple machine learning models. Since the best model for any given task is not predetermined, it's crucial to test multiple models and compare their performances. `workflowsets` is designed to manage multiple workflows, making it easier to compare different modeling approaches and preprocessing strategies.
+
+This blog post introduces the `option_add` function of the `workflowsets` package, which is used to control options for evaluating workflow set functions such as `fit_resamples` and `tune_grid`. For more information on this function, refer to the documentation with `?option_add`.
+
+We start by loading the packages we will be using for this post
+
+```{r}
+#| label: import-library
+#| message: false
+#| warning: false
+library(pacman)
+p_load(tidyverse, tidymodels, gt)
+```
+
+For this post we'll use the [**heart disease dataset**](https://www.kaggle.com/datasets/rashadrmammadov/heart-disease-prediction?resource=download) from kaggle.com. A preview of the data is given @tbl-load-dataset
+
+```{r}
+#| label: tbl-load-dataset
+#| message: false
+#| warning: false
+#| tbl-cap: Data Preview
+heart_disease <- read_csv("heart_disease_dataset.csv")
+
+head(heart_disease) |> 
+  gt() |> 
+  tab_header(
+    title = "Heart Diseases"
+  ) |> 
+  opt_stylize(
+    style = 2, 
+    color = "cyan"
+  ) |> 
+  as_raw_html()
+```
+## Short EDA
+```{r}
+#| label: tbl-preview-data
+#| tbl: Quick description of the data
+
+skimr::skim_without_charts(heart_disease) |> 
+  gt() |> 
+  tab_spanner(
+    label = "Character",
+    columns = character.min:character.whitespace
+  ) |> 
+  tab_spanner(
+    label = "Numeric",
+    columns = starts_with("numeric")
+  ) |> 
+  cols_label(
+    skim_type ~ "Type",
+    skim_variable ~"Variable",
+    n_missing ~ "Missing?",
+    complete_rate ~ "Complete?",
+    character.min ~ "Min",
+    character.max ~ "Max",
+    character.empty ~ "Empty",
+    character.n_unique ~ "Unique",
+    character.whitespace ~ "Gap",
+    numeric.mean ~ "Mean",
+    numeric.sd ~ "SD",
+    numeric.p0 ~ "Min",
+    numeric.p25 ~ "25%",
+    numeric.p50 ~ "Median",
+    numeric.p75 ~ "75%",
+    numeric.p100 ~ "Max"
+  ) |> 
+  cols_width(
+    skim_type ~ px(80),
+    everything() ~ px(70)
+  ) |> 
+  opt_stylize(
+    style = 2,
+    color = "cyan",
+  ) |> 
+  as_raw_html()
+```
+
+@tbl-preview-data shows there are no missing values, and we'll therefore continue with our analysis.
+
+We'll proceed to convert all character variables to factor data types
+```{r}
+#| label: convert-chr-to-fct
+
+heart_diseases <- heart_disease |> 
+  janitor::clean_names() |> 
+  mutate(across(where(is.character), factor))
+```
+
+```{r}
+#| label: fig-pairs
+#| message: false
+#| warning: false
+#| fig-cap: "Scattered Matrix Plots of variables"
+
+GGally::ggscatmat(
+  data = heart_diseases,
+  columns = 1:ncol(heart_diseases),
+  color = "heart_disease",
+  alpha = .3
+)
+```
 
 
-Since this post doesn't specify an explicit `image`, the first image in the post will be used in the listing page of posts.
+```{r}
+#| label: fig-corplot
+#| message: false
+#| warning: false
+#| fig-cap: "Correlation plot of numeric variables"
+GGally::ggcorr(
+  data = heart_diseases,
+  columns = 1:ncol(heart_diseases),
+  name = expression(rho),
+  geom = "circle",
+  size = 3,
+  min_size = 5,
+  max_size = 10,
+  angle = -45
+) +
+  ggtitle("Correlation Plot of Numeric Variables")
+```
+
+@fig-corplot shows high correlation between heart diseases and cholesterol level, as well as heart diseases and age.
+
+
+```{r}
+#| label: fig-outcome
+#| fig-cap: Frequency of Heart Disease Outcome
+
+heart_diseases |> 
+  mutate(
+    heart_disease = case_when(
+      heart_disease == 0 ~ "No",
+      heart_disease == 1 ~ "Yes"
+    )
+  ) |> 
+  ggplot(aes(heart_disease, fill = gender)) +
+  geom_bar(position = "dodge") +
+  labs(
+    x = "Heart disease",
+    y = "Frequency",
+    title = "Heart disease a bit more prevalent in male than females"
+  ) +
+  ggthemes::scale_fill_fivethirtyeight()
+```
+
+
+We won't spend time on EDA and proceed with our modeling workflow.
+
+## Modeling
+### Data Splitting
+we'll split our data to 75% for training and 25% for testing data using the outcome variable (`heart_disease`) as the strata that determines the split
+```{r}
+#| label: data-splitting
+
+set.seed(8343)
+hd_split <- initial_split(heart_diseases, prop = .75, strata = heart_disease)
+
+hd_train <- training(hd_split)
+head(hd_train)
+```
+
+### Model Sepcification
+We'll use a randomforest, decision tree, and a glm model.
+
+```{r}
+rf_spec <- rand_forest(
+  mtry = tune(),
+  min_n = tune(),
+  trees = 1000
+) |> 
+  set_engine("ranger") |> 
+  set_mode("classification")
+
+dec_tree_spec <- decision_tree(
+  min_n = tune(),
+  tree_depth = tune()
+) |> 
+  set_engine("spark") |> 
+  set_mode("classification")
+
+log_reg_spec <- logistic_reg() |> 
+  set_engine("glm", family = stats::binomial(link = "logit")) |> 
+  set_mode("classification")
+```
+
+The logistic regression model specification is having no tuning parameter, and we'll proceed like that.
+
+### Data Preprocessing
+We are going to have two preprocessing specification, one includes using a non-preprocessing while the other includes using a preprocessed data.
+
+```{r}
+dt_rec <- recipe(
+  heart_disease ~ .,
+  data = hd_train
+)
+
+dt_rec_2 <- dt_rec |> 
+  step_log(all_numeric_predictors()) |> 
+  step_dummy(all_factor_predictors(), one_hot = TRUE)
+```
+
