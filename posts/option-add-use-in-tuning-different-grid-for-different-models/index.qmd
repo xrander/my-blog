@@ -13,7 +13,7 @@ image: image_2.jpeg
 
 ## Introduction
 
-![](https://www.tidymodels.org/images/tidymodels.png)
+![](https://www.tidymodels.org/images/tidymodels.png){width="820"}
 
 The `tidymodels` package is a game-changer for the R ecosystem, providing a streamlined and intuitive approach to modeling. Built on the tidyverse foundation, it offers a cohesive framework that simplifies the journey from data wrangling to robust models. What makes `tidymodels` stand out is its consistent workflow, reducing the learning curve for data scientists and ensuring compatibility across different modeling packages【@kuhn2022tidy】.
 
@@ -36,7 +36,7 @@ We start by loading the packages we will be using for this post
 #| message: false
 #| warning: false
 library(pacman)
-p_load(tidyverse, tidymodels, gt)
+p_load(tidyverse, tidymodels, gt, finetune, bonsai)
 ```
 
 For this post we'll use the [**heart disease dataset**](https://www.kaggle.com/datasets/rashadrmammadov/heart-disease-prediction?resource=download) from kaggle.com. A preview of the data is given @tbl-load-dataset
@@ -59,7 +59,9 @@ head(heart_disease) |>
   ) |> 
   as_raw_html()
 ```
+
 ## Short EDA
+
 ```{r}
 #| label: tbl-preview-data
 #| tbl: Quick description of the data
@@ -103,15 +105,25 @@ skimr::skim_without_charts(heart_disease) |>
   as_raw_html()
 ```
 
-@tbl-preview-data shows there are no missing values, and we'll therefore continue with our analysis.
+@tbl-preview-data shows there are no missing values, so we can proceed with our analysis.
 
-We'll proceed to convert all character variables to factor data types
+Next, we will convert all character variables to factor data types
+
 ```{r}
 #| label: convert-chr-to-fct
 
 heart_diseases <- heart_disease |> 
   janitor::clean_names() |> 
-  mutate(across(where(is.character), factor))
+  mutate(
+    across(where(is.character), factor),
+    exercise_hours = factor(exercise_hours),
+    stress_level = factor(stress_level),
+    heart_disease = factor(
+      heart_disease, 
+      labels = c("No","Yes"),
+      levels = c(0, 1)
+    )
+  )
 ```
 
 ```{r}
@@ -127,7 +139,6 @@ GGally::ggscatmat(
   alpha = .3
 )
 ```
-
 
 ```{r}
 #| label: fig-corplot
@@ -147,20 +158,11 @@ GGally::ggcorr(
   ggtitle("Correlation Plot of Numeric Variables")
 ```
 
-@fig-corplot shows high correlation between heart diseases and cholesterol level, as well as heart diseases and age.
-
-
 ```{r}
 #| label: fig-outcome
 #| fig-cap: Frequency of Heart Disease Outcome
 
 heart_diseases |> 
-  mutate(
-    heart_disease = case_when(
-      heart_disease == 0 ~ "No",
-      heart_disease == 1 ~ "Yes"
-    )
-  ) |> 
   ggplot(aes(heart_disease, fill = gender)) +
   geom_bar(position = "dodge") +
   labs(
@@ -171,59 +173,283 @@ heart_diseases |>
   ggthemes::scale_fill_fivethirtyeight()
 ```
 
-
 We won't spend time on EDA and proceed with our modeling workflow.
 
 ## Modeling
+
 ### Data Splitting
-we'll split our data to 75% for training and 25% for testing data using the outcome variable (`heart_disease`) as the strata that determines the split
+
+we will split our data to 75% for training and 25% for testing, using the outcome variable (`heart_disease`) as the strata to ensure a balance split. Additionally, We will create validation folds to evaluate the models.
+
 ```{r}
 #| label: data-splitting
 
-set.seed(8343)
+set.seed(832)
 hd_split <- initial_split(heart_diseases, prop = .75, strata = heart_disease)
 
 hd_train <- training(hd_split)
-head(hd_train)
+hd_folds <- vfold_cv(hd_train)
+
+head(hd_train) |> 
+  gt() |> 
+  opt_stylize(
+    style = 2,
+    color = "cyan"
+  ) |> 
+  as_raw_html()
 ```
 
-### Model Sepcification
-We'll use a randomforest, decision tree, and a glm model.
+### Model Specification
+
+We will use two models for our analysis:
+
+- K-nearest neighbors (KNN) model
+
+- Generalized linear model (GLM).
 
 ```{r}
-rf_spec <- rand_forest(
-  mtry = tune(),
-  min_n = tune(),
-  trees = 1000
+#| label: model specification
+
+knn_spec <- nearest_neighbor(
+  neighbors = tune(),
+  weight_func = tune(),
+  dist_power = tune()
 ) |> 
-  set_engine("ranger") |> 
+  set_engine("kknn") |> 
   set_mode("classification")
 
-dec_tree_spec <- decision_tree(
-  min_n = tune(),
-  tree_depth = tune()
-) |> 
-  set_engine("spark") |> 
-  set_mode("classification")
-
-log_reg_spec <- logistic_reg() |> 
+glm_spec <- logistic_reg() |> 
   set_engine("glm", family = stats::binomial(link = "logit")) |> 
   set_mode("classification")
 ```
 
-The logistic regression model specification is having no tuning parameter, and we'll proceed like that.
-
-### Data Preprocessing
-We are going to have two preprocessing specification, one includes using a non-preprocessing while the other includes using a preprocessed data.
+Below is the specification we have set for the KNN model:
 
 ```{r}
-dt_rec <- recipe(
+#| label: knn-spc
+knn_spec |>  translate()
+```
+
+The KNN spec model is having three tuning parameters. For the GLM model we have the following:
+
+```{r}
+#| label: glm-spec
+glm_spec |> translate()
+```
+
+The GLM specification is having no tuning parameter.
+
+As seen in all the model specification above, the formula is missing. We'll determine the formula for all models and the necessary preprocessing/feature engineering options we want to include in the next step using the `recipe` package
+
+### Data Preprocessing
+
+We have three preprocessing specification. The first defines the formula which we will use, the second includes normalizing all numeric predictors, and the final preprocessing step involves creating dummy variables for our categorical variables.
+
+```{r}
+#| label: data-preproc
+formula <- recipe(
   heart_disease ~ .,
   data = hd_train
 )
 
-dt_rec_2 <- dt_rec |> 
-  step_log(all_numeric_predictors()) |> 
-  step_dummy(all_factor_predictors(), one_hot = TRUE)
+normalize <- formula |> 
+  step_normalize(all_numeric_predictors())
+
+dummy <- normalize |> 
+  step_dummy(all_factor_predictors())
 ```
 
+```{r}
+#| label: tbl-preproc-2
+#| tbl-cap: Preview of normalized preprocessed data
+normalize |> 
+  prep() |> 
+  juice() |> 
+  head() |> 
+  gt() |> 
+  opt_stylize(
+    style = 3,
+    color = "cyan"
+  )
+```
+
+@tbl-preproc-2 previews how the data looks after normalizing, which is the second feature engineering technique. @tbl-preproc-3 shows the data after creating dummy variables categorical variables.
+
+```{r}
+#| label: tbl-preproc-3
+#| tbl-cap: Preview of dummy + normalized preprocessed data
+
+dummy |> 
+  prep() |> 
+  juice() |> 
+  head() |> 
+  gt() |> 
+  opt_stylize(
+    style = 2,
+    color = "cyan"
+  ) |> 
+  as_raw_html()
+```
+
+### Model Workflow Set
+
+```{r}
+#| label: model-workflow
+hd_wf_set<- workflow_set(
+  preproc = list(
+    form = formula,
+    norm = normalize,
+    dum = dummy
+  ),
+  models = list(
+    glm = glm_spec,
+    knn = knn_spec
+  )
+)
+```
+
+### Tuning Parameter
+
+Using the `workflowset` function, we've tied three recipe objects to the three different models. The K-nearest neighbor model needs tuning as mentioned earlier. 
+
+```{r}
+#| label: fig-tune-grid
+#| fig-cap: Tuning grids to be used for K-nearest  neighbor model specification
+#| fig-subcap: |
+#|  - knn regular tune grid
+#|  - knn latin hypercube tune grid
+set.seed(34443)
+
+knn_grid <- knn_spec |> 
+  extract_parameter_set_dials() |> 
+  grid_regular(levels = 6)
+
+knn_latin <- knn_spec |> 
+  extract_parameter_set_dials() |> 
+  grid_latin_hypercube(size = 300)
+
+grid_control <- control_race(
+  save_pred = TRUE,
+  save_workflow = TRUE
+)
+
+knn_grid |> 
+  ggplot(aes(dist_power, neighbors, col = weight_func)) +
+  geom_point() +
+  ggthemes::scale_color_colorblind() +
+  labs(
+    x = "Minkowski distance",
+    y = "Number of Neighbors",
+    title = "k-NN Regular Grid"
+  ) +
+  facet_wrap(~weight_func) +
+  theme(
+    legend.position = "none"
+  )
+  
+knn_latin |>
+  ggplot(aes(dist_power, neighbors, col = weight_func)) +
+  geom_point() +
+  ggthemes::scale_color_tableau() +
+  labs(
+    x = "Minkowski distance",
+    y = "Number of Neighbors",
+    title = "k-NN Latin Hypercube Grid"
+  ) +
+  facet_wrap(~weight_func) +
+  theme(
+    legend.position = "none"
+  )
+```
+We set the tuning grid for the model and use the `option_add` function to specify it. We will test two different grid structures as shown in @fig-tune-grid.
+
+## Using `option_add` to Specify Model Grids
+
+We can specify the grid to use for each model using the `option_add` function. Below is an image of `hd_wf_set` that we defined recently, and we will interpret its output.
+
+![Defined workflowset output](no_optn_add.png)
+
+The image above shows that option column is having zero values as well as the results column.
+
+```{r}
+#| label: opt-add
+
+hd_tune <- hd_wf_set |> 
+  option_add(
+    id = "norm_knn",
+    grid = knn_grid,
+    control = grid_control
+  ) |> 
+  option_add(
+    id = "form_knn",
+    grid = knn_grid,
+    control = grid_control
+  ) |> 
+  option_add(
+    id = "norm_knn",
+    grid = knn_latin,
+    control = grid_control
+  ) |> 
+  option_add(
+    id = "form_knn",
+    grid = knn_latin,
+    control = grid_control
+  ) |> 
+  option_add(
+    id = "dum_knn",
+    grid = knn_grid,
+    control = grid_control
+  ) |> 
+  option_add(
+    id = "dum_knn",
+    grid = knn_latin,
+    control = grid_control
+  )
+
+```
+
+![Defined workflowset output after options are added](optn_add.png)
+
+After using the `option-add` function, we can see that KNN model specification have two options added to it. We can now proceed to tune our model.
+
+```{r}
+#| label: tune-model
+doParallel::registerDoParallel(cores = 6)
+
+hd_tune_res <- workflow_map(
+ hd_tune ,
+ fn = "tune_race_anova",
+ resamples = hd_folds,
+ seed = 3343,
+ verbose = TRUE
+)
+```
+
+## Tune Result
+
+```{r}
+#| label: fig-tune-res
+autoplot(hd_tune_res)
+```
+
+```{r}
+#| label: tune-res
+hd_tune_res |> 
+  rank_results(rank_metric = "accuracy") |> 
+  filter(.metric == "accuracy") |> 
+  select(-c(.metric,  preprocessor, model, n)) |> 
+  gt() |> 
+  cols_label(
+    wflow_id = "Model ID",
+    .config = "Model Number"
+  ) |> 
+  opt_stylize(
+    style = 2,
+    color = "cyan"
+  ) |> 
+  as_raw_html()
+```
+Based on the results, it appears that the KNN model with no preprocessing is the best performing model.
+
+## Conclusion
+The success of our KNN model, particularly with preprocessing, underscores the critical role of the `option_add` function. By utilizing `option_add`, we efficiently defined and refined our model's tuning grid, allowing us to systematically explore and optimize hyperparameters. This approach not only enhances model performance but also ensures robustness and reliability in our predictive analytics pipeline.
