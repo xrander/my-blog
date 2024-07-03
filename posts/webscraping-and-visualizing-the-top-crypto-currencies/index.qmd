@@ -9,10 +9,61 @@ code-summary: "Show the code"
 image: image.jpeg
 ---
 
-## Crypto 
+## Cryptocurrency Chronicles
 Cryptocurrencies have captivated the financial world, bringing immense joy to some and heartache to many. One thing is certain: when you get it right and strike gold with cryptocurrencies, it can set you up for life (depending on your frugality and investment amount). As a data scientist, I know the thrill of diving into this dynamic market.
 
 This post, however, isn’t about trading strategies or price forecasting. Instead, it's a comprehensive guide for those interested in web scraping using R. Whether you're a seasoned developer or a curious beginner, you'll find valuable insights and practical techniques here. And if you have a passion for data visualization, you’re in for a treat. So, join me as we explore the fascinating world of cryptocurrencies through the lens of data science and R programming.
-![](crypto-savings.jpeg){width="250", height="300"}
 
-## Getting 
+![](crypto-savings.jpeg){width="800"}
+
+## Scraping Our Data
+I will load the libraries that will be for this post.
+```{r}
+#| label: load-packages
+library(pacman)
+
+p_load(rvest, tidyverse)
+```
+The data will be scraped from coinmarketcap.com.
+
+```{r}
+url <- "https://coinmarketcap.com/all/views/all/"
+
+crypto <- read_html(url) |> 
+  html_nodes("table") |> 
+  html_table()
+
+crypto <- crypto[[3]]
+
+head(crypto)
+```
+
+### Data Cleaning
+Now that I've obtained the data, I can start with data clean up. I'll use `janitor` package `clean_names()` function to clean the name of the columns. After that, I will select columns which we intereste in and discard the rest
+
+```{r}
+#| label: data-clean-up
+
+crypto <- crypto |> 
+  janitor::clean_names() |> 
+  select(name, symbol, market_cap, price)
+
+head(crypto)
+```
+
+The *market_price* and *price* should be numeric data and not character, so I'll convert them extracting the numbers. I'll also remove all missing data and retain only cryptocurrencies with complete dataset
+```{r}
+#| label: missing-data-check
+crypto <- crypto |> 
+  mutate(
+    market_cap = str_remove_all(market_cap, r"--[\$[\d.]+]--"),
+    market_cap = parse_number(market_cap),
+    price = parse_number(price)
+  )
+```
+
+```{r}
+crypto <- crypto[complete.cases(crypto), ]
+```
+
+Now we can visualize our data.
