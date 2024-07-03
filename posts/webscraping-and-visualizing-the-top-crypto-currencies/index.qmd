@@ -1,0 +1,18 @@
+---
+title: "Webscraping and Visualizing the Top CryptoCurrencies"
+subtitle: "Top Cryptocurrencies According to Price and Market Cap"
+date: "2024-06-11"
+categories: [Webscraping, Data Visualization]
+code-fold: true
+code-copy: hover
+code-summary: "Show the code"
+image: image.jpeg
+---
+
+## Crypto 
+Cryptocurrencies have captivated the financial world, bringing immense joy to some and heartache to many. One thing is certain: when you get it right and strike gold with cryptocurrencies, it can set you up for life (depending on your frugality and investment amount). As a data scientist, I know the thrill of diving into this dynamic market.
+
+This post, however, isn’t about trading strategies or price forecasting. Instead, it's a comprehensive guide for those interested in web scraping using R. Whether you're a seasoned developer or a curious beginner, you'll find valuable insights and practical techniques here. And if you have a passion for data visualization, you’re in for a treat. So, join me as we explore the fascinating world of cryptocurrencies through the lens of data science and R programming.
+![](crypto-savings.jpeg){width="250", height="300"}
+
+## Getting 

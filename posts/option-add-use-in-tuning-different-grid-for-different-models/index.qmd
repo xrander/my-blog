@@ -203,9 +203,9 @@ head(hd_train) |>
 
 We will use two models for our analysis:
 
-- K-nearest neighbors (KNN) model
+-   K-nearest neighbors (KNN) model
 
-- Generalized linear model (GLM).
+-   Generalized linear model (GLM).
 
 ```{r}
 #| label: model specification
@@ -310,7 +310,7 @@ hd_wf_set<- workflow_set(
 
 ### Tuning Parameter
 
-Using the `workflowset` function, we've tied three recipe objects to the three different models. The K-nearest neighbor model needs tuning as mentioned earlier. 
+Using the `workflowset` function, we've tied three recipe objects to the three different models. The K-nearest neighbor model needs tuning as mentioned earlier.
 
 ```{r}
 #| label: fig-tune-grid
@@ -361,6 +361,7 @@ knn_latin |>
     legend.position = "none"
   )
 ```
+
 We set the tuning grid for the model and use the `option_add` function to specify it. We will test two different grid structures as shown in @fig-tune-grid.
 
 ## Using `option_add` to Specify Model Grids
@@ -449,7 +450,9 @@ hd_tune_res |>
   ) |> 
   as_raw_html()
 ```
+
 Based on the results, it appears that the KNN model with no preprocessing is the best performing model.
 
 ## Conclusion
+
 The success of our KNN model, particularly with preprocessing, underscores the critical role of the `option_add` function. By utilizing `option_add`, we efficiently defined and refined our model's tuning grid, allowing us to systematically explore and optimize hyperparameters. This approach not only enhances model performance but also ensures robustness and reliability in our predictive analytics pipeline.
