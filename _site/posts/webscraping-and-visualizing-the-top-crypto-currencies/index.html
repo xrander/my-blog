@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2024-06-11">
+<meta name="dcterms.date" content="2024-07-04">
 
 <title>Webscraping and Visualizing the Top CryptoCurrencies</title>
 <style>
@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -133,7 +167,7 @@ ul.task-list li input[type="checkbox"] {
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">June 11, 2024</p>
+        <p class="date">July 4, 2024</p>
       </div>
     </div>
     
@@ -152,14 +186,407 @@ ul.task-list li input[type="checkbox"] {
 
 
 
-<section id="cryptocurrency-chronicles" class="level2">
-<h2 class="anchored" data-anchor-id="cryptocurrency-chronicles">Cryptocurrency Chronicles</h2>
 <p>Cryptocurrencies have captivated the financial world, bringing immense joy to some and heartache to many. One thing is certain: when you get it right and strike gold with cryptocurrencies, it can set you up for life (depending on your frugality and investment amount). As a data scientist, I know the thrill of diving into this dynamic market.</p>
-<p>This post, however, isn’t about trading strategies or price forecasting. Instead, it’s a comprehensive guide for those interested in web scraping using R. Whether you’re a seasoned developer or a curious beginner, you’ll find valuable insights and practical techniques here. And if you have a passion for data visualization, you’re in for a treat. So, join me as we explore the fascinating world of cryptocurrencies through the lens of data science and R programming.</p>
-<p><img src="crypto-savings.jpeg" class="img-fluid" width="800"></p>
+<p>This post, however, isn’t about trading strategies or price forecasting. Instead, it’s a exploring the capabilities of R in web scraping using the <code>rvest</code> package. Since I like to spend time in creating good visuals, I will be making some interesting visualization here.</p>
+<section id="getting-our-data" class="level2">
+<h2 class="anchored" data-anchor-id="getting-our-data">Getting Our data</h2>
+<p>The goal is to scrape data from the web and visualize the data. In this case I’ll be scraping the data from coinmarketcap.com.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pacman)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">p_load</span>(rvest, tidyverse)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>url <span class="ot">&lt;-</span> <span class="st">"https://coinmarketcap.com/all/views/all/"</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>crypto <span class="ot">&lt;-</span> <span class="fu">read_html</span>(url) <span class="sc">|&gt;</span> </span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">html_nodes</span>(<span class="st">"table"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">html_table</span>()</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>crypto <span class="ot">&lt;-</span> crypto[[<span class="dv">3</span>]]</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(crypto)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 1,001
+   Rank Name        Symbol `Market Cap` Price `Circulating Supply` `Volume(24h)`
+  &lt;int&gt; &lt;chr&gt;       &lt;chr&gt;  &lt;chr&gt;        &lt;chr&gt; &lt;chr&gt;                &lt;chr&gt;        
+1     1 BTCBitcoin  BTC    $1.13T$1,12… $57,… 19,719,431 BTC       $36,726,237,…
+2     2 ETHEthereum ETH    $378.33B$37… $3,1… 120,195,136 ETH *    $19,466,352,…
+3     3 USDTTether… USDT   $112.4B$112… $0.9… 112,484,875,383 USD… $71,224,850,…
+4     4 BNBBNB      BNB    $77.56B$77,… $525… 147,582,964 BNB *    $1,969,368,7…
+5     5 SOLSolana   SOL    $62.34B$62,… $134… 462,768,865 SOL *    $3,168,623,4…
+6     6 USDCUSDC    USDC   $32.86B$32,… $1.00 32,861,234,560 USDC… $6,923,535,8…
+# ℹ 994 more variables: `% 1h` &lt;chr&gt;, `% 24h` &lt;chr&gt;, `% 7d` &lt;chr&gt;, `` &lt;lgl&gt;,
+#   `` &lt;lgl&gt;, `` &lt;lgl&gt;, `` &lt;lgl&gt;, `` &lt;lgl&gt;, `` &lt;lgl&gt;, `` &lt;lgl&gt;, `` &lt;lgl&gt;,
+#   `` &lt;lgl&gt;, `` &lt;lgl&gt;, `` &lt;lgl&gt;, `` &lt;lgl&gt;, `` &lt;lgl&gt;, `` &lt;lgl&gt;, `` &lt;lgl&gt;,
+#   `` &lt;lgl&gt;, `` &lt;lgl&gt;, `` &lt;lgl&gt;, `` &lt;lgl&gt;, `` &lt;lgl&gt;, `` &lt;lgl&gt;, `` &lt;lgl&gt;,
+#   `` &lt;lgl&gt;, `` &lt;lgl&gt;, `` &lt;lgl&gt;, `` &lt;lgl&gt;, `` &lt;lgl&gt;, `` &lt;lgl&gt;, `` &lt;lgl&gt;,
+#   `` &lt;lgl&gt;, `` &lt;lgl&gt;, `` &lt;lgl&gt;, `` &lt;lgl&gt;, `` &lt;lgl&gt;, `` &lt;lgl&gt;, `` &lt;lgl&gt;,
+#   `` &lt;lgl&gt;, `` &lt;lgl&gt;, `` &lt;lgl&gt;, `` &lt;lgl&gt;, `` &lt;lgl&gt;, `` &lt;lgl&gt;, `` &lt;lgl&gt;, …</code></pre>
+</div>
+</div>
 </section>
-<section id="getting" class="level2">
-<h2 class="anchored" data-anchor-id="getting">Getting</h2>
+<section id="explore-data" class="level2">
+<h2 class="anchored" data-anchor-id="explore-data">Explore Data</h2>
+<p>Now that I’ve obtained the data, I can explore the data. <strong>Is the data clean?.</strong> There are a lot of columns not needed when I imported the data. I’ll use the <code>janitor</code> package <code>clean_names()</code> function to clean the name of the columns. After that, I will select the columns that are of interest.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>crypto <span class="ot">&lt;-</span> crypto <span class="sc">|&gt;</span> </span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(name, symbol, market_cap, price)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(crypto)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 200
+Columns: 4
+$ name       &lt;chr&gt; "BTCBitcoin", "ETHEthereum", "USDTTether USDt", "BNBBNB", "…
+$ symbol     &lt;chr&gt; "BTC", "ETH", "USDT", "BNB", "SOL", "USDC", "XRP", "TON", "…
+$ market_cap &lt;chr&gt; "$1.13T$1,129,824,593,080", "$378.33B$378,328,786,533", "$1…
+$ price      &lt;chr&gt; "$57,294.99", "$3,147.62", "$0.9992", "$525.55", "$134.71",…</code></pre>
+</div>
+</div>
+<p><strong>Is the data structure as expected?</strong> From the data which we have above, there are some columns that needs their data types changed. The <em>market_cap</em> and <em>price</em> column should be numeric/double data type and not character.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>crypto <span class="ot">&lt;-</span> crypto <span class="sc">|&gt;</span> </span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">market_cap =</span> <span class="fu">str_remove_all</span>(market_cap, r<span class="st">"--[\$[\d.]+]--"</span>),</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">market_cap =</span> <span class="fu">parse_number</span>(market_cap),</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">price =</span> <span class="fu">parse_number</span>(price)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(crypto)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>tibble [200 × 4] (S3: tbl_df/tbl/data.frame)
+ $ name      : chr [1:200] "BTCBitcoin" "ETHEthereum" "USDTTether USDt" "BNBBNB" ...
+ $ symbol    : chr [1:200] "BTC" "ETH" "USDT" "BNB" ...
+ $ market_cap: num [1:200] 1.30e+11 3.29e+08 3.97e+08 5.62e+08 3.41e+08 ...
+ $ price     : num [1:200] 5.73e+04 3.15e+03 9.99e-01 5.26e+02 1.35e+02 ...</code></pre>
+</div>
+</div>
+<p><strong>Is the data complete?</strong> I will check for missing data using <code>skimr</code> package</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>skimr<span class="sc">::</span><span class="fu">n_missing</span>(crypto)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 360</code></pre>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>skimr<span class="sc">::</span><span class="fu">skim</span>(crypto)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Data summary</caption>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Name</td>
+<td style="text-align: left;">crypto</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Number of rows</td>
+<td style="text-align: left;">200</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Number of columns</td>
+<td style="text-align: left;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">_______________________</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Column type frequency:</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">character</td>
+<td style="text-align: left;">2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">numeric</td>
+<td style="text-align: left;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">________________________</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Group variables</td>
+<td style="text-align: left;">None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: character</strong></p>
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 19%">
+<col style="width: 13%">
+<col style="width: 19%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 8%">
+<col style="width: 12%">
+<col style="width: 15%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">skim_variable</th>
+<th style="text-align: right;">n_missing</th>
+<th style="text-align: right;">complete_rate</th>
+<th style="text-align: right;">min</th>
+<th style="text-align: right;">max</th>
+<th style="text-align: right;">empty</th>
+<th style="text-align: right;">n_unique</th>
+<th style="text-align: right;">whitespace</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">name</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">37</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">200</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">symbol</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">180</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 10%">
+<col style="width: 7%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 6%">
+<col style="width: 10%">
+<col style="width: 9%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 4%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">skim_variable</th>
+<th style="text-align: right;">n_missing</th>
+<th style="text-align: right;">complete_rate</th>
+<th style="text-align: right;">mean</th>
+<th style="text-align: right;">sd</th>
+<th style="text-align: right;">p0</th>
+<th style="text-align: right;">p25</th>
+<th style="text-align: right;">p50</th>
+<th style="text-align: right;">p75</th>
+<th style="text-align: right;">p100</th>
+<th style="text-align: left;">hist</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">market_cap</td>
+<td style="text-align: right;">180</td>
+<td style="text-align: right;">0.1</td>
+<td style="text-align: right;">6.856759e+09</td>
+<td style="text-align: right;">2.894509e+10</td>
+<td style="text-align: right;">31776567</td>
+<td style="text-align: right;">170507576.75</td>
+<td style="text-align: right;">344495461.0</td>
+<td style="text-align: right;">612731443.25</td>
+<td style="text-align: right;">1.298246e+11</td>
+<td style="text-align: left;">▇▁▁▁▁</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">price</td>
+<td style="text-align: right;">180</td>
+<td style="text-align: right;">0.1</td>
+<td style="text-align: right;">3.079420e+03</td>
+<td style="text-align: right;">1.278031e+04</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.86</td>
+<td style="text-align: right;">5.8</td>
+<td style="text-align: right;">85.67</td>
+<td style="text-align: right;">5.729499e+04</td>
+<td style="text-align: left;">▇▁▁▁▁</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><em>market_cap</em> and <em>price</em> are having missing values and I will clean this to return only the complete rows and columns.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>crypto <span class="ot">&lt;-</span> crypto[<span class="fu">complete.cases</span>(crypto), ]</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>skimr<span class="sc">::</span><span class="fu">skim_without_charts</span>(crypto)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Data summary</caption>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Name</td>
+<td style="text-align: left;">crypto</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Number of rows</td>
+<td style="text-align: left;">20</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Number of columns</td>
+<td style="text-align: left;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">_______________________</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Column type frequency:</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">character</td>
+<td style="text-align: left;">2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">numeric</td>
+<td style="text-align: left;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">________________________</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Group variables</td>
+<td style="text-align: left;">None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: character</strong></p>
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 19%">
+<col style="width: 13%">
+<col style="width: 19%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 8%">
+<col style="width: 12%">
+<col style="width: 15%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">skim_variable</th>
+<th style="text-align: right;">n_missing</th>
+<th style="text-align: right;">complete_rate</th>
+<th style="text-align: right;">min</th>
+<th style="text-align: right;">max</th>
+<th style="text-align: right;">empty</th>
+<th style="text-align: right;">n_unique</th>
+<th style="text-align: right;">whitespace</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">name</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">symbol</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 11%">
+<col style="width: 8%">
+<col style="width: 11%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 7%">
+<col style="width: 10%">
+<col style="width: 9%">
+<col style="width: 10%">
+<col style="width: 10%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">skim_variable</th>
+<th style="text-align: right;">n_missing</th>
+<th style="text-align: right;">complete_rate</th>
+<th style="text-align: right;">mean</th>
+<th style="text-align: right;">sd</th>
+<th style="text-align: right;">p0</th>
+<th style="text-align: right;">p25</th>
+<th style="text-align: right;">p50</th>
+<th style="text-align: right;">p75</th>
+<th style="text-align: right;">p100</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">market_cap</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">6.856759e+09</td>
+<td style="text-align: right;">2.894509e+10</td>
+<td style="text-align: right;">31776567</td>
+<td style="text-align: right;">170507576.75</td>
+<td style="text-align: right;">344495461.0</td>
+<td style="text-align: right;">612731443.25</td>
+<td style="text-align: right;">1.298246e+11</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">price</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">3.079420e+03</td>
+<td style="text-align: right;">1.278031e+04</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.86</td>
+<td style="text-align: right;">5.8</td>
+<td style="text-align: right;">85.67</td>
+<td style="text-align: right;">5.729499e+04</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 
 
 </section>
