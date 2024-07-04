@@ -15,16 +15,21 @@ image: image.jpeg
 }
 ```
 
+::: {.justify}
 Cryptocurrencies have captivated the financial world, bringing immense joy to some and heartache to many. One thing is certain: when you get it right and strike gold with cryptocurrencies, it can set you up for life (depending on your frugality and investment amount). As a data scientist, I know the thrill of diving into this dynamic market.
 
 This post, however, isn’t about trading strategies or price forecasting. Instead, it's a exploring the capabilities of R in web scraping using the `rvest` package. Since I like to spend time in creating good visuals, I will be making some interesting visualization here.
+:::
 
 ## Getting Our data
-The goal is to scrape data from the web and visualize the data. In this case I'll be scraping the data from coinmarketcap.com.
+
+::: {.justify}
+First, I scraped data from CoinMarketCap using the URL https://coinmarketcap.com/all/views/all/. The code extracts a specific table and selects relevant columns like name, symbol, market cap, and price.
+:::
 ```{r}
 #| label: load-packages
 library(pacman)
-p_load(rvest, tidyverse)
+p_load(rvest, tidyverse, magick, ggimage)
 
 url <- "https://coinmarketcap.com/all/views/all/"
 
@@ -37,11 +42,10 @@ crypto <- crypto[[3]]
 head(crypto)
 ```
 
-## Explore Data
-Now that I've obtained the data, I can explore the data.
-**Is the data clean?.** 
-There are a lot of columns not needed when I imported the data. I'll use the `janitor` package `clean_names()` function to clean the name of the columns. After that, I will select the columns that are of interest.
-
+## Data Exploration and Cleaning
+::: {.justify}
+I started by cleaning the column names using `janitor::clean_names()` and selecting the columns I needed. Then, I ensured data types were appropriate by converting *market_cap* and *price* to numeric values.
+:::
 ```{r}
 #| label: data-clean-up
 
@@ -52,32 +56,162 @@ crypto <- crypto |>
 glimpse(crypto)
 ```
 
+::: {.justify}
 **Is the data structure as expected?**
 From the data which we have above, there are some columns that needs their data types changed. The *market_cap* and *price* column should be numeric/double data type and not character.
+:::
 ```{r}
 #| label: missing-data-check
 crypto <- crypto |> 
   mutate(
-    market_cap = str_remove_all(market_cap, r"--[\$[\d.]+]--"),
+    market_cap = str_remove_all(market_cap, r"--[\$[\d.]+[TB]]--"),
     market_cap = parse_number(market_cap),
     price = parse_number(price)
   )
 
 str(crypto)
 ```
-**Is the data complete?**
-I will check for missing data using `skimr` package
+
+## Handling missing Data
+::: {.justify}
+I used the `skimr` package to identify missing data. The code then filtered the 
+*crypto* data frame to keep only complete rows with values in all columns.
+:::
 ```{r}
+#| label: check-missing
 skimr::n_missing(crypto)
 ```
 
 ```{r}
+#| label: confirm-missing
 skimr::skim(crypto)
 ```
-*market_cap* and *price* are having missing values and I will clean this to return only the complete rows and columns.
 
 ```{r}
+#| label: final-check
 crypto <- crypto[complete.cases(crypto), ]
 skimr::skim_without_charts(crypto)
 ```
 
+## Data Visualization
+::: {.justify}
+Now, let's visualize the data! I created a donut chart to represent the market cap distribution of the top six cryptocurrencies. The remaining currencies are grouped into an "Other" category.
+
+The code calculates the market cap share for each currency, along with cumulative values and labels for the chart.
+:::
+```{r}
+#| label: tbl-crypto-compression
+#| tbl-cap: "Top Six Cryptocurrencies according to Market Capitalization"
+#| tbl-subcap: "20 Cryptocurrencies has been compressed to 7 "
+crypto <- crypto |> 
+  mutate(
+    new_sym = fct_lump(
+      symbol, n = 6, w = market_cap
+    )
+  )
+
+crypto |> 
+  summarize(
+    .by = new_sym,
+    market_cap = sum(market_cap),
+    count = n()
+  )
+```
+::: {.justify}
+@tbl-crypto-compression shows that the market cap has been compressed into 7, 6 for the top cryptocurrency and 14 lumped together into a new category, *Other*.
+:::
+```{r}
+crypto_summary <- crypto |> 
+  summarize(
+    .by = new_sym,
+    market_cap = sum(market_cap)
+  ) |> 
+  mutate(
+    prop = market_cap/sum(market_cap) * 100,
+    market_cap = round(market_cap/1e9, 2),
+    market_cap = paste0(market_cap, " B"),
+    ymax = cumsum(prop),
+    ymin = c(0, head(ymax, n = -1)),
+    lab_pos = (ymax + ymin)/2,
+    label = paste0(new_sym, "\nValue: ",round(prop, 2), "%")
+  )
+```
+
+## Crytocurrencies by Market Capitalization
+```{r}
+#| labels: fig-market-cao
+#| fig-cap: Crypto Asset Market Cap
+ggplot(
+  crypto_summary,
+  aes(xmin = 3, xmax = 4,ymin = ymin, ymax = ymax, fill = new_sym)
+) +
+  geom_rect() +
+  expand_limits(x = c(1.5, 4)) +
+  coord_polar(theta = "y", start = 1) +
+  scale_fill_brewer(palette ="YlOrRd") +
+  theme_void() +
+  ggrepel::geom_label_repel(
+    x = 3,
+    aes(y = lab_pos, label = label),
+    size = 2,
+    col = "gray3"
+  ) +
+  theme_void() +
+  ggtitle("Market Cap of Top Cryptocurrencies") +
+  theme(
+    legend.position = "none"
+  )
+```
+As shown in @fig-market-cap, Bitcoin, and ETH are clearly dominating the crypto space in market capitalization. Assets such as BNB, SOL and USDT are slowly increasing their dominance ranging from 3 - 6%.
+
+## Top 20 Cryptocurrencies Price
+:::{.justify}
+I downloaded logos for the top 20 cryptocurrencies and added them as an "images" column to the data frame.
+ 
+The code then creates a bar chart to visualize individual cryptocurrency prices, with labels indicating the price for each currency.
+:::
+```{r}
+#| lable: get-images
+images <- list.files(path = "images", full.names = TRUE)
+
+crypto <- crypto |> 
+  arrange(symbol) |> 
+  bind_cols("images" = images)
+
+crypto_img <- crypto |> 
+  mutate(
+    images = paste0("<img src='", images, "' width='12'/>")
+  )
+```
+
+Now we can visualize the prices of each asset.
+```{r}
+crypto_img |> 
+  ggplot(aes(price, fct_reorder(images, price))) +
+  geom_col(
+    width = .1,
+    fill = "#FBD25B"
+  ) +
+  geom_label(
+    aes(label = round(price, 2)),
+    col = "white",
+    fill = "#AE1D0E",
+    size = 2.5
+  ) +
+  labs(
+    title = "Price of the Top 20 Cryptocurrencies"
+  ) +
+  scale_x_log10(label = scales::label_number()) +
+  theme_minimal() +
+  theme(
+    axis.text.y = ggtext::element_markdown(),
+    axis.ticks = element_blank(),
+    axis.title = element_blank(),
+    plot.title = element_text(hjust = .5, color = "#AE1D0E")
+  )
+```
+
+## Conclusion
+::: {.justify}
+In this project, I successfully scraped cryptocurrency data, cleaned it for analysis, and created visualizations to explore market cap distribution and individual cryptocurrency prices. This process demonstrates the power of web scraping and data visualization in R.
+:::
