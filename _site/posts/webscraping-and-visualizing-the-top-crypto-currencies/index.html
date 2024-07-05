@@ -222,12 +222,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <pre><code># A tibble: 6 × 1,001
    Rank Name        Symbol `Market Cap` Price `Circulating Supply` `Volume(24h)`
   &lt;int&gt; &lt;chr&gt;       &lt;chr&gt;  &lt;chr&gt;        &lt;chr&gt; &lt;chr&gt;                &lt;chr&gt;        
-1     1 BTCBitcoin  BTC    $1.15T$1,15… $58,… 19,719,450 BTC       $39,396,029,…
-2     2 ETHEthereum ETH    $379.8B$379… $3,1… 120,195,136 ETH *    $19,517,484,…
-3     3 USDTTether… USDT   $112.42B$11… $0.9… 112,484,875,383 USD… $72,671,479,…
-4     4 BNBBNB      BNB    $77.84B$77,… $527… 147,582,927 BNB *    $2,025,414,5…
-5     5 SOLSolana   SOL    $62.66B$62,… $135… 462,885,682 SOL *    $3,087,927,2…
-6     6 USDCUSDC    USDC   $32.92B$32,… $1.00 32,914,376,804 USDC… $6,883,531,7…
+1     1 BTCBitcoin  BTC    $1.07T$1,07… $54,… 19,719,475 BTC       $52,500,564,…
+2     2 ETHEthereum ETH    $345.06B$34… $2,8… 120,196,848 ETH *    $29,468,896,…
+3     3 USDTTether… USDT   $112.44B$11… $0.9… 112,484,875,383 USD… $96,103,976,…
+4     4 BNBBNB      BNB    $69.21B$69,… $469… 147,582,870 BNB *    $2,632,825,3…
+5     5 SOLSolana   SOL    $58.11B$58,… $125… 462,886,047 SOL *    $4,203,105,4…
+6     6 USDCUSDC    USDC   $33.09B$33,… $0.9… 33,099,458,015 USDC… $9,313,268,3…
 # ℹ 994 more variables: `% 1h` &lt;chr&gt;, `% 24h` &lt;chr&gt;, `% 7d` &lt;chr&gt;, `` &lt;lgl&gt;,
 #   `` &lt;lgl&gt;, `` &lt;lgl&gt;, `` &lt;lgl&gt;, `` &lt;lgl&gt;, `` &lt;lgl&gt;, `` &lt;lgl&gt;, `` &lt;lgl&gt;,
 #   `` &lt;lgl&gt;, `` &lt;lgl&gt;, `` &lt;lgl&gt;, `` &lt;lgl&gt;, `` &lt;lgl&gt;, `` &lt;lgl&gt;, `` &lt;lgl&gt;,
@@ -257,8 +257,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 Columns: 4
 $ name       &lt;chr&gt; "BTCBitcoin", "ETHEthereum", "USDTTether USDt", "BNBBNB", "…
 $ symbol     &lt;chr&gt; "BTC", "ETH", "USDT", "BNB", "SOL", "USDC", "XRP", "TON", "…
-$ market_cap &lt;chr&gt; "$1.15T$1,154,783,125,965", "$379.8B$379,801,583,482", "$11…
-$ price      &lt;chr&gt; "$58,529.98", "$3,164.39", "$0.9994", "$527.63", "$135.38",…</code></pre>
+$ market_cap &lt;chr&gt; "$1.07T$1,071,480,397,941", "$345.06B$345,058,510,685", "$1…
+$ price      &lt;chr&gt; "$54,373.45", "$2,871.28", "$0.9996", "$469.29", "$125.54",…</code></pre>
 </div>
 </div>
 <div class="justify">
@@ -280,8 +280,8 @@ $ price      &lt;chr&gt; "$58,529.98", "$3,164.39", "$0.9994", "$527.63", "$135.
 <pre><code>tibble [200 × 4] (S3: tbl_df/tbl/data.frame)
  $ name      : chr [1:200] "BTCBitcoin" "ETHEthereum" "USDTTether USDt" "BNBBNB" ...
  $ symbol    : chr [1:200] "BTC" "ETH" "USDT" "BNB" ...
- $ market_cap: num [1:200] 1.15e+12 3.80e+11 1.12e+11 7.78e+10 6.27e+10 ...
- $ price     : num [1:200] 5.85e+04 3.16e+03 9.99e-01 5.28e+02 1.35e+02 ...</code></pre>
+ $ market_cap: num [1:200] 1.07e+12 3.45e+11 1.12e+11 6.92e+10 5.81e+10 ...
+ $ price     : num [1:200] 54373 2871 1 469 126 ...</code></pre>
 </div>
 </div>
 </section>
@@ -386,7 +386,7 @@ $ price      &lt;chr&gt; "$58,529.98", "$3,164.39", "$0.9994", "$527.63", "$135.
 <td style="text-align: right;">0</td>
 <td style="text-align: right;">1</td>
 <td style="text-align: right;">0</td>
-<td style="text-align: right;">5</td>
+<td style="text-align: right;">4</td>
 <td style="text-align: right;">180</td>
 <td style="text-align: right;">21</td>
 <td style="text-align: right;">0</td>
@@ -428,26 +428,26 @@ $ price      &lt;chr&gt; "$58,529.98", "$3,164.39", "$0.9994", "$527.63", "$135.
 <td style="text-align: left;">market_cap</td>
 <td style="text-align: right;">180</td>
 <td style="text-align: right;">0.1</td>
-<td style="text-align: right;">9.835746e+10</td>
-<td style="text-align: right;">2.625757e+11</td>
-<td style="text-align: right;">5058599426</td>
-<td style="text-align: right;">7.663762e+09</td>
-<td style="text-align: right;">1.23484e+10</td>
-<td style="text-align: right;">4.035431e+10</td>
-<td style="text-align: right;">1.154783e+12</td>
+<td style="text-align: right;">9.107187e+10</td>
+<td style="text-align: right;">2.433057e+11</td>
+<td style="text-align: right;">4359885722</td>
+<td style="text-align: right;">6.659552e+09</td>
+<td style="text-align: right;">1.119664e+10</td>
+<td style="text-align: right;">3.93483e+10</td>
+<td style="text-align: right;">1.071480e+12</td>
 <td style="text-align: left;">▇▁▁▁▁</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">price</td>
 <td style="text-align: right;">180</td>
 <td style="text-align: right;">0.1</td>
-<td style="text-align: right;">3.138400e+03</td>
-<td style="text-align: right;">1.305695e+04</td>
+<td style="text-align: right;">2.912640e+03</td>
+<td style="text-align: right;">1.212951e+04</td>
 <td style="text-align: right;">0</td>
-<td style="text-align: right;">4.900000e-01</td>
-<td style="text-align: right;">5.32000e+00</td>
-<td style="text-align: right;">5.296000e+01</td>
-<td style="text-align: right;">5.852998e+04</td>
+<td style="text-align: right;">8.500000e-01</td>
+<td style="text-align: right;">5.540000e+00</td>
+<td style="text-align: right;">7.51500e+01</td>
+<td style="text-align: right;">5.437345e+04</td>
 <td style="text-align: left;">▇▁▁▁▁</td>
 </tr>
 </tbody>
@@ -542,7 +542,7 @@ $ price      &lt;chr&gt; "$58,529.98", "$3,164.39", "$0.9994", "$527.63", "$135.
 <td style="text-align: right;">0</td>
 <td style="text-align: right;">1</td>
 <td style="text-align: right;">3</td>
-<td style="text-align: right;">5</td>
+<td style="text-align: right;">4</td>
 <td style="text-align: right;">0</td>
 <td style="text-align: right;">20</td>
 <td style="text-align: right;">0</td>
@@ -559,8 +559,8 @@ $ price      &lt;chr&gt; "$58,529.98", "$3,164.39", "$0.9994", "$527.63", "$135.
 <col style="width: 10%">
 <col style="width: 8%">
 <col style="width: 10%">
-<col style="width: 9%">
 <col style="width: 10%">
+<col style="width: 9%">
 <col style="width: 10%">
 </colgroup>
 <thead>
@@ -582,25 +582,25 @@ $ price      &lt;chr&gt; "$58,529.98", "$3,164.39", "$0.9994", "$527.63", "$135.
 <td style="text-align: left;">market_cap</td>
 <td style="text-align: right;">0</td>
 <td style="text-align: right;">1</td>
-<td style="text-align: right;">9.835746e+10</td>
-<td style="text-align: right;">2.625757e+11</td>
-<td style="text-align: right;">5058599426</td>
-<td style="text-align: right;">7.663762e+09</td>
-<td style="text-align: right;">1.23484e+10</td>
-<td style="text-align: right;">4.035431e+10</td>
-<td style="text-align: right;">1.154783e+12</td>
+<td style="text-align: right;">9.107187e+10</td>
+<td style="text-align: right;">2.433057e+11</td>
+<td style="text-align: right;">4359885722</td>
+<td style="text-align: right;">6.659552e+09</td>
+<td style="text-align: right;">1.119664e+10</td>
+<td style="text-align: right;">3.93483e+10</td>
+<td style="text-align: right;">1.071480e+12</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">price</td>
 <td style="text-align: right;">0</td>
 <td style="text-align: right;">1</td>
-<td style="text-align: right;">3.138400e+03</td>
-<td style="text-align: right;">1.305695e+04</td>
+<td style="text-align: right;">2.912640e+03</td>
+<td style="text-align: right;">1.212951e+04</td>
 <td style="text-align: right;">0</td>
-<td style="text-align: right;">4.900000e-01</td>
-<td style="text-align: right;">5.32000e+00</td>
-<td style="text-align: right;">5.296000e+01</td>
-<td style="text-align: right;">5.852998e+04</td>
+<td style="text-align: right;">8.500000e-01</td>
+<td style="text-align: right;">5.540000e+00</td>
+<td style="text-align: right;">7.51500e+01</td>
+<td style="text-align: right;">5.437345e+04</td>
 </tr>
 </tbody>
 </table>
@@ -639,13 +639,13 @@ Table&nbsp;1: Top Six Cryptocurrencies according to Market Capitalization
 <pre><code># A tibble: 7 × 3
   new_sym    market_cap count
   &lt;fct&gt;           &lt;dbl&gt; &lt;int&gt;
-1 BTC     1154783125965     1
-2 ETH      379801583482     1
-3 USDT     112422540979     1
-4 BNB       77835975018     1
-5 SOL       62664716541     1
-6 USDC      32917504360     1
-7 Other    146723664862    14</code></pre>
+1 BTC     1071480397941     1
+2 ETH      345058510685     1
+3 USDT     112440083915     1
+4 BNB       69212448352     1
+5 SOL       58108556585     1
+6 USDC      33094885127     1
+7 Other    132042521446    14</code></pre>
 </div>
 </div>
 </figure>
@@ -727,7 +727,7 @@ Table&nbsp;1: Top Six Cryptocurrencies according to Market Capitalization
 <span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>crypto_img <span class="ot">&lt;-</span> crypto <span class="sc">|&gt;</span> </span>
 <span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">images =</span> <span class="fu">paste0</span>(<span class="st">"&lt;img src='"</span>, images, <span class="st">"' width='12'/&gt;"</span>)</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">images =</span> <span class="fu">paste0</span>(<span class="st">"&lt;img src='"</span>, images, <span class="st">"' width='15'/&gt;"</span>)</span>
 <span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
@@ -754,10 +754,11 @@ Table&nbsp;1: Top Six Cryptocurrencies according to Market Capitalization
 <span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
 <span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
 <span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.y =</span> ggtext<span class="sc">::</span><span class="fu">element_markdown</span>(),</span>
-<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.ticks =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> .<span class="dv">5</span>, <span class="at">color =</span> <span class="st">"#AE1D0E"</span>)</span>
-<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.ticks =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> .<span class="dv">5</span>, <span class="at">color =</span> <span class="st">"#AE1D0E"</span>)</span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>

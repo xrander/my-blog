@@ -180,7 +180,7 @@ crypto <- crypto |>
 
 crypto_img <- crypto |> 
   mutate(
-    images = paste0("<img src='", images, "' width='12'/>")
+    images = paste0("<img src='", images, "' width='15'/>")
   )
 ```
 
@@ -205,6 +205,7 @@ crypto_img |>
   theme_minimal() +
   theme(
     axis.text.y = ggtext::element_markdown(),
+    axis.text.x = element_blank(),
     axis.ticks = element_blank(),
     axis.title = element_blank(),
     plot.title = element_text(hjust = .5, color = "#AE1D0E")
