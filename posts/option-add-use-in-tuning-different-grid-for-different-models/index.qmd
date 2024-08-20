@@ -1,6 +1,6 @@
 ---
 title: "Managing Workflowset Models"
-subtitle: "Using `option-add` to Tune Different Model of Workflowset"
+subtitle: "Using **option-add** to Tune Different Model of Workflowset"
 date: "2024-06-11"
 categories: [Machine Learning, Tuning]
 draft: False 
@@ -15,7 +15,7 @@ image: image_2.jpeg
 
 ![](https://www.tidymodels.org/images/tidymodels.png){width="820"}
 
-The `tidymodels` package is a game-changer for the R ecosystem, providing a streamlined and intuitive approach to modeling. Built on the tidyverse foundation, it offers a cohesive framework that simplifies the journey from data wrangling to robust models. What makes `tidymodels` stand out is its consistent workflow, reducing the learning curve for data scientists and ensuring compatibility across different modeling packages【@kuhn2022tidy】.
+The **tidymodels** package is a game-changer for the R ecosystem, providing a streamlined and intuitive approach to modeling. Built on the tidyverse foundation, it offers a cohesive framework that simplifies the journey from data wrangling to robust models. What makes `tidymodels` stand out is its consistent workflow, reducing the learning curve for data scientists and ensuring compatibility across different modeling packages【@kuhn2022tidy】.
 
 ### Workflow
 

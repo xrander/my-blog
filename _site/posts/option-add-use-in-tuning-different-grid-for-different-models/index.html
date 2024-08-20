@@ -172,7 +172,7 @@ div.csl-indent {
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
       <h1 class="title">Managing Workflowset Models</h1>
-            <p class="subtitle lead">Using <code>option-add</code> to Tune Different Model of Workflowset</p>
+            <p class="subtitle lead">Using <strong>option-add</strong> to Tune Different Model of Workflowset</p>
                                 <div class="quarto-categories">
                 <div class="quarto-category">Machine Learning</div>
                 <div class="quarto-category">Tuning</div>
@@ -209,7 +209,7 @@ div.csl-indent {
 <section id="introduction" class="level2">
 <h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
 <p><img src="https://www.tidymodels.org/images/tidymodels.png" class="img-fluid" width="820"></p>
-<p>The <code>tidymodels</code> package is a game-changer for the R ecosystem, providing a streamlined and intuitive approach to modeling. Built on the tidyverse foundation, it offers a cohesive framework that simplifies the journey from data wrangling to robust models. What makes <code>tidymodels</code> stand out is its consistent workflow, reducing the learning curve for data scientists and ensuring compatibility across different modeling packages【<span class="citation" data-cites="kuhn2022tidy">Kuhn and Silge (<a href="#ref-kuhn2022tidy" role="doc-biblioref">2022</a>)</span>】.</p>
+<p>The <strong>tidymodels</strong> package is a game-changer for the R ecosystem, providing a streamlined and intuitive approach to modeling. Built on the tidyverse foundation, it offers a cohesive framework that simplifies the journey from data wrangling to robust models. What makes <code>tidymodels</code> stand out is its consistent workflow, reducing the learning curve for data scientists and ensuring compatibility across different modeling packages【<span class="citation" data-cites="kuhn2022tidy">Kuhn and Silge (<a href="#ref-kuhn2022tidy" role="doc-biblioref">2022</a>)</span>】.</p>
 <section id="workflow" class="level3">
 <h3 class="anchored" data-anchor-id="workflow">Workflow</h3>
 <p>The <code>workflows</code> package is one of the standout components of tidymodels, making the iterative machine learning process in R more manageable. By bundling model fitting and data preprocessing steps into a single coherent object, <code>workflows</code> simplifies the complexities of the machine learning pipeline, ensuring each step is clearly defined and reproducible. This iterative machine learning process, as covered in “Tidy Modeling with R”【<span class="citation" data-cites="kuhn2022tidy">Kuhn and Silge (<a href="#ref-kuhn2022tidy" role="doc-biblioref">2022</a>)</span>】, is illustrated below:</p>
@@ -256,7 +256,7 @@ Table&nbsp;1: Data Preview
 </figcaption>
 <div aria-describedby="tbl-load-dataset-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<div id="cvaonutoah" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="wnfxpvlvhg" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
   
   
 <table class="gt_table do-not-create-environment cell caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false" data-bgcolor="#FFFFFF">
@@ -447,7 +447,7 @@ Table&nbsp;1: Data Preview
 <span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_raw_html</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<div id="uorwnmcrfc" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="zbywxfvjzj" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
   
   
 <table class="gt_table caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false" width="0" data-bgcolor="#FFFFFF">
@@ -1574,6 +1574,15 @@ Table&nbsp;2: Preview of normalized preprocessed data
 #miuzpkfdgz .gt_indent_5 {
   text-indent: 25px;
 }
+
+#miuzpkfdgz .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#miuzpkfdgz div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
 </style>
 
 <table class="gt_table do-not-create-environment cell caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
@@ -2198,13 +2207,13 @@ Figure&nbsp;4: Tuning grids to be used for K-nearest neighbor model specificatio
 <pre><code>i 1 of 6 resampling: form_glm</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>✔ 1 of 6 resampling: form_glm (547ms)</code></pre>
+<pre><code>✔ 1 of 6 resampling: form_glm (510ms)</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>i 2 of 6 tuning:     form_knn</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>✔ 2 of 6 tuning:     form_knn (1m 46.9s)</code></pre>
+<pre><code>✔ 2 of 6 tuning:     form_knn (1m 39.3s)</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>i   No tuning parameters. `fit_resamples()` will be attempted</code></pre>
@@ -2213,13 +2222,13 @@ Figure&nbsp;4: Tuning grids to be used for K-nearest neighbor model specificatio
 <pre><code>i 3 of 6 resampling: norm_glm</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>✔ 3 of 6 resampling: norm_glm (523ms)</code></pre>
+<pre><code>✔ 3 of 6 resampling: norm_glm (514ms)</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>i 4 of 6 tuning:     norm_knn</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>✔ 4 of 6 tuning:     norm_knn (2m 5.8s)</code></pre>
+<pre><code>✔ 4 of 6 tuning:     norm_knn (1m 46.5s)</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>i   No tuning parameters. `fit_resamples()` will be attempted</code></pre>
@@ -2228,13 +2237,13 @@ Figure&nbsp;4: Tuning grids to be used for K-nearest neighbor model specificatio
 <pre><code>i 5 of 6 resampling: dum_glm</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>✔ 5 of 6 resampling: dum_glm (698ms)</code></pre>
+<pre><code>✔ 5 of 6 resampling: dum_glm (646ms)</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>i 6 of 6 tuning:     dum_knn</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>✔ 6 of 6 tuning:     dum_knn (2m 47.4s)</code></pre>
+<pre><code>✔ 6 of 6 tuning:     dum_knn (2m 30.6s)</code></pre>
 </div>
 </div>
 </section>
