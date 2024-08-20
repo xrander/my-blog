@@ -340,6 +340,7 @@ The result from applying the whole steps is shown in @tbl-preproc-table
 psm_rec_4 |> 
   prep() |> 
   juice() |> 
+  head() |> 
   kable()
 ```
 
@@ -412,12 +413,15 @@ psm_pca_mod
 ```
 
 ```{r}
+#| warning: false
+#| message: false
 psm_model <- last_fit(
   psm_pca_mod,
   split = psm_split
 )
 ```
 ```{r}
+
 psm_model |> 
   collect_predictions() |> 
   select("prediction" =.pred, age) |> 
