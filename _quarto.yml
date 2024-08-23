@@ -12,8 +12,12 @@ website:
         href: https://github.com/xrander
       - icon: twitter
         href: https://x.com/fp_talk
+      - icon: linkedin
+        href: https://www.linkedin.com/in/olamide-adu
     left: 
       - blog.qmd
+      - icon: house-fill
+        href: https://olamideadu.com
 format:
   html:
     theme: darkly
