@@ -6,15 +6,425 @@ code-fold: true
 code-copy: hover
 code-summary: "Show the code"
 image: image.jpg
-draft: true
+draft: false
+bibliography: references.bib
 ---
 
 # Introduction
-According to the World Bank, Algeria's forest is about 0.82% of the total country's land mass in 2021 ([tradingeconomics.com](https://tradingeconomics.com/algeria/forest-area-percent-of-land-area-wb-data.html)). Algeria is one of the Maghreb countries affected by wildfire. Given the troubles associated with wildfire, it is important to assess and predict the potential for wildfire activity. One of the ways to predict the potential for wildfire is associating its occurrence with weather conditions. This is called the **Fire Weather Index** (FWI). FWI was developed by the Canadian Forest Service and it is a key component of the Canadian Forest Fire Weather Index System. FWI is also used internationally to assess fire danger and predict wildfire behavior based on weather conditions.
-![Forest Fire - source:aljazeer.com](image2.jpg)
+
+According to the World Bank, Algeria's forest is about 0.82% of the total country's land mass in 2021 ([tradingeconomics.com](https://tradingeconomics.com/algeria/forest-area-percent-of-land-area-wb-data.html)). Algeria is one of the Maghreb countries affected by wildfire. Given the troubles associated with wildfire, it is important to assess and predict the potential for wildfire activity. One of the ways to predict the potential for wildfire is associating its occurrence with weather conditions. This is called the **Fire Weather Index** (FWI). FWI was developed by the Canadian Forest Service and it is a key component of the Canadian Forest Fire Weather Index System. FWI is also used internationally to assess fire danger and predict wildfire behavior based on weather conditions. ![Forest Fire - source:aljazeer.com](image2.jpg)
 
 ## Objective
-For this project, we will predict the occurrence of fire (fire or nor fire) given a set of parameters related to FWI in two regions of Algeria, the Bejaia region located in the northeast of Algeria and Sidi Bel-abbes region located in the northwest of Algeria.
+
+For this project, I will predict the occurrence of fire (fire or nor fire) given a set of parameters related to FWI in two regions of Algeria, the Bejaia region located in the northeast of Algeria and Sidi Bel-abbes region located in the northwest of Algeria.
 
 ## Data
-The data for this post is collected from UCI machine learning data repository
+
+The data for this analysis is collected from UCI machine learning data repository and provided by [@abid2020]. The variables include:
+
+|Variable name|Data type|Definition|
+|:------|:------:|--------:|
+|region|categorical| area in Algeria, either of Sidi Bel-abbes or Bejaia|
+|day|date|the day in number|
+|month|date|month of the year, from June to September|
+|year|date|single year of when data as observed|
+|temp|numeric|max noon temperature in $^{\circ}C$|
+|rh|numeric|relative humidity in percentage|
+|ws|numeric|wind speed in km/h|
+|rain|numeric|total rain in a day in mm|
+|ffmc|numeric|fine fuel moisture code|
+|dmc|numeric|Duff moisture code|
+|dc|numeric|drought code|
+|isi|numeric|Initial spread index|
+|bui|numeric|buildup index|
+|fwi|numeric|fire weather index|
+|classes|binary|class of fire occurrence. This is the target variable|
+
+To get started I load all necessary packages. Tidyverse for all forms of data manipulation, visualization and data importation and tidymodels for our model workflow.
+
+```{r}
+#| label: load-libraries
+library(pacman)
+p_load(tidyverse, tidymodels, knitr, ggthemes, hrbrthemes)
+theme_set(theme_ipsum_ps(base_size = 12))
+```
+ 
+:::{.callout-important appearance=simple}
+I like using the `pacman` package instead of using base R's `library()` function because it simplifies library management and integration. Another packagem management system is pkgdown.
+::: 
+
+Next I import the data
+```{r}
+algeria_ff <- read_csv("data/Algerian_forest_fires_dataset_UPDATE.csv", skip = 1) |> 
+  janitor::clean_names()
+```
+
+# Data Understanding
+After importing the data, I need to investigate if the data is imported as expected, and confirm that all data types are as expected.
+
+## Data Preview
+A quick preview of the data is the first step:
+```{r}
+#| label: tbl-data-preview
+#| tbl-cap: "Data preview"
+#| tbl-subcap: true
+
+algeria_ff |> 
+  head() |> 
+  kable()
+
+algeria_ff |> 
+  tail() |> 
+  kable()
+
+algeria_ff |> 
+  car::some() |> 
+  kable()
+```
+@tbl-data-preview shows the first six observations, @tbl-data-preview-1, the last six observations, @tbl-data-preview-2, and 10 random observations from the data, @tbl-data-preview-3.
+
+From @tbl-data-prop, all the variables are character when they should be majorly numeric and one or two categorical variable. I can also see that the regions are not indicated in the data. The variables present are `{r} names(algeria_ff)`. 
+
+
+```{r}
+#| label: tbl-data-prop
+#| tbl-cap: "Data Properties"
+#| tbl-subcap: true
+
+
+skimr::skim(algeria_ff)
+```
+
+## Missing Data
+There's a maximum of two missing data, which is in the `classes` variable, @tbl-data-prop-2. I will investigate this:
+
+```{r}
+#| label: tbl-missing
+#| tbl-cap: Missing data
+algeria_ff |> 
+  filter(is.na(classes)) |>  kable()
+```
+There's an interesting finding in @tbl-missing. The start of Sidi-Bel Abbes region dataset can be seen under the `day` variable. I will add row numbers and a new column called region and add each region according to the row number where Sidi-Bel Abbes appears in the variable `day`. All data before Sidi-Bel Abbes are Bejaia region data,
+```{r}
+#| label: tbl-add-row
+#| tbl-cap: Row numbers added
+
+algeria_ff <- algeria_ff |> 
+  mutate(
+    id = row_number(),
+    .before = day
+  )
+head(algeria_ff) |> kable()
+```
+
+I will perform the previous filter operation in @tbl-missing to get the start of the row number for Sidi-Bel Abbes Region.
+
+```{r}
+#| label: tbl-missing-2
+algeria_ff |> 
+  filter(is.na(classes))
+```
+Sidi-Bel Abbes data starts from 124, @tbl-missing-2. I will add the regions and remove the id variable that contains the row numbers. The number of observations for each region can be seen in @tbl-region
+
+```{r}
+#| label: tbl-region
+#| tbl-cap: Number of observations for the regions
+algerian_ff <- algeria_ff |> 
+  mutate(
+    region = case_when(id <= 122 ~ "Bejaia",
+                       .default = "Sidi-Bel Abbes"),
+    .before = day,
+    .keep = "unused"
+  )
+
+head(algerian_ff)
+```
+
+Now we can check for missing data again
+```{r}
+algerian_ff |> 
+  filter(if_any(everything(), is.na)) |> 
+  kable()
+```
+The missing points are still the same. Here, I will remove this data points and proceed with the analysis.
+
+```{r}
+algerian_ff <- algerian_ff |> 
+  drop_na() |> 
+  filter(classes %in% c("not fire", "fire"))
+```
+
+I also need to change the other variables to numeric data types except `region` and `classes` which will be changed to factor variable type.
+
+```{r}
+algerian_ff <- algerian_ff |> 
+  mutate(
+    region = factor(region),
+    classes = ifelse(classes == "not fire", 0, 1),
+    classes = factor(classes, labels = c("not fire", "fire"), levels = c(0 ,1)),
+    across(where(is.character), parse_number)
+  )
+
+str(algerian_ff)
+```
+
+# Exploratory Data Analyis
+Let's do some exploratory data analysis to understand our target variable, predictors, and the relationship between them.
+## Target Variable
+```{r}
+#| label: fig-tgt-plot
+#| fig-cap: "Frequency of Classes"
+
+algerian_ff |>
+  count(classes) |> 
+  ggplot(aes(classes, n, fill = classes)) +
+  geom_bar(stat = "identity") +
+  geom_text(
+    aes(label = n),
+    nudge_y = 11.5,
+    size = 4,
+    col = "#ff3000"
+  ) +
+  scale_fill_colorblind() +
+  labs(
+    x = "Classes",
+    y = "Count",
+    title = "Frequency of Fire Occurrence Situation"
+  ) +
+  coord_cartesian(ylim = c(0, 145)) +
+  scale_y_continuous(breaks = seq(0, 145, 29)) +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(hjust = .5)
+  )
+```
+
+@fig-tgt-plot shows there are more occurrence of fire than not fire.
+
+### Features / Predictors
+
+```{r}
+#| message: false
+#| warning: false
+#| label: fig-pairs-plot
+#| fig-cap: Predictors plots
+algerian_ff |> 
+  select(-classes) |> 
+  GGally::ggpairs(
+    title = "Predictors"
+  ) +
+  theme_bw()
+```
+
+As show in @fig-pairs-plot, `rain`, `ws`, `dmc`, `dc`, `isi`, `bui` and `fwi` are rightly skewed, `temperature` and `rh` are normally distributed, while `ffmc` is left-skewed. There's also high correlation between some of the variables.
+
+### Target vs Feature
+```{r}
+#| label: fig-reg-class
+#| fig-cap: "There are more fire outbreak in  Sidi-Bel Abbes than in Bejaia"
+algerian_ff |> 
+  summarize(
+    .by = c(classes, region),
+    count = n()
+  ) |> 
+  ggplot(aes(region, count, fill = fct_reorder(classes, count))) +
+  geom_col(position = "dodge") +
+  geom_text(
+    aes(label = count),
+    size = 3.2,
+    vjust = -.2,
+    position = position_dodge(width = 1)
+    # position = position_nudge(x = 0, y =1)
+  ) +
+  scale_fill_calc() +
+  labs(
+    fill = "Region",
+    x = "Classes",
+    y = "Count",
+    title = "Frequency of Fire Occurrence Situation Across Regions",
+    subtitle = "There's more fire outbreak in Sidi-Bel Abbes than in Bejaia"
+  ) 
+```
+
+```{r}
+algerian_ff |> 
+  ggplot(aes(rain, temperature, col = classes)) +
+  geom_jitter() +
+  scale_color_wsj() +
+  labs(
+    x = "Rain",
+    y = "Temperature",
+    title = "Temperature vs Rain relationship for Fire Occurrence",
+    subtitle = "Fire rarely occur on days with high rainfall"
+  ) +
+  theme(plot.subtitle = element_text(size = 10))
+```
+
+```{r}
+#| label: fig-rh-class
+#| fig-cap: "Relative humidity of each days across the months showing the occurrence of fire."
+#| fig-subcap: true
+#| layout-nrow: 2
+
+algerian_ff |> 
+  ggplot(aes(day, rh, colour = classes)) +
+  geom_point() +
+  labs(
+    x = "Day",
+    y = "Relative Humidity (%)",
+    title = "Fire occurence for each days in a month given the day's humidity"
+  ) +
+  facet_wrap(~month)
+
+algerian_ff |> 
+  ggplot(aes(day, rh, colour = classes)) +
+  geom_point() +
+  labs(
+    x = "Day",
+    y = "Relative Humidity (%)",
+    title = "Fire occurence for each days in a month for a region given the day's humidity"
+  ) +
+  facet_grid(region~month)
+```
+
+@fig-rh-class-1 shows no clear pattern in fire occurrence, but it is visible that the 8th month had more fire occurring from its 10th day to the 27th day. Fire occurred more in days with low relative humidity compared to those with high humidity. @fig-rh-class-2 shows how month 8 had fire occuring the most, even at high relative humidity.
+
+# Modeling
+
+As introduced earlier, the model algorithm I will be using for this binary classification is logistic regression. The modeling worklow will go as thus:
+
+-   Data sharing
+-   Create resamples
+-   Create model specification
+-   Feature engineering
+-   Workflow and model training
+-   Model evaluation
+-   Model last fit on whole data.
+
+## Data Sharing
+Let's split the data into two portions. The training data will be 70% of the whole data while the test data will be 30%.
+
+```{r}
+#| label: tbl-distro
+#| tbl-cap: Distribution of the targer variable across regions
+set.seed(123)
+algerian_split <- initial_split(algerian_ff, prop = .7)
+algerian_train <- training(algerian_split)
+algerian_test <- testing(algerian_split)
+algerian_train |> 
+  count(region, classes)
+```
+
+@tbl-distro shows how the data is distributed in the training data.
+
+## Model Specification
+Next we create the model specification
+```{r}
+lr_spec <- logistic_reg() |> 
+  set_mode("classification") |> 
+  set_engine("glm")
+
+lr_spec |> 
+  translate()
+```
+
+## Feature Engineering
+For feature engineering, we will remove zero and near-zero variance variables. After, we'll apply Yeo-Johnson to prevent to handle data values that have zero or negative values. After this, we standardize the results and make all factor variables one-hot coded.
+```{r}
+lr_rec <- recipe(
+  classes ~ . + 1, data = algerian_train
+) |> 
+  step_zv(all_numeric_predictors()) |> 
+  step_nzv(all_numeric_predictors()) |> 
+  step_YeoJohnson(all_numeric_predictors()) |> 
+  step_scale(all_numeric_predictors()) |> 
+  step_pca(all_numeric_predictors()) |> 
+  step_dummy(region)
+  
+lr_rec
+```
+
+To see how the data looks after preprocessing let's use the `prep()` and `juice()` function.
+```{r}
+#| label: tbl-preproc
+#| tbl-cap: Preprocessed data
+lr_rec |> 
+  prep() |> 
+  juice() |> 
+  head() |> 
+  kable()
+```
+
+From @tbl-preproc we can see that the variable year has been removed.The variables has also been reduced as some of them were related, check @fig-pairs-plot
+## Workflow
+```{r}
+#| message: false
+lr_wf <- workflow() |> 
+  add_model(lr_spec) |> 
+  add_recipe(lr_rec) |> 
+  fit(algerian_train)
+```
+
+## Model Result
+```{r}
+#| lable: tbl-model-sum
+#| tbl-cap: Model summary
+lr_wf |> tidy()
+```
+When all the factors are zero, the odds of fire occurring is very low, i.e. the exponential of the intercept estimate, `{r} exp((lr_wf |> extract_fit_engine() |> coef())[1])`. For region Sidi-Bel Abbes, the odds of a fire outbreak is 1.5 times higher, @tbl-model-sum.
+
+## Model Evaluation
+
+### Accuracy
+```{r}
+lr_wf |> augment(algerian_test) |> 
+  accuracy(classes, .pred_class)
+```
+
+The accuracy of the model is high at 92%.
+
+### Sensitivity
+```{r}
+lr_wf |> 
+  augment(algerian_test) |> 
+  sensitivity(classes, .pred_class)
+```
+The model is 82% sensitive.
+
+
+### Precision
+
+```{r}
+lr_wf |> 
+  augment(algerian_test) |> 
+  precision(classes, .pred_class)
+```
+### ROC-AUC
+
+```{r}
+lr_wf |> 
+  augment(algerian_test) |> 
+  roc_auc(classes, `.pred_not fire`)
+```
+```{r}
+#| label: fig-roc
+#| fig-cap: Area under the curve is high
+
+lr_wf |> 
+  augment(algerian_test) |> 
+  roc_curve(classes, `.pred_not fire`) |> 
+  autoplot()
+```
+
+The area under the curve is .99 which is very good @fig-roc.
+### Confusion Matrix
+```{r}
+lr_wf |> 
+  augment(algerian_test) |> 
+  conf_mat(classes, .pred_class) 
+```
+
+The model performance precision and accuracy is high above 90%, with precision at 100%. There are 6 false positives which signals the likelihood of fire when there is supposed to be non.
+
+# Summary and Conclusion
+The project seek to predict the likelihood of fire outbreak in two regions of Algeria. A logistic regression model was employed with 6 preprocessing steps. The model developed was evaluated and has high accuracy at 92%, a high precision of 100%, 0.99 for roc_auc

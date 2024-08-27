@@ -21,7 +21,61 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
@@ -69,6 +123,35 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="../../styles.css">
 </head>
@@ -94,6 +177,11 @@ ul.task-list li input[type="checkbox"] {
     <a class="nav-link" href="../../blog.html"> 
 <span class="menu-text">Blog</span></a>
   </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://olamideadu.com"> <i class="bi bi-house-fill" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item compact">
@@ -103,6 +191,11 @@ ul.task-list li input[type="checkbox"] {
   </li>  
   <li class="nav-item compact">
     <a class="nav-link" href="https://x.com/fp_talk"> <i class="bi bi-twitter" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.linkedin.com/in/olamide-adu"> <i class="bi bi-linkedin" role="img">
 </i> 
 <span class="menu-text"></span></a>
   </li>  
@@ -151,18 +244,902 @@ ul.task-list li input[type="checkbox"] {
 
 
 
-<section id="introduction" class="level2">
-<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
-<p>According to the World Bank, Algeria’s forest is about 0.82% of the total country’s land mass in 2021 (<a href="https://tradingeconomics.com/algeria/forest-area-percent-of-land-area-wb-data.html">tradingeconomics.com</a>). Algeria is one of the Maghreb countries affected by wildfire. Given the troubles associated with wildfire, it is important to assess and predict the potential for wildfire activity. One of the ways to predict the potential for wildfire is associating its occurrence with weather conditions. This is called the <strong>Fire Weather Index</strong> (FWI). FWI was developed by the Canadian Forest Service and it is a key component of the Canadian Forest Fire Weather Index System. FWI is also used internationally to assess fire danger and predict wildfire behavior based on weather conditions.</p>
-<section id="objective" class="level3">
-<h3 class="anchored" data-anchor-id="objective">Objective</h3>
-<p>For this project, we will predict the occurrence of fire given a set of parameters related to FWI in two regions of Algeria, the Bejaia region located in the northeast of Algeria and Sidi Bel-abbes region located in the northwest of Algeria.</p>
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p>According to the World Bank, Algeria’s forest is about 0.82% of the total country’s land mass in 2021 (<a href="https://tradingeconomics.com/algeria/forest-area-percent-of-land-area-wb-data.html">tradingeconomics.com</a>). Algeria is one of the Maghreb countries affected by wildfire. Given the troubles associated with wildfire, it is important to assess and predict the potential for wildfire activity. One of the ways to predict the potential for wildfire is associating its occurrence with weather conditions. This is called the <strong>Fire Weather Index</strong> (FWI). FWI was developed by the Canadian Forest Service and it is a key component of the Canadian Forest Fire Weather Index System. FWI is also used internationally to assess fire danger and predict wildfire behavior based on weather conditions. <img src="image2.jpg" class="img-fluid" alt="Forest Fire - source:aljazeer.com"></p>
+<section id="objective" class="level2">
+<h2 class="anchored" data-anchor-id="objective">Objective</h2>
+<p>For this project, I will predict the occurrence of fire (fire or nor fire) given a set of parameters related to FWI in two regions of Algeria, the Bejaia region located in the northeast of Algeria and Sidi Bel-abbes region located in the northwest of Algeria.</p>
+</section>
+<section id="data" class="level2">
+<h2 class="anchored" data-anchor-id="data">Data</h2>
+<p>The data for this analysis is collected from UCI machine learning data repository and provided by <span class="citation" data-cites="abid2020">(<a href="#ref-abid2020" role="doc-biblioref">Abid and Izeboudjen 2020</a>)</span>. The variables include:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 29%">
+<col style="width: 33%">
+<col style="width: 37%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Variable name</th>
+<th style="text-align: center;">Data type</th>
+<th style="text-align: right;">Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">region</td>
+<td style="text-align: center;">categorical</td>
+<td style="text-align: right;">area in Algeria, either of Sidi Bel-abbes or Bejaia</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">day</td>
+<td style="text-align: center;">date</td>
+<td style="text-align: right;">the day in number</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">month</td>
+<td style="text-align: center;">date</td>
+<td style="text-align: right;">month of the year, from June to September</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">year</td>
+<td style="text-align: center;">date</td>
+<td style="text-align: right;">single year of when data as observed</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">temp</td>
+<td style="text-align: center;">numeric</td>
+<td style="text-align: right;">max noon temperature in <span class="math inline">\(^{\circ}C\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rh</td>
+<td style="text-align: center;">numeric</td>
+<td style="text-align: right;">relative humidity in percentage</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ws</td>
+<td style="text-align: center;">numeric</td>
+<td style="text-align: right;">wind speed in km/h</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rain</td>
+<td style="text-align: center;">numeric</td>
+<td style="text-align: right;">total rain in a day in mm</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ffmc</td>
+<td style="text-align: center;">numeric</td>
+<td style="text-align: right;">fine fuel moisture code</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">dmc</td>
+<td style="text-align: center;">numeric</td>
+<td style="text-align: right;">Duff moisture code</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">dc</td>
+<td style="text-align: center;">numeric</td>
+<td style="text-align: right;">drought code</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">isi</td>
+<td style="text-align: center;">numeric</td>
+<td style="text-align: right;">Initial spread index</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">bui</td>
+<td style="text-align: center;">numeric</td>
+<td style="text-align: right;">buildup index</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">fwi</td>
+<td style="text-align: center;">numeric</td>
+<td style="text-align: right;">fire weather index</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">classes</td>
+<td style="text-align: center;">binary</td>
+<td style="text-align: right;">class of fire occurrence</td>
+</tr>
+</tbody>
+</table>
+<p>To get started I load all necessary packages. Tidyverse for all forms of data manipulation, visualization and data importation and tidymodels for our model workflow.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pacman)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">p_load</span>(tidyverse, tidymodels, knitr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="callout callout-style-simple callout-important">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p>I like using the <code>pacman</code> package instead of using base R’s <code>library()</code> function because it simplifies library management and integration. Another packagem management system is pkgdown.</p>
+</div>
+</div>
+</div>
+<p>Next I import the data</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>algeria_ff <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/Algerian_forest_fires_dataset_UPDATE.csv"</span>, <span class="at">skip =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: One or more parsing issues, call `problems()` on your data frame for details,
+e.g.:
+  dat &lt;- vroom(...)
+  problems(dat)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 246 Columns: 14
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (14): day, month, year, Temperature, RH, Ws, Rain, FFMC, DMC, DC, ISI, B...
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="data-understanding" class="level1">
+<h1>Data Understanding</h1>
+<p>After importing the data, I need to investigate if the data is imported as expected, and confirm that all data types are as expected.</p>
+<section id="data-preview" class="level2">
+<h2 class="anchored" data-anchor-id="data-preview">Data Preview</h2>
+<p>A quick preview of the data is the first step:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>algeria_ff <span class="sc">|&gt;</span> </span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>()</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>algeria_ff <span class="sc">|&gt;</span> </span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tail</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>()</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>algeria_ff <span class="sc">|&gt;</span> </span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  car<span class="sc">::</span><span class="fu">some</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div id="tbl-data-preview" class="cell quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-data-preview-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Data preview
+</figcaption>
+<div aria-describedby="tbl-data-preview-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div id="tbl-data-preview-1" class="do-not-create-environment quarto-float anchored">
+<figure class="quarto-float quarto-subfloat-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-subfloat-caption quarto-subfloat-tbl" id="tbl-data-preview-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(a)
+</figcaption>
+<div aria-describedby="tbl-data-preview-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table id="tbl-data-preview-1" class="do-not-create-environment caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 5%">
+<col style="width: 8%">
+<col style="width: 6%">
+<col style="width: 16%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 5%">
+<col style="width: 6%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 12%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">day</th>
+<th style="text-align: left;">month</th>
+<th style="text-align: left;">year</th>
+<th style="text-align: left;">Temperature</th>
+<th style="text-align: left;">RH</th>
+<th style="text-align: left;">Ws</th>
+<th style="text-align: left;">Rain</th>
+<th style="text-align: left;">FFMC</th>
+<th style="text-align: left;">DMC</th>
+<th style="text-align: left;">DC</th>
+<th style="text-align: left;">ISI</th>
+<th style="text-align: left;">BUI</th>
+<th style="text-align: left;">FWI</th>
+<th style="text-align: left;">Classes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">01</td>
+<td style="text-align: left;">06</td>
+<td style="text-align: left;">2012</td>
+<td style="text-align: left;">29</td>
+<td style="text-align: left;">57</td>
+<td style="text-align: left;">18</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">65.7</td>
+<td style="text-align: left;">3.4</td>
+<td style="text-align: left;">7.6</td>
+<td style="text-align: left;">1.3</td>
+<td style="text-align: left;">3.4</td>
+<td style="text-align: left;">0.5</td>
+<td style="text-align: left;">not fire</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">02</td>
+<td style="text-align: left;">06</td>
+<td style="text-align: left;">2012</td>
+<td style="text-align: left;">29</td>
+<td style="text-align: left;">61</td>
+<td style="text-align: left;">13</td>
+<td style="text-align: left;">1.3</td>
+<td style="text-align: left;">64.4</td>
+<td style="text-align: left;">4.1</td>
+<td style="text-align: left;">7.6</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">3.9</td>
+<td style="text-align: left;">0.4</td>
+<td style="text-align: left;">not fire</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">03</td>
+<td style="text-align: left;">06</td>
+<td style="text-align: left;">2012</td>
+<td style="text-align: left;">26</td>
+<td style="text-align: left;">82</td>
+<td style="text-align: left;">22</td>
+<td style="text-align: left;">13.1</td>
+<td style="text-align: left;">47.1</td>
+<td style="text-align: left;">2.5</td>
+<td style="text-align: left;">7.1</td>
+<td style="text-align: left;">0.3</td>
+<td style="text-align: left;">2.7</td>
+<td style="text-align: left;">0.1</td>
+<td style="text-align: left;">not fire</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">04</td>
+<td style="text-align: left;">06</td>
+<td style="text-align: left;">2012</td>
+<td style="text-align: left;">25</td>
+<td style="text-align: left;">89</td>
+<td style="text-align: left;">13</td>
+<td style="text-align: left;">2.5</td>
+<td style="text-align: left;">28.6</td>
+<td style="text-align: left;">1.3</td>
+<td style="text-align: left;">6.9</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">1.7</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">not fire</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">05</td>
+<td style="text-align: left;">06</td>
+<td style="text-align: left;">2012</td>
+<td style="text-align: left;">27</td>
+<td style="text-align: left;">77</td>
+<td style="text-align: left;">16</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">64.8</td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">14.2</td>
+<td style="text-align: left;">1.2</td>
+<td style="text-align: left;">3.9</td>
+<td style="text-align: left;">0.5</td>
+<td style="text-align: left;">not fire</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">06</td>
+<td style="text-align: left;">06</td>
+<td style="text-align: left;">2012</td>
+<td style="text-align: left;">31</td>
+<td style="text-align: left;">67</td>
+<td style="text-align: left;">14</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">82.6</td>
+<td style="text-align: left;">5.8</td>
+<td style="text-align: left;">22.2</td>
+<td style="text-align: left;">3.1</td>
+<td style="text-align: left;">7</td>
+<td style="text-align: left;">2.5</td>
+<td style="text-align: left;">fire</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div id="tbl-data-preview-2" class="do-not-create-environment quarto-float anchored">
+<figure class="quarto-float quarto-subfloat-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-subfloat-caption quarto-subfloat-tbl" id="tbl-data-preview-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(b)
+</figcaption>
+<div aria-describedby="tbl-data-preview-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table id="tbl-data-preview-2" class="do-not-create-environment caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 5%">
+<col style="width: 8%">
+<col style="width: 6%">
+<col style="width: 16%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 5%">
+<col style="width: 6%">
+<col style="width: 5%">
+<col style="width: 12%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">day</th>
+<th style="text-align: left;">month</th>
+<th style="text-align: left;">year</th>
+<th style="text-align: left;">Temperature</th>
+<th style="text-align: left;">RH</th>
+<th style="text-align: left;">Ws</th>
+<th style="text-align: left;">Rain</th>
+<th style="text-align: left;">FFMC</th>
+<th style="text-align: left;">DMC</th>
+<th style="text-align: left;">DC</th>
+<th style="text-align: left;">ISI</th>
+<th style="text-align: left;">BUI</th>
+<th style="text-align: left;">FWI</th>
+<th style="text-align: left;">Classes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">25</td>
+<td style="text-align: left;">09</td>
+<td style="text-align: left;">2012</td>
+<td style="text-align: left;">28</td>
+<td style="text-align: left;">70</td>
+<td style="text-align: left;">15</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">79.9</td>
+<td style="text-align: left;">13.8</td>
+<td style="text-align: left;">36.1</td>
+<td style="text-align: left;">2.4</td>
+<td style="text-align: left;">14.1</td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">not fire</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">26</td>
+<td style="text-align: left;">09</td>
+<td style="text-align: left;">2012</td>
+<td style="text-align: left;">30</td>
+<td style="text-align: left;">65</td>
+<td style="text-align: left;">14</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">85.4</td>
+<td style="text-align: left;">16</td>
+<td style="text-align: left;">44.5</td>
+<td style="text-align: left;">4.5</td>
+<td style="text-align: left;">16.9</td>
+<td style="text-align: left;">6.5</td>
+<td style="text-align: left;">fire</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">27</td>
+<td style="text-align: left;">09</td>
+<td style="text-align: left;">2012</td>
+<td style="text-align: left;">28</td>
+<td style="text-align: left;">87</td>
+<td style="text-align: left;">15</td>
+<td style="text-align: left;">4.4</td>
+<td style="text-align: left;">41.1</td>
+<td style="text-align: left;">6.5</td>
+<td style="text-align: left;">8</td>
+<td style="text-align: left;">0.1</td>
+<td style="text-align: left;">6.2</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">not fire</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">28</td>
+<td style="text-align: left;">09</td>
+<td style="text-align: left;">2012</td>
+<td style="text-align: left;">27</td>
+<td style="text-align: left;">87</td>
+<td style="text-align: left;">29</td>
+<td style="text-align: left;">0.5</td>
+<td style="text-align: left;">45.9</td>
+<td style="text-align: left;">3.5</td>
+<td style="text-align: left;">7.9</td>
+<td style="text-align: left;">0.4</td>
+<td style="text-align: left;">3.4</td>
+<td style="text-align: left;">0.2</td>
+<td style="text-align: left;">not fire</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">29</td>
+<td style="text-align: left;">09</td>
+<td style="text-align: left;">2012</td>
+<td style="text-align: left;">24</td>
+<td style="text-align: left;">54</td>
+<td style="text-align: left;">18</td>
+<td style="text-align: left;">0.1</td>
+<td style="text-align: left;">79.7</td>
+<td style="text-align: left;">4.3</td>
+<td style="text-align: left;">15.2</td>
+<td style="text-align: left;">1.7</td>
+<td style="text-align: left;">5.1</td>
+<td style="text-align: left;">0.7</td>
+<td style="text-align: left;">not fire</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">30</td>
+<td style="text-align: left;">09</td>
+<td style="text-align: left;">2012</td>
+<td style="text-align: left;">24</td>
+<td style="text-align: left;">64</td>
+<td style="text-align: left;">15</td>
+<td style="text-align: left;">0.2</td>
+<td style="text-align: left;">67.3</td>
+<td style="text-align: left;">3.8</td>
+<td style="text-align: left;">16.5</td>
+<td style="text-align: left;">1.2</td>
+<td style="text-align: left;">4.8</td>
+<td style="text-align: left;">0.5</td>
+<td style="text-align: left;">not fire</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div id="tbl-data-preview-3" class="do-not-create-environment quarto-float anchored">
+<figure class="quarto-float quarto-subfloat-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-subfloat-caption quarto-subfloat-tbl" id="tbl-data-preview-3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(c)
+</figcaption>
+<div aria-describedby="tbl-data-preview-3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table id="tbl-data-preview-3" class="do-not-create-environment caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 5%">
+<col style="width: 7%">
+<col style="width: 6%">
+<col style="width: 15%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 7%">
+<col style="width: 5%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 11%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">day</th>
+<th style="text-align: left;">month</th>
+<th style="text-align: left;">year</th>
+<th style="text-align: left;">Temperature</th>
+<th style="text-align: left;">RH</th>
+<th style="text-align: left;">Ws</th>
+<th style="text-align: left;">Rain</th>
+<th style="text-align: left;">FFMC</th>
+<th style="text-align: left;">DMC</th>
+<th style="text-align: left;">DC</th>
+<th style="text-align: left;">ISI</th>
+<th style="text-align: left;">BUI</th>
+<th style="text-align: left;">FWI</th>
+<th style="text-align: left;">Classes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">12</td>
+<td style="text-align: left;">06</td>
+<td style="text-align: left;">2012</td>
+<td style="text-align: left;">26</td>
+<td style="text-align: left;">81</td>
+<td style="text-align: left;">19</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">84</td>
+<td style="text-align: left;">13.8</td>
+<td style="text-align: left;">61.4</td>
+<td style="text-align: left;">4.8</td>
+<td style="text-align: left;">17.7</td>
+<td style="text-align: left;">7.1</td>
+<td style="text-align: left;">fire</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">06</td>
+<td style="text-align: left;">07</td>
+<td style="text-align: left;">2012</td>
+<td style="text-align: left;">32</td>
+<td style="text-align: left;">63</td>
+<td style="text-align: left;">14</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">87</td>
+<td style="text-align: left;">10.9</td>
+<td style="text-align: left;">37</td>
+<td style="text-align: left;">5.6</td>
+<td style="text-align: left;">12.5</td>
+<td style="text-align: left;">6.8</td>
+<td style="text-align: left;">fire</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">20</td>
+<td style="text-align: left;">07</td>
+<td style="text-align: left;">2012</td>
+<td style="text-align: left;">33</td>
+<td style="text-align: left;">65</td>
+<td style="text-align: left;">15</td>
+<td style="text-align: left;">0.1</td>
+<td style="text-align: left;">81.4</td>
+<td style="text-align: left;">12.3</td>
+<td style="text-align: left;">62.1</td>
+<td style="text-align: left;">2.8</td>
+<td style="text-align: left;">16.5</td>
+<td style="text-align: left;">4</td>
+<td style="text-align: left;">fire</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">19</td>
+<td style="text-align: left;">08</td>
+<td style="text-align: left;">2012</td>
+<td style="text-align: left;">35</td>
+<td style="text-align: left;">62</td>
+<td style="text-align: left;">19</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">89.4</td>
+<td style="text-align: left;">23.2</td>
+<td style="text-align: left;">120.9</td>
+<td style="text-align: left;">9.7</td>
+<td style="text-align: left;">31.3</td>
+<td style="text-align: left;">17.2</td>
+<td style="text-align: left;">fire</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">04</td>
+<td style="text-align: left;">09</td>
+<td style="text-align: left;">2012</td>
+<td style="text-align: left;">29</td>
+<td style="text-align: left;">73</td>
+<td style="text-align: left;">17</td>
+<td style="text-align: left;">0.1</td>
+<td style="text-align: left;">68.4</td>
+<td style="text-align: left;">1.9</td>
+<td style="text-align: left;">15.7</td>
+<td style="text-align: left;">1.4</td>
+<td style="text-align: left;">2.9</td>
+<td style="text-align: left;">0.5</td>
+<td style="text-align: left;">not fire</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">11</td>
+<td style="text-align: left;">09</td>
+<td style="text-align: left;">2012</td>
+<td style="text-align: left;">30</td>
+<td style="text-align: left;">77</td>
+<td style="text-align: left;">21</td>
+<td style="text-align: left;">1.8</td>
+<td style="text-align: left;">58.5</td>
+<td style="text-align: left;">1.9</td>
+<td style="text-align: left;">8.4</td>
+<td style="text-align: left;">1.1</td>
+<td style="text-align: left;">2.4</td>
+<td style="text-align: left;">0.3</td>
+<td style="text-align: left;">not fire</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">23</td>
+<td style="text-align: left;">09</td>
+<td style="text-align: left;">2012</td>
+<td style="text-align: left;">32</td>
+<td style="text-align: left;">54</td>
+<td style="text-align: left;">11</td>
+<td style="text-align: left;">0.5</td>
+<td style="text-align: left;">73.7</td>
+<td style="text-align: left;">7.9</td>
+<td style="text-align: left;">30.4</td>
+<td style="text-align: left;">1.2</td>
+<td style="text-align: left;">9.6</td>
+<td style="text-align: left;">0.7</td>
+<td style="text-align: left;">not fire</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">22</td>
+<td style="text-align: left;">06</td>
+<td style="text-align: left;">2012</td>
+<td style="text-align: left;">33</td>
+<td style="text-align: left;">46</td>
+<td style="text-align: left;">14</td>
+<td style="text-align: left;">1.1</td>
+<td style="text-align: left;">78.3</td>
+<td style="text-align: left;">8.1</td>
+<td style="text-align: left;">8.3</td>
+<td style="text-align: left;">1.9</td>
+<td style="text-align: left;">7.7</td>
+<td style="text-align: left;">1.2</td>
+<td style="text-align: left;">not fire</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">18</td>
+<td style="text-align: left;">08</td>
+<td style="text-align: left;">2012</td>
+<td style="text-align: left;">37</td>
+<td style="text-align: left;">37</td>
+<td style="text-align: left;">14</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">94.3</td>
+<td style="text-align: left;">35.9</td>
+<td style="text-align: left;">86.8</td>
+<td style="text-align: left;">16</td>
+<td style="text-align: left;">35.9</td>
+<td style="text-align: left;">26.3</td>
+<td style="text-align: left;">fire</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">01</td>
+<td style="text-align: left;">09</td>
+<td style="text-align: left;">2012</td>
+<td style="text-align: left;">29</td>
+<td style="text-align: left;">86</td>
+<td style="text-align: left;">16</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">37.9</td>
+<td style="text-align: left;">0.9</td>
+<td style="text-align: left;">8.2</td>
+<td style="text-align: left;">0.1</td>
+<td style="text-align: left;">1.4</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">not fire</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p><a href="#tbl-data-preview" class="quarto-xref">Table&nbsp;1</a> shows the first six observations, <a href="#tbl-data-preview-1" class="quarto-xref">Table&nbsp;1 (a)</a>, the last six observations, <a href="#tbl-data-preview-2" class="quarto-xref">Table&nbsp;1 (b)</a>, and 10 random observations from the data, <a href="#tbl-data-preview-3" class="quarto-xref">Table&nbsp;1 (c)</a>.</p>
+<p>From <a href="#tbl-data-preview" class="quarto-xref">Table&nbsp;1</a>, all the variables are character when they should be majorly numeric and one or two categorical variable. I can also see that the regions are not indicated in the data. The variables present are day, month, year, Temperature, RH, Ws, Rain, FFMC, DMC, DC, ISI, BUI, FWI, Classes</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>skimr<span class="sc">::</span><span class="fu">skim</span>(algeria_ff)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Data summary</caption>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Name</td>
+<td style="text-align: left;">algeria_ff</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Number of rows</td>
+<td style="text-align: left;">246</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Number of columns</td>
+<td style="text-align: left;">14</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">_______________________</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Column type frequency:</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">character</td>
+<td style="text-align: left;">14</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">________________________</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Group variables</td>
+<td style="text-align: left;">None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: character</strong></p>
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 19%">
+<col style="width: 13%">
+<col style="width: 19%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 8%">
+<col style="width: 12%">
+<col style="width: 15%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">skim_variable</th>
+<th style="text-align: right;">n_missing</th>
+<th style="text-align: right;">complete_rate</th>
+<th style="text-align: right;">min</th>
+<th style="text-align: right;">max</th>
+<th style="text-align: right;">empty</th>
+<th style="text-align: right;">n_unique</th>
+<th style="text-align: right;">whitespace</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">day</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">29</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">33</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">month</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">year</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Temperature</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">RH</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">63</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Ws</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Rain</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">FFMC</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">174</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">DMC</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">167</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">DC</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">199</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ISI</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">107</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">BUI</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">175</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">FWI</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">127</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Classes</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0.99</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
 
 
 </section>
 </section>
 
-</main> <!-- /main -->
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-abid2020" class="csl-entry" role="listitem">
+Abid, Faroudja, and Nouma Izeboudjen. 2020. <span>“Predicting Forest Fire in Algeria Using Data Mining Techniques: Case Study of the Decision Tree Algorithm.”</span> In, 363–70. Springer International Publishing. <a href="https://doi.org/10.1007/978-3-030-36674-2_37">https://doi.org/10.1007/978-3-030-36674-2_37</a>.
+</div>
+</div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {

@@ -3,6 +3,7 @@
     "listing": "/blog.html",
     "items": [
       "/posts/possum regression/index.html",
+      "/posts/algeria-fwi-prediction/index.html",
       "/posts/webscraping-and-visualizing-the-top-crypto-currencies/index.html",
       "/posts/option-add-use-in-tuning-different-grid-for-different-models/index.html",
       "/posts/gef-projects/index.html"
