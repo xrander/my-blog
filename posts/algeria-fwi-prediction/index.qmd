@@ -417,6 +417,8 @@ lr_wf |>
 ```
 
 The area under the curve is .99 which is very good @fig-roc.
+
+
 ### Confusion Matrix
 ```{r}
 lr_wf |> 
