@@ -210,7 +210,7 @@ window.Quarto = {
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Predicion of Algeria’s Forest Weather Index</h1>
+      <h1 class="title">Prediction of Algeria’s Forest Weather Index</h1>
                                 <div class="quarto-categories">
                 <div class="quarto-category">Machine Learning</div>
                 <div class="quarto-category">Logistic Regression</div>
@@ -341,7 +341,7 @@ window.Quarto = {
 <tr class="odd">
 <td style="text-align: left;">classes</td>
 <td style="text-align: center;">binary</td>
-<td style="text-align: right;">class of fire occurrence</td>
+<td style="text-align: right;">class of fire occurrence. This is the target variable</td>
 </tr>
 </tbody>
 </table>
@@ -350,7 +350,8 @@ window.Quarto = {
 <details class="code-fold">
 <summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pacman)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">p_load</span>(tidyverse, tidymodels, knitr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">p_load</span>(tidyverse, tidymodels, knitr, ggthemes, hrbrthemes)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">theme_set</span>(<span class="fu">theme_ipsum_ps</span>(<span class="at">base_size =</span> <span class="dv">12</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div class="callout callout-style-simple callout-important">
@@ -367,7 +368,8 @@ window.Quarto = {
 <div class="cell">
 <details class="code-fold">
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>algeria_ff <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/Algerian_forest_fires_dataset_UPDATE.csv"</span>, <span class="at">skip =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>algeria_ff <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/Algerian_forest_fires_dataset_UPDATE.csv"</span>, <span class="at">skip =</span> <span class="dv">1</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning: One or more parsing issues, call `problems()` on your data frame for details,
@@ -441,17 +443,17 @@ Table&nbsp;1: Data preview
 <th style="text-align: left;">day</th>
 <th style="text-align: left;">month</th>
 <th style="text-align: left;">year</th>
-<th style="text-align: left;">Temperature</th>
-<th style="text-align: left;">RH</th>
-<th style="text-align: left;">Ws</th>
-<th style="text-align: left;">Rain</th>
-<th style="text-align: left;">FFMC</th>
-<th style="text-align: left;">DMC</th>
-<th style="text-align: left;">DC</th>
-<th style="text-align: left;">ISI</th>
-<th style="text-align: left;">BUI</th>
-<th style="text-align: left;">FWI</th>
-<th style="text-align: left;">Classes</th>
+<th style="text-align: left;">temperature</th>
+<th style="text-align: left;">rh</th>
+<th style="text-align: left;">ws</th>
+<th style="text-align: left;">rain</th>
+<th style="text-align: left;">ffmc</th>
+<th style="text-align: left;">dmc</th>
+<th style="text-align: left;">dc</th>
+<th style="text-align: left;">isi</th>
+<th style="text-align: left;">bui</th>
+<th style="text-align: left;">fwi</th>
+<th style="text-align: left;">classes</th>
 </tr>
 </thead>
 <tbody>
@@ -586,17 +588,17 @@ Table&nbsp;1: Data preview
 <th style="text-align: left;">day</th>
 <th style="text-align: left;">month</th>
 <th style="text-align: left;">year</th>
-<th style="text-align: left;">Temperature</th>
-<th style="text-align: left;">RH</th>
-<th style="text-align: left;">Ws</th>
-<th style="text-align: left;">Rain</th>
-<th style="text-align: left;">FFMC</th>
-<th style="text-align: left;">DMC</th>
-<th style="text-align: left;">DC</th>
-<th style="text-align: left;">ISI</th>
-<th style="text-align: left;">BUI</th>
-<th style="text-align: left;">FWI</th>
-<th style="text-align: left;">Classes</th>
+<th style="text-align: left;">temperature</th>
+<th style="text-align: left;">rh</th>
+<th style="text-align: left;">ws</th>
+<th style="text-align: left;">rain</th>
+<th style="text-align: left;">ffmc</th>
+<th style="text-align: left;">dmc</th>
+<th style="text-align: left;">dc</th>
+<th style="text-align: left;">isi</th>
+<th style="text-align: left;">bui</th>
+<th style="text-align: left;">fwi</th>
+<th style="text-align: left;">classes</th>
 </tr>
 </thead>
 <tbody>
@@ -721,7 +723,7 @@ Table&nbsp;1: Data preview
 <col style="width: 6%">
 <col style="width: 6%">
 <col style="width: 7%">
-<col style="width: 5%">
+<col style="width: 6%">
 <col style="width: 6%">
 <col style="width: 6%">
 <col style="width: 11%">
@@ -731,17 +733,17 @@ Table&nbsp;1: Data preview
 <th style="text-align: left;">day</th>
 <th style="text-align: left;">month</th>
 <th style="text-align: left;">year</th>
-<th style="text-align: left;">Temperature</th>
-<th style="text-align: left;">RH</th>
-<th style="text-align: left;">Ws</th>
-<th style="text-align: left;">Rain</th>
-<th style="text-align: left;">FFMC</th>
-<th style="text-align: left;">DMC</th>
-<th style="text-align: left;">DC</th>
-<th style="text-align: left;">ISI</th>
-<th style="text-align: left;">BUI</th>
-<th style="text-align: left;">FWI</th>
-<th style="text-align: left;">Classes</th>
+<th style="text-align: left;">temperature</th>
+<th style="text-align: left;">rh</th>
+<th style="text-align: left;">ws</th>
+<th style="text-align: left;">rain</th>
+<th style="text-align: left;">ffmc</th>
+<th style="text-align: left;">dmc</th>
+<th style="text-align: left;">dc</th>
+<th style="text-align: left;">isi</th>
+<th style="text-align: left;">bui</th>
+<th style="text-align: left;">fwi</th>
+<th style="text-align: left;">classes</th>
 </tr>
 </thead>
 <tbody>
@@ -762,147 +764,147 @@ Table&nbsp;1: Data preview
 <td style="text-align: left;">fire</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">06</td>
-<td style="text-align: left;">07</td>
-<td style="text-align: left;">2012</td>
-<td style="text-align: left;">32</td>
-<td style="text-align: left;">63</td>
-<td style="text-align: left;">14</td>
-<td style="text-align: left;">0</td>
-<td style="text-align: left;">87</td>
-<td style="text-align: left;">10.9</td>
-<td style="text-align: left;">37</td>
-<td style="text-align: left;">5.6</td>
-<td style="text-align: left;">12.5</td>
-<td style="text-align: left;">6.8</td>
-<td style="text-align: left;">fire</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">20</td>
-<td style="text-align: left;">07</td>
-<td style="text-align: left;">2012</td>
-<td style="text-align: left;">33</td>
-<td style="text-align: left;">65</td>
-<td style="text-align: left;">15</td>
-<td style="text-align: left;">0.1</td>
-<td style="text-align: left;">81.4</td>
-<td style="text-align: left;">12.3</td>
-<td style="text-align: left;">62.1</td>
-<td style="text-align: left;">2.8</td>
-<td style="text-align: left;">16.5</td>
-<td style="text-align: left;">4</td>
-<td style="text-align: left;">fire</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">19</td>
+<td style="text-align: left;">24</td>
 <td style="text-align: left;">08</td>
 <td style="text-align: left;">2012</td>
-<td style="text-align: left;">35</td>
-<td style="text-align: left;">62</td>
-<td style="text-align: left;">19</td>
+<td style="text-align: left;">34</td>
+<td style="text-align: left;">64</td>
+<td style="text-align: left;">14</td>
 <td style="text-align: left;">0</td>
-<td style="text-align: left;">89.4</td>
-<td style="text-align: left;">23.2</td>
-<td style="text-align: left;">120.9</td>
-<td style="text-align: left;">9.7</td>
-<td style="text-align: left;">31.3</td>
-<td style="text-align: left;">17.2</td>
+<td style="text-align: left;">88.9</td>
+<td style="text-align: left;">40.5</td>
+<td style="text-align: left;">171.3</td>
+<td style="text-align: left;">9</td>
+<td style="text-align: left;">50.9</td>
+<td style="text-align: left;">20.9</td>
 <td style="text-align: left;">fire</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">04</td>
+<td style="text-align: left;">12</td>
 <td style="text-align: left;">09</td>
 <td style="text-align: left;">2012</td>
 <td style="text-align: left;">29</td>
-<td style="text-align: left;">73</td>
-<td style="text-align: left;">17</td>
-<td style="text-align: left;">0.1</td>
-<td style="text-align: left;">68.4</td>
-<td style="text-align: left;">1.9</td>
-<td style="text-align: left;">15.7</td>
-<td style="text-align: left;">1.4</td>
-<td style="text-align: left;">2.9</td>
+<td style="text-align: left;">88</td>
+<td style="text-align: left;">13</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">71</td>
+<td style="text-align: left;">2.6</td>
+<td style="text-align: left;">16.6</td>
+<td style="text-align: left;">1.2</td>
+<td style="text-align: left;">3.7</td>
 <td style="text-align: left;">0.5</td>
 <td style="text-align: left;">not fire</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">11</td>
+<td style="text-align: left;">25</td>
 <td style="text-align: left;">09</td>
+<td style="text-align: left;">2012</td>
+<td style="text-align: left;">26</td>
+<td style="text-align: left;">81</td>
+<td style="text-align: left;">21</td>
+<td style="text-align: left;">5.8</td>
+<td style="text-align: left;">48.6</td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">7.7</td>
+<td style="text-align: left;">0.4</td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">0.1</td>
+<td style="text-align: left;">not fire</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">02</td>
+<td style="text-align: left;">06</td>
 <td style="text-align: left;">2012</td>
 <td style="text-align: left;">30</td>
-<td style="text-align: left;">77</td>
-<td style="text-align: left;">21</td>
-<td style="text-align: left;">1.8</td>
-<td style="text-align: left;">58.5</td>
-<td style="text-align: left;">1.9</td>
-<td style="text-align: left;">8.4</td>
-<td style="text-align: left;">1.1</td>
-<td style="text-align: left;">2.4</td>
-<td style="text-align: left;">0.3</td>
-<td style="text-align: left;">not fire</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">23</td>
-<td style="text-align: left;">09</td>
-<td style="text-align: left;">2012</td>
-<td style="text-align: left;">32</td>
-<td style="text-align: left;">54</td>
-<td style="text-align: left;">11</td>
-<td style="text-align: left;">0.5</td>
-<td style="text-align: left;">73.7</td>
-<td style="text-align: left;">7.9</td>
-<td style="text-align: left;">30.4</td>
-<td style="text-align: left;">1.2</td>
-<td style="text-align: left;">9.6</td>
-<td style="text-align: left;">0.7</td>
+<td style="text-align: left;">73</td>
+<td style="text-align: left;">13</td>
+<td style="text-align: left;">4</td>
+<td style="text-align: left;">55.7</td>
+<td style="text-align: left;">2.7</td>
+<td style="text-align: left;">7.8</td>
+<td style="text-align: left;">0.6</td>
+<td style="text-align: left;">2.9</td>
+<td style="text-align: left;">0.2</td>
 <td style="text-align: left;">not fire</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">22</td>
+<td style="text-align: left;">12</td>
 <td style="text-align: left;">06</td>
 <td style="text-align: left;">2012</td>
-<td style="text-align: left;">33</td>
-<td style="text-align: left;">46</td>
-<td style="text-align: left;">14</td>
-<td style="text-align: left;">1.1</td>
-<td style="text-align: left;">78.3</td>
-<td style="text-align: left;">8.1</td>
-<td style="text-align: left;">8.3</td>
-<td style="text-align: left;">1.9</td>
-<td style="text-align: left;">7.7</td>
-<td style="text-align: left;">1.2</td>
-<td style="text-align: left;">not fire</td>
+<td style="text-align: left;">27</td>
+<td style="text-align: left;">58</td>
+<td style="text-align: left;">17</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">88.9</td>
+<td style="text-align: left;">21.3</td>
+<td style="text-align: left;">37.8</td>
+<td style="text-align: left;">8.7</td>
+<td style="text-align: left;">21.2</td>
+<td style="text-align: left;">12.9</td>
+<td style="text-align: left;">fire</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">18</td>
-<td style="text-align: left;">08</td>
-<td style="text-align: left;">2012</td>
-<td style="text-align: left;">37</td>
-<td style="text-align: left;">37</td>
-<td style="text-align: left;">14</td>
-<td style="text-align: left;">0</td>
-<td style="text-align: left;">94.3</td>
-<td style="text-align: left;">35.9</td>
-<td style="text-align: left;">86.8</td>
 <td style="text-align: left;">16</td>
-<td style="text-align: left;">35.9</td>
-<td style="text-align: left;">26.3</td>
+<td style="text-align: left;">06</td>
+<td style="text-align: left;">2012</td>
+<td style="text-align: left;">29</td>
+<td style="text-align: left;">87</td>
+<td style="text-align: left;">15</td>
+<td style="text-align: left;">0.4</td>
+<td style="text-align: left;">47.4</td>
+<td style="text-align: left;">4.2</td>
+<td style="text-align: left;">8</td>
+<td style="text-align: left;">0.2</td>
+<td style="text-align: left;">4.1</td>
+<td style="text-align: left;">0.1</td>
+<td style="text-align: left;">not fire</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">26</td>
+<td style="text-align: left;">06</td>
+<td style="text-align: left;">2012</td>
+<td style="text-align: left;">36</td>
+<td style="text-align: left;">62</td>
+<td style="text-align: left;">16</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">87.8</td>
+<td style="text-align: left;">16.5</td>
+<td style="text-align: left;">34.5</td>
+<td style="text-align: left;">7</td>
+<td style="text-align: left;">16.4</td>
+<td style="text-align: left;">9.5</td>
+<td style="text-align: left;">fire</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">22</td>
+<td style="text-align: left;">07</td>
+<td style="text-align: left;">2012</td>
+<td style="text-align: left;">32</td>
+<td style="text-align: left;">48</td>
+<td style="text-align: left;">18</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">91.5</td>
+<td style="text-align: left;">44.2</td>
+<td style="text-align: left;">90.1</td>
+<td style="text-align: left;">13.2</td>
+<td style="text-align: left;">44</td>
+<td style="text-align: left;">25.4</td>
 <td style="text-align: left;">fire</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">01</td>
+<td style="text-align: left;">25</td>
 <td style="text-align: left;">09</td>
 <td style="text-align: left;">2012</td>
-<td style="text-align: left;">29</td>
-<td style="text-align: left;">86</td>
-<td style="text-align: left;">16</td>
+<td style="text-align: left;">28</td>
+<td style="text-align: left;">70</td>
+<td style="text-align: left;">15</td>
 <td style="text-align: left;">0</td>
-<td style="text-align: left;">37.9</td>
-<td style="text-align: left;">0.9</td>
-<td style="text-align: left;">8.2</td>
-<td style="text-align: left;">0.1</td>
-<td style="text-align: left;">1.4</td>
-<td style="text-align: left;">0</td>
+<td style="text-align: left;">79.9</td>
+<td style="text-align: left;">13.8</td>
+<td style="text-align: left;">36.1</td>
+<td style="text-align: left;">2.4</td>
+<td style="text-align: left;">14.1</td>
+<td style="text-align: left;">3</td>
 <td style="text-align: left;">not fire</td>
 </tr>
 </tbody>
@@ -916,15 +918,26 @@ Table&nbsp;1: Data preview
 </div>
 </div>
 <p><a href="#tbl-data-preview" class="quarto-xref">Table&nbsp;1</a> shows the first six observations, <a href="#tbl-data-preview-1" class="quarto-xref">Table&nbsp;1 (a)</a>, the last six observations, <a href="#tbl-data-preview-2" class="quarto-xref">Table&nbsp;1 (b)</a>, and 10 random observations from the data, <a href="#tbl-data-preview-3" class="quarto-xref">Table&nbsp;1 (c)</a>.</p>
-<p>From <a href="#tbl-data-preview" class="quarto-xref">Table&nbsp;1</a>, all the variables are character when they should be majorly numeric and one or two categorical variable. I can also see that the regions are not indicated in the data. The variables present are day, month, year, Temperature, RH, Ws, Rain, FFMC, DMC, DC, ISI, BUI, FWI, Classes</p>
+<p>From <a href="#tbl-data-prop" class="quarto-xref">Table&nbsp;2</a>, all the variables are character when they should be majorly numeric and one or two categorical variable. I can also see that the regions are not indicated in the data. The variables present are day, month, year, temperature, rh, ws, rain, ffmc, dmc, dc, isi, bui, fwi, classes.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>skimr<span class="sc">::</span><span class="fu">skim</span>(algeria_ff)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
+<div id="tbl-data-prop" class="cell quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-data-prop-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;2: Data Properties
+</figcaption>
+<div aria-describedby="tbl-data-prop-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
-<caption>Data summary</caption>
+<div id="tbl-data-prop-1" class="do-not-create-environment quarto-float anchored">
+<figure class="quarto-float quarto-subfloat-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-subfloat-caption quarto-subfloat-tbl" id="tbl-data-prop-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(a)
+</figcaption>
+<div aria-describedby="tbl-data-prop-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table id="tbl-data-prop-1" class="do-not-create-environment caption-top table table-sm table-striped small">
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">Name</td>
@@ -960,8 +973,17 @@ Table&nbsp;1: Data preview
 </tr>
 </tbody>
 </table>
+</div>
+</figure>
+</div>
 <p><strong>Variable type: character</strong></p>
-<table class="caption-top table table-sm table-striped small">
+<div id="tbl-data-prop-2" class="do-not-create-environment quarto-float anchored">
+<figure class="quarto-float quarto-subfloat-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-subfloat-caption quarto-subfloat-tbl" id="tbl-data-prop-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(b)
+</figcaption>
+<div aria-describedby="tbl-data-prop-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table id="tbl-data-prop-2" class="do-not-create-environment caption-top table table-sm table-striped small">
 <colgroup>
 <col style="width: 19%">
 <col style="width: 13%">
@@ -1016,7 +1038,7 @@ Table&nbsp;1: Data preview
 <td style="text-align: right;">0</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">Temperature</td>
+<td style="text-align: left;">temperature</td>
 <td style="text-align: right;">1</td>
 <td style="text-align: right;">1.00</td>
 <td style="text-align: right;">2</td>
@@ -1026,7 +1048,7 @@ Table&nbsp;1: Data preview
 <td style="text-align: right;">0</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">RH</td>
+<td style="text-align: left;">rh</td>
 <td style="text-align: right;">1</td>
 <td style="text-align: right;">1.00</td>
 <td style="text-align: right;">2</td>
@@ -1036,7 +1058,7 @@ Table&nbsp;1: Data preview
 <td style="text-align: right;">0</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">Ws</td>
+<td style="text-align: left;">ws</td>
 <td style="text-align: right;">1</td>
 <td style="text-align: right;">1.00</td>
 <td style="text-align: right;">1</td>
@@ -1046,7 +1068,7 @@ Table&nbsp;1: Data preview
 <td style="text-align: right;">0</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">Rain</td>
+<td style="text-align: left;">rain</td>
 <td style="text-align: right;">1</td>
 <td style="text-align: right;">1.00</td>
 <td style="text-align: right;">1</td>
@@ -1056,7 +1078,7 @@ Table&nbsp;1: Data preview
 <td style="text-align: right;">0</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">FFMC</td>
+<td style="text-align: left;">ffmc</td>
 <td style="text-align: right;">1</td>
 <td style="text-align: right;">1.00</td>
 <td style="text-align: right;">2</td>
@@ -1066,7 +1088,7 @@ Table&nbsp;1: Data preview
 <td style="text-align: right;">0</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">DMC</td>
+<td style="text-align: left;">dmc</td>
 <td style="text-align: right;">1</td>
 <td style="text-align: right;">1.00</td>
 <td style="text-align: right;">1</td>
@@ -1076,7 +1098,7 @@ Table&nbsp;1: Data preview
 <td style="text-align: right;">0</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">DC</td>
+<td style="text-align: left;">dc</td>
 <td style="text-align: right;">1</td>
 <td style="text-align: right;">1.00</td>
 <td style="text-align: right;">1</td>
@@ -1086,7 +1108,7 @@ Table&nbsp;1: Data preview
 <td style="text-align: right;">0</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">ISI</td>
+<td style="text-align: left;">isi</td>
 <td style="text-align: right;">1</td>
 <td style="text-align: right;">1.00</td>
 <td style="text-align: right;">1</td>
@@ -1096,7 +1118,7 @@ Table&nbsp;1: Data preview
 <td style="text-align: right;">0</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">BUI</td>
+<td style="text-align: left;">bui</td>
 <td style="text-align: right;">1</td>
 <td style="text-align: right;">1.00</td>
 <td style="text-align: right;">1</td>
@@ -1106,7 +1128,7 @@ Table&nbsp;1: Data preview
 <td style="text-align: right;">0</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">FWI</td>
+<td style="text-align: left;">fwi</td>
 <td style="text-align: right;">1</td>
 <td style="text-align: right;">1.00</td>
 <td style="text-align: right;">1</td>
@@ -1116,7 +1138,7 @@ Table&nbsp;1: Data preview
 <td style="text-align: right;">0</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">Classes</td>
+<td style="text-align: left;">classes</td>
 <td style="text-align: right;">2</td>
 <td style="text-align: right;">0.99</td>
 <td style="text-align: right;">4</td>
@@ -1128,11 +1150,1033 @@ Table&nbsp;1: Data preview
 </tbody>
 </table>
 </div>
+</figure>
 </div>
-
-
-
+</div>
+</div>
+</figure>
+</div>
+</div>
 </section>
+<section id="missing-data" class="level2">
+<h2 class="anchored" data-anchor-id="missing-data">Missing Data</h2>
+<p>There’s a maximum of two missing data, which is in the <code>classes</code> variable, <a href="#tbl-data-prop-2" class="quarto-xref">Table&nbsp;2 (b)</a>. I will investigate this:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>algeria_ff <span class="sc">|&gt;</span> </span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">is.na</span>(classes)) <span class="sc">|&gt;</span>  <span class="fu">kable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div id="tbl-missing" class="cell quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-missing-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;3: Missing data
+</figcaption>
+<div aria-describedby="tbl-missing-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="do-not-create-environment cell caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 28%">
+<col style="width: 5%">
+<col style="width: 4%">
+<col style="width: 11%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 6%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 7%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">day</th>
+<th style="text-align: left;">month</th>
+<th style="text-align: left;">year</th>
+<th style="text-align: left;">temperature</th>
+<th style="text-align: left;">rh</th>
+<th style="text-align: left;">ws</th>
+<th style="text-align: left;">rain</th>
+<th style="text-align: left;">ffmc</th>
+<th style="text-align: left;">dmc</th>
+<th style="text-align: left;">dc</th>
+<th style="text-align: left;">isi</th>
+<th style="text-align: left;">bui</th>
+<th style="text-align: left;">fwi</th>
+<th style="text-align: left;">classes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Sidi-Bel Abbes Region Dataset</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">14</td>
+<td style="text-align: left;">07</td>
+<td style="text-align: left;">2012</td>
+<td style="text-align: left;">37</td>
+<td style="text-align: left;">37</td>
+<td style="text-align: left;">18</td>
+<td style="text-align: left;">0.2</td>
+<td style="text-align: left;">88.9</td>
+<td style="text-align: left;">12.9</td>
+<td style="text-align: left;">14.6 9</td>
+<td style="text-align: left;">12.5</td>
+<td style="text-align: left;">10.4</td>
+<td style="text-align: left;">fire</td>
+<td style="text-align: left;">NA</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>There’s an interesting finding in <a href="#tbl-missing" class="quarto-xref">Table&nbsp;3</a>. The start of Sidi-Bel Abbes region dataset can be seen under the <code>day</code> variable. I will add row numbers and a new column called region and add each region according to the row number where Sidi-Bel Abbes appears in the variable <code>day</code>. All data before Sidi-Bel Abbes are Bejaia region data,</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>algeria_ff <span class="ot">&lt;-</span> algeria_ff <span class="sc">|&gt;</span> </span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">id =</span> <span class="fu">row_number</span>(),</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">.before =</span> day</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(algeria_ff) <span class="sc">|&gt;</span> <span class="fu">kable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div id="tbl-add-row" class="cell quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-add-row-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;4: Row numbers added
+</figcaption>
+<div aria-describedby="tbl-add-row-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="do-not-create-environment cell caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 3%">
+<col style="width: 5%">
+<col style="width: 7%">
+<col style="width: 6%">
+<col style="width: 15%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 5%">
+<col style="width: 6%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 11%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;">id</th>
+<th style="text-align: left;">day</th>
+<th style="text-align: left;">month</th>
+<th style="text-align: left;">year</th>
+<th style="text-align: left;">temperature</th>
+<th style="text-align: left;">rh</th>
+<th style="text-align: left;">ws</th>
+<th style="text-align: left;">rain</th>
+<th style="text-align: left;">ffmc</th>
+<th style="text-align: left;">dmc</th>
+<th style="text-align: left;">dc</th>
+<th style="text-align: left;">isi</th>
+<th style="text-align: left;">bui</th>
+<th style="text-align: left;">fwi</th>
+<th style="text-align: left;">classes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">01</td>
+<td style="text-align: left;">06</td>
+<td style="text-align: left;">2012</td>
+<td style="text-align: left;">29</td>
+<td style="text-align: left;">57</td>
+<td style="text-align: left;">18</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">65.7</td>
+<td style="text-align: left;">3.4</td>
+<td style="text-align: left;">7.6</td>
+<td style="text-align: left;">1.3</td>
+<td style="text-align: left;">3.4</td>
+<td style="text-align: left;">0.5</td>
+<td style="text-align: left;">not fire</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">02</td>
+<td style="text-align: left;">06</td>
+<td style="text-align: left;">2012</td>
+<td style="text-align: left;">29</td>
+<td style="text-align: left;">61</td>
+<td style="text-align: left;">13</td>
+<td style="text-align: left;">1.3</td>
+<td style="text-align: left;">64.4</td>
+<td style="text-align: left;">4.1</td>
+<td style="text-align: left;">7.6</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">3.9</td>
+<td style="text-align: left;">0.4</td>
+<td style="text-align: left;">not fire</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">03</td>
+<td style="text-align: left;">06</td>
+<td style="text-align: left;">2012</td>
+<td style="text-align: left;">26</td>
+<td style="text-align: left;">82</td>
+<td style="text-align: left;">22</td>
+<td style="text-align: left;">13.1</td>
+<td style="text-align: left;">47.1</td>
+<td style="text-align: left;">2.5</td>
+<td style="text-align: left;">7.1</td>
+<td style="text-align: left;">0.3</td>
+<td style="text-align: left;">2.7</td>
+<td style="text-align: left;">0.1</td>
+<td style="text-align: left;">not fire</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">04</td>
+<td style="text-align: left;">06</td>
+<td style="text-align: left;">2012</td>
+<td style="text-align: left;">25</td>
+<td style="text-align: left;">89</td>
+<td style="text-align: left;">13</td>
+<td style="text-align: left;">2.5</td>
+<td style="text-align: left;">28.6</td>
+<td style="text-align: left;">1.3</td>
+<td style="text-align: left;">6.9</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">1.7</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">not fire</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">05</td>
+<td style="text-align: left;">06</td>
+<td style="text-align: left;">2012</td>
+<td style="text-align: left;">27</td>
+<td style="text-align: left;">77</td>
+<td style="text-align: left;">16</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">64.8</td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">14.2</td>
+<td style="text-align: left;">1.2</td>
+<td style="text-align: left;">3.9</td>
+<td style="text-align: left;">0.5</td>
+<td style="text-align: left;">not fire</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">06</td>
+<td style="text-align: left;">06</td>
+<td style="text-align: left;">2012</td>
+<td style="text-align: left;">31</td>
+<td style="text-align: left;">67</td>
+<td style="text-align: left;">14</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">82.6</td>
+<td style="text-align: left;">5.8</td>
+<td style="text-align: left;">22.2</td>
+<td style="text-align: left;">3.1</td>
+<td style="text-align: left;">7</td>
+<td style="text-align: left;">2.5</td>
+<td style="text-align: left;">fire</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>I will perform the previous filter operation in <a href="#tbl-missing" class="quarto-xref">Table&nbsp;3</a> to get the start of the row number for Sidi-Bel Abbes Region.</p>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>algeria_ff <span class="sc">|&gt;</span> </span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">is.na</span>(classes))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div id="tbl-missing-2" class="cell quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl quarto-uncaptioned" id="tbl-missing-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;5
+</figcaption>
+<div aria-describedby="tbl-missing-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 15
+     id day    month year  temperature rh    ws    rain  ffmc  dmc   dc    isi  
+  &lt;int&gt; &lt;chr&gt;  &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;
+1   123 Sidi-… &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt;        &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt; 
+2   168 14     07    2012  37          37    18    0.2   88.9  12.9  14.6… 12.5 
+# ℹ 3 more variables: bui &lt;chr&gt;, fwi &lt;chr&gt;, classes &lt;chr&gt;</code></pre>
+</div>
+</div>
+</figure>
+</div>
+<p>Sidi-Bel Abbes data starts from 124, <a href="#tbl-missing-2" class="quarto-xref">Table&nbsp;5</a>. I will add the regions and remove the id variable that contains the row numbers. The number of observations for each region can be seen in <a href="#tbl-region" class="quarto-xref">Table&nbsp;6</a></p>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>algerian_ff <span class="ot">&lt;-</span> algeria_ff <span class="sc">|&gt;</span> </span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">region =</span> <span class="fu">case_when</span>(id <span class="sc">&lt;=</span> <span class="dv">122</span> <span class="sc">~</span> <span class="st">"Bejaia"</span>,</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>                       <span class="at">.default =</span> <span class="st">"Sidi-Bel Abbes"</span>),</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">.before =</span> day,</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">.keep =</span> <span class="st">"unused"</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(algerian_ff)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div id="tbl-region" class="cell quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-region-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;6: Number of observations for the regions
+</figcaption>
+<div aria-describedby="tbl-region-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 15
+  region day   month year  temperature rh    ws    rain  ffmc  dmc   dc    isi  
+  &lt;chr&gt;  &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;
+1 Bejaia 01    06    2012  29          57    18    0     65.7  3.4   7.6   1.3  
+2 Bejaia 02    06    2012  29          61    13    1.3   64.4  4.1   7.6   1    
+3 Bejaia 03    06    2012  26          82    22    13.1  47.1  2.5   7.1   0.3  
+4 Bejaia 04    06    2012  25          89    13    2.5   28.6  1.3   6.9   0    
+5 Bejaia 05    06    2012  27          77    16    0     64.8  3     14.2  1.2  
+6 Bejaia 06    06    2012  31          67    14    0     82.6  5.8   22.2  3.1  
+# ℹ 3 more variables: bui &lt;chr&gt;, fwi &lt;chr&gt;, classes &lt;chr&gt;</code></pre>
+</div>
+</div>
+</figure>
+</div>
+<p>Now we can check for missing data again</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>algerian_ff <span class="sc">|&gt;</span> </span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">if_any</span>(<span class="fu">everything</span>(), is.na)) <span class="sc">|&gt;</span> </span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 12%">
+<col style="width: 25%">
+<col style="width: 5%">
+<col style="width: 4%">
+<col style="width: 10%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 5%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 6%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">region</th>
+<th style="text-align: left;">day</th>
+<th style="text-align: left;">month</th>
+<th style="text-align: left;">year</th>
+<th style="text-align: left;">temperature</th>
+<th style="text-align: left;">rh</th>
+<th style="text-align: left;">ws</th>
+<th style="text-align: left;">rain</th>
+<th style="text-align: left;">ffmc</th>
+<th style="text-align: left;">dmc</th>
+<th style="text-align: left;">dc</th>
+<th style="text-align: left;">isi</th>
+<th style="text-align: left;">bui</th>
+<th style="text-align: left;">fwi</th>
+<th style="text-align: left;">classes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Sidi-Bel Abbes</td>
+<td style="text-align: left;">Sidi-Bel Abbes Region Dataset</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sidi-Bel Abbes</td>
+<td style="text-align: left;">14</td>
+<td style="text-align: left;">07</td>
+<td style="text-align: left;">2012</td>
+<td style="text-align: left;">37</td>
+<td style="text-align: left;">37</td>
+<td style="text-align: left;">18</td>
+<td style="text-align: left;">0.2</td>
+<td style="text-align: left;">88.9</td>
+<td style="text-align: left;">12.9</td>
+<td style="text-align: left;">14.6 9</td>
+<td style="text-align: left;">12.5</td>
+<td style="text-align: left;">10.4</td>
+<td style="text-align: left;">fire</td>
+<td style="text-align: left;">NA</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>The missing points are still the same. Here, I will remove this data points and proceed with the analysis.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>algerian_ff <span class="ot">&lt;-</span> algerian_ff <span class="sc">|&gt;</span> </span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(classes <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"not fire"</span>, <span class="st">"fire"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>I also need to change the other variables to numeric data types except <code>region</code> and <code>classes</code> which will be changed to factor variable type.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>algerian_ff <span class="ot">&lt;-</span> algerian_ff <span class="sc">|&gt;</span> </span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">region =</span> <span class="fu">factor</span>(region),</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">classes =</span> <span class="fu">ifelse</span>(classes <span class="sc">==</span> <span class="st">"not fire"</span>, <span class="dv">0</span>, <span class="dv">1</span>),</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">classes =</span> <span class="fu">factor</span>(classes, <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"not fire"</span>, <span class="st">"fire"</span>), <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">0</span> ,<span class="dv">1</span>)),</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">across</span>(<span class="fu">where</span>(is.character), parse_number)</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(algerian_ff)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>tibble [243 × 15] (S3: tbl_df/tbl/data.frame)
+ $ region     : Factor w/ 2 levels "Bejaia","Sidi-Bel Abbes": 1 1 1 1 1 1 1 1 1 1 ...
+ $ day        : num [1:243] 1 2 3 4 5 6 7 8 9 10 ...
+ $ month      : num [1:243] 6 6 6 6 6 6 6 6 6 6 ...
+ $ year       : num [1:243] 2012 2012 2012 2012 2012 ...
+ $ temperature: num [1:243] 29 29 26 25 27 31 33 30 25 28 ...
+ $ rh         : num [1:243] 57 61 82 89 77 67 54 73 88 79 ...
+ $ ws         : num [1:243] 18 13 22 13 16 14 13 15 13 12 ...
+ $ rain       : num [1:243] 0 1.3 13.1 2.5 0 0 0 0 0.2 0 ...
+ $ ffmc       : num [1:243] 65.7 64.4 47.1 28.6 64.8 82.6 88.2 86.6 52.9 73.2 ...
+ $ dmc        : num [1:243] 3.4 4.1 2.5 1.3 3 5.8 9.9 12.1 7.9 9.5 ...
+ $ dc         : num [1:243] 7.6 7.6 7.1 6.9 14.2 22.2 30.5 38.3 38.8 46.3 ...
+ $ isi        : num [1:243] 1.3 1 0.3 0 1.2 3.1 6.4 5.6 0.4 1.3 ...
+ $ bui        : num [1:243] 3.4 3.9 2.7 1.7 3.9 7 10.9 13.5 10.5 12.6 ...
+ $ fwi        : num [1:243] 0.5 0.4 0.1 0 0.5 2.5 7.2 7.1 0.3 0.9 ...
+ $ classes    : Factor w/ 2 levels "not fire","fire": 1 1 1 1 1 2 2 2 1 1 ...</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="exploratory-data-analyis" class="level1">
+<h1>Exploratory Data Analyis</h1>
+<p>Let’s do some exploratory data analysis to understand our target variable, predictors, and the relationship between them. ## Target Variable</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>algerian_ff <span class="sc">|&gt;</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(classes) <span class="sc">|&gt;</span> </span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(classes, n, <span class="at">fill =</span> classes)) <span class="sc">+</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>) <span class="sc">+</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">label =</span> n),</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">nudge_y =</span> <span class="fl">11.5</span>,</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">4</span>,</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">col =</span> <span class="st">"#ff3000"</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_colorblind</span>() <span class="sc">+</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Classes"</span>,</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Count"</span>,</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Frequency of Fire Occurrence Situation"</span></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">145</span>)) <span class="sc">+</span></span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">145</span>, <span class="dv">29</span>)) <span class="sc">+</span></span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">"none"</span>,</span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> .<span class="dv">5</span>)</span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div id="fig-tgt-plot" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-tgt-plot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-tgt-plot-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-tgt-plot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Frequency of Classes
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><a href="#fig-tgt-plot" class="quarto-xref">Figure&nbsp;1</a> shows there are more occurrence of fire than not fire.</p>
+<section id="features-predictors" class="level3">
+<h3 class="anchored" data-anchor-id="features-predictors">Features / Predictors</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>algerian_ff <span class="sc">|&gt;</span> </span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>classes) <span class="sc">|&gt;</span> </span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  GGally<span class="sc">::</span><span class="fu">ggpairs</span>(</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Predictors"</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div id="fig-pairs-plot" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-pairs-plot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-pairs-plot-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-pairs-plot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Predictors plots
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>As show in <a href="#fig-pairs-plot" class="quarto-xref">Figure&nbsp;2</a>, <code>rain</code>, <code>ws</code>, <code>dmc</code>, <code>dc</code>, <code>isi</code>, <code>bui</code> and <code>fwi</code> are rightly skewed, <code>temperature</code> and <code>rh</code> are normally distributed, while <code>ffmc</code> is left-skewed. There’s also high correlation between some of the variables.</p>
+</section>
+<section id="target-vs-feature" class="level3">
+<h3 class="anchored" data-anchor-id="target-vs-feature">Target vs Feature</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>algerian_ff <span class="sc">|&gt;</span> </span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">.by =</span> <span class="fu">c</span>(classes, region),</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">count =</span> <span class="fu">n</span>()</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(region, count, <span class="at">fill =</span> <span class="fu">fct_reorder</span>(classes, count))) <span class="sc">+</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">position =</span> <span class="st">"dodge"</span>) <span class="sc">+</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">label =</span> count),</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="fl">3.2</span>,</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">vjust =</span> <span class="sc">-</span>.<span class="dv">2</span>,</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="at">width =</span> <span class="dv">1</span>)</span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># position = position_nudge(x = 0, y =1)</span></span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_calc</span>() <span class="sc">+</span></span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">"Region"</span>,</span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Classes"</span>,</span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Count"</span>,</span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Frequency of Fire Occurrence Situation Across Regions"</span>,</span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"There's more fire outbreak in Sidi-Bel Abbes than in Bejaia"</span></span>
+<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>  ) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div id="fig-reg-class" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-reg-class-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-reg-class-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-reg-class-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: There are more fire outbreak in Sidi-Bel Abbes than in Bejaia
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>algerian_ff <span class="sc">|&gt;</span> </span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(rain, temperature, <span class="at">col =</span> classes)) <span class="sc">+</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>() <span class="sc">+</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_wsj</span>() <span class="sc">+</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Rain"</span>,</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Temperature"</span>,</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Temperature vs Rain relationship for Fire Occurrence"</span>,</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Fire rarely occur on days with high rainfall"</span></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell" data-layout-nrow="2">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>algerian_ff <span class="sc">|&gt;</span> </span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(day, rh, <span class="at">colour =</span> classes)) <span class="sc">+</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Day"</span>,</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Relative Humidity (%)"</span>,</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Fire occurence for each days in a month given the day's humidity"</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>month)</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>algerian_ff <span class="sc">|&gt;</span> </span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(day, rh, <span class="at">colour =</span> classes)) <span class="sc">+</span></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Day"</span>,</span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Relative Humidity (%)"</span>,</span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Fire occurence for each days in a month for a region given the day's humidity"</span></span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(region<span class="sc">~</span>month)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div id="fig-rh-class" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-rh-class-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="cell-output-display quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-rh-class" style="flex-basis: 100.0%;justify-content: flex-start;">
+<div id="fig-rh-class-1" class="quarto-figure quarto-figure-center quarto-float anchored" width="672">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-rh-class-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-rh-class-1.png" id="fig-rh-class-1" class="img-fluid figure-img" data-ref-parent="fig-rh-class" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-rh-class-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(a)
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="cell-output-display quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-rh-class" style="flex-basis: 100.0%;justify-content: flex-start;">
+<div id="fig-rh-class-2" class="quarto-figure quarto-figure-center quarto-float anchored" width="672">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-rh-class-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-rh-class-2.png" id="fig-rh-class-2" class="img-fluid figure-img" data-ref-parent="fig-rh-class" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-rh-class-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(b)
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-rh-class-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: Relative humidity of each days across the months showing the occurrence of fire.
+</figcaption>
+</figure>
+</div>
+</div>
+<p><a href="#fig-rh-class-1" class="quarto-xref">Figure&nbsp;4 (a)</a> shows no clear pattern in fire occurrence, but it is visible that the 8th month had more fire occurring from its 10th day to the 27th day. Fire occurred more in days with low relative humidity compared to those with high humidity. <a href="#fig-rh-class-2" class="quarto-xref">Figure&nbsp;4 (b)</a> shows how month 8 had fire occuring the most, even at high relative humidity.</p>
+</section>
+</section>
+<section id="modeling" class="level1">
+<h1>Modeling</h1>
+<p>As introduced earlier, the model algorithm I will be using for this binary classification is logistic regression. The modeling worklow will go as thus:</p>
+<ul>
+<li>Data sharing</li>
+<li>Create resamples</li>
+<li>Create model specification</li>
+<li>Feature engineering</li>
+<li>Workflow and model training</li>
+<li>Model evaluation</li>
+<li>Model last fit on whole data.</li>
+</ul>
+<section id="data-sharing" class="level2">
+<h2 class="anchored" data-anchor-id="data-sharing">Data Sharing</h2>
+<p>Let’s split the data into two portions. The training data will be 70% of the whole data while the test data will be 30%.</p>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>algerian_split <span class="ot">&lt;-</span> <span class="fu">initial_split</span>(algerian_ff, <span class="at">prop =</span> .<span class="dv">7</span>)</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>algerian_train <span class="ot">&lt;-</span> <span class="fu">training</span>(algerian_split)</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>algerian_test <span class="ot">&lt;-</span> <span class="fu">testing</span>(algerian_split)</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>algerian_train <span class="sc">|&gt;</span> </span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(region, classes)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div id="tbl-distro" class="cell quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-distro-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;7: Distribution of the targer variable across regions
+</figcaption>
+<div aria-describedby="tbl-distro-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 3
+  region         classes      n
+  &lt;fct&gt;          &lt;fct&gt;    &lt;int&gt;
+1 Bejaia         not fire    41
+2 Bejaia         fire        48
+3 Sidi-Bel Abbes not fire    32
+4 Sidi-Bel Abbes fire        49</code></pre>
+</div>
+</div>
+</figure>
+</div>
+<p><a href="#tbl-distro" class="quarto-xref">Table&nbsp;7</a> shows how the data is distributed in the training data.</p>
+</section>
+<section id="model-specification" class="level2">
+<h2 class="anchored" data-anchor-id="model-specification">Model Specification</h2>
+<p>Next we create the model specification</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>lr_spec <span class="ot">&lt;-</span> <span class="fu">logistic_reg</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_mode</span>(<span class="st">"classification"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">"glm"</span>)</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>lr_spec <span class="sc">|&gt;</span> </span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">translate</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Logistic Regression Model Specification (classification)
+
+Computational engine: glm 
+
+Model fit template:
+stats::glm(formula = missing_arg(), data = missing_arg(), weights = missing_arg(), 
+    family = stats::binomial)</code></pre>
+</div>
+</div>
+</section>
+<section id="feature-engineering" class="level2">
+<h2 class="anchored" data-anchor-id="feature-engineering">Feature Engineering</h2>
+<p>For feature engineering, we will remove zero and near-zero variance variables. After, we’ll apply Yeo-Johnson to prevent to handle data values that have zero or negative values. After this, we standardize the results and make all factor variables one-hot coded.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>lr_rec <span class="ot">&lt;-</span> <span class="fu">recipe</span>(</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  classes <span class="sc">~</span> . <span class="sc">+</span> <span class="dv">1</span>, <span class="at">data =</span> algerian_train</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span> </span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_zv</span>(<span class="fu">all_numeric_predictors</span>()) <span class="sc">|&gt;</span> </span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_nzv</span>(<span class="fu">all_numeric_predictors</span>()) <span class="sc">|&gt;</span> </span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_YeoJohnson</span>(<span class="fu">all_numeric_predictors</span>()) <span class="sc">|&gt;</span> </span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_scale</span>(<span class="fu">all_numeric_predictors</span>()) <span class="sc">|&gt;</span> </span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_pca</span>(<span class="fu">all_numeric_predictors</span>()) <span class="sc">|&gt;</span> </span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_dummy</span>(region)</span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>lr_rec</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Recipe ──────────────────────────────────────────────────────────────────────</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Inputs </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Number of variables by role</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>outcome:    1
+predictor: 14</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Operations </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>• Zero variance filter on: all_numeric_predictors()</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>• Sparse, unbalanced variable filter on: all_numeric_predictors()</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>• Yeo-Johnson transformation on: all_numeric_predictors()</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>• Scaling for: all_numeric_predictors()</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>• PCA extraction with: all_numeric_predictors()</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>• Dummy variables from: region</code></pre>
+</div>
+</div>
+<p>To see how the data looks after preprocessing let’s use the <code>prep()</code> and <code>juice()</code> function.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>lr_rec <span class="sc">|&gt;</span> </span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prep</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">juice</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div id="tbl-preproc" class="cell quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-preproc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;8: Preprocessed data
+</figcaption>
+<div aria-describedby="tbl-preproc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="do-not-create-environment cell caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 10%">
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 13%">
+<col style="width: 13%">
+<col style="width: 12%">
+<col style="width: 26%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">classes</th>
+<th style="text-align: right;">PC1</th>
+<th style="text-align: right;">PC2</th>
+<th style="text-align: right;">PC3</th>
+<th style="text-align: right;">PC4</th>
+<th style="text-align: right;">PC5</th>
+<th style="text-align: right;">region_Sidi.Bel.Abbes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">fire</td>
+<td style="text-align: right;">-12.75870</td>
+<td style="text-align: right;">1.065189</td>
+<td style="text-align: right;">1.9127196</td>
+<td style="text-align: right;">0.1717558</td>
+<td style="text-align: right;">1.5907799</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">fire</td>
+<td style="text-align: right;">-15.82715</td>
+<td style="text-align: right;">3.592703</td>
+<td style="text-align: right;">-0.6338943</td>
+<td style="text-align: right;">-0.1082043</td>
+<td style="text-align: right;">0.1228698</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">fire</td>
+<td style="text-align: right;">-13.60741</td>
+<td style="text-align: right;">1.357303</td>
+<td style="text-align: right;">-0.8886342</td>
+<td style="text-align: right;">-0.0618020</td>
+<td style="text-align: right;">0.1017522</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">not fire</td>
+<td style="text-align: right;">-11.74371</td>
+<td style="text-align: right;">-3.347725</td>
+<td style="text-align: right;">-1.0163208</td>
+<td style="text-align: right;">1.2834374</td>
+<td style="text-align: right;">1.1943557</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">fire</td>
+<td style="text-align: right;">-13.83764</td>
+<td style="text-align: right;">1.683620</td>
+<td style="text-align: right;">1.3037796</td>
+<td style="text-align: right;">0.2674702</td>
+<td style="text-align: right;">0.5054699</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">fire</td>
+<td style="text-align: right;">-14.13147</td>
+<td style="text-align: right;">1.995548</td>
+<td style="text-align: right;">-0.6331457</td>
+<td style="text-align: right;">0.3294726</td>
+<td style="text-align: right;">0.1962187</td>
+<td style="text-align: right;">1</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>From <a href="#tbl-preproc" class="quarto-xref">Table&nbsp;8</a> we can see that the variable year has been removed.The variables has also been reduced as some of them were related, check <a href="#fig-pairs-plot" class="quarto-xref">Figure&nbsp;2</a> ## Workflow</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>lr_wf <span class="ot">&lt;-</span> <span class="fu">workflow</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_model</span>(lr_spec) <span class="sc">|&gt;</span> </span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_recipe</span>(lr_rec) <span class="sc">|&gt;</span> </span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(algerian_train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="model-result" class="level2">
+<h2 class="anchored" data-anchor-id="model-result">Model Result</h2>
+<div class="cell" data-lable="tbl-model-sum" data-tbl-cap="Model summary">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>lr_wf <span class="sc">|&gt;</span> <span class="fu">tidy</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 7 × 5
+  term                  estimate std.error statistic   p.value
+  &lt;chr&gt;                    &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+1 (Intercept)             -8.40      7.01     -1.20  0.230    
+2 PC1                     -0.758     0.538    -1.41  0.159    
+3 PC2                      3.43      0.847     4.05  0.0000517
+4 PC3                      0.480     0.459     1.05  0.296    
+5 PC4                      1.77      0.638     2.77  0.00558  
+6 PC5                     -0.999     0.440    -2.27  0.0231   
+7 region_Sidi.Bel.Abbes    0.356     0.959     0.371 0.711    </code></pre>
+</div>
+</div>
+<p>When all the factors are zero, the odds of fire occurring is very low, i.e.&nbsp;the exponential of the intercept estimate, 2.2380029^{-4}. For region Sidi-Bel Abbes, the odds of a fire outbreak is 1.5 times higher, <strong>?@tbl-model-sum</strong>.</p>
+</section>
+<section id="model-evaluation" class="level2">
+<h2 class="anchored" data-anchor-id="model-evaluation">Model Evaluation</h2>
+<section id="accuracy" class="level3">
+<h3 class="anchored" data-anchor-id="accuracy">Accuracy</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>lr_wf <span class="sc">|&gt;</span> <span class="fu">augment</span>(algerian_test) <span class="sc">|&gt;</span> </span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">accuracy</span>(classes, .pred_class)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 3
+  .metric  .estimator .estimate
+  &lt;chr&gt;    &lt;chr&gt;          &lt;dbl&gt;
+1 accuracy binary         0.918</code></pre>
+</div>
+</div>
+<p>The accuracy of the model is high at 92%.</p>
+</section>
+<section id="sensitivity" class="level3">
+<h3 class="anchored" data-anchor-id="sensitivity">Sensitivity</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>lr_wf <span class="sc">|&gt;</span> </span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">augment</span>(algerian_test) <span class="sc">|&gt;</span> </span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sensitivity</span>(classes, .pred_class)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 3
+  .metric     .estimator .estimate
+  &lt;chr&gt;       &lt;chr&gt;          &lt;dbl&gt;
+1 sensitivity binary         0.818</code></pre>
+</div>
+</div>
+<p>The model is 82% sensitive.</p>
+</section>
+<section id="precision" class="level3">
+<h3 class="anchored" data-anchor-id="precision">Precision</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>lr_wf <span class="sc">|&gt;</span> </span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">augment</span>(algerian_test) <span class="sc">|&gt;</span> </span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">precision</span>(classes, .pred_class)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 3
+  .metric   .estimator .estimate
+  &lt;chr&gt;     &lt;chr&gt;          &lt;dbl&gt;
+1 precision binary             1</code></pre>
+</div>
+</div>
+</section>
+<section id="roc-auc" class="level3">
+<h3 class="anchored" data-anchor-id="roc-auc">ROC-AUC</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>lr_wf <span class="sc">|&gt;</span> </span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">augment</span>(algerian_test) <span class="sc">|&gt;</span> </span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">roc_auc</span>(classes, <span class="st">`</span><span class="at">.pred_not fire</span><span class="st">`</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 3
+  .metric .estimator .estimate
+  &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
+1 roc_auc binary         0.992</code></pre>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>lr_wf <span class="sc">|&gt;</span> </span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">augment</span>(algerian_test) <span class="sc">|&gt;</span> </span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">roc_curve</span>(classes, <span class="st">`</span><span class="at">.pred_not fire</span><span class="st">`</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autoplot</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div id="fig-roc" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-roc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-roc-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-roc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;5: Area under the curve is high
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The area under the curve is .99 which is very good <a href="#fig-roc" class="quarto-xref">Figure&nbsp;5</a>. ### Confusion Matrix</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>lr_wf <span class="sc">|&gt;</span> </span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">augment</span>(algerian_test) <span class="sc">|&gt;</span> </span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">conf_mat</span>(classes, .pred_class) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>          Truth
+Prediction not fire fire
+  not fire       27    0
+  fire            6   40</code></pre>
+</div>
+</div>
+<p>The model performance precision and accuracy is high above 90%, with precision at 100%. There are 6 false positives which signals the likelihood of fire when there is supposed to be non.</p>
+</section>
+</section>
+</section>
+<section id="summary-and-conclusion" class="level1">
+<h1>Summary and Conclusion</h1>
+<p>The project seek to predict the likelihood of fire outbreak in two regions of Algeria. A logistic regression model was employed with 6 preprocessing steps. The model developed was evaluated and has high accuracy at 92%, a high precision of 100%, 0.99 for roc_auc</p>
+
+
+
 </section>
 
 <div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
