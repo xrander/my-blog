@@ -2,6 +2,7 @@
   {
     "listing": "/blog.html",
     "items": [
+      "/posts/regularized_algeria_fire_pred/index.html",
       "/posts/possum regression/index.html",
       "/posts/algeria-fwi-prediction/index.html",
       "/posts/webscraping-and-visualizing-the-top-crypto-currencies/index.html",
