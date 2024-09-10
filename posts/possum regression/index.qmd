@@ -37,7 +37,6 @@ S/N|Variable name | Definition |
 |14. |belly | belly girth (in cm)|
 
 ```{r}
-#| echo: false
 #| message: false
 #| warning: false
 pacman::p_load(tidyverse, GGally, knitr, ggthemr, tidymodels, themis)
