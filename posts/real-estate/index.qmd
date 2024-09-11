@@ -1,0 +1,592 @@
+---
+title: "Real Estate Prediction Using Boosting Tree (XGBoost)"
+date: "2024-02-10"
+categories: [Machine Learning, XGBoost]
+code-fold: true
+code-copy: hover
+code-summary: "Show the code"
+image: image.jpg
+draft: false
+---
+
+![](https://devtraco.com/wp-content/uploads/2022/10/Commercial-real-estate.jpg)
+
+```{r}
+#| label: load-libraries
+#| include: false
+#| message: false
+
+pacman::p_load(tidyverse, janitor, tidymodels, janitor,
+               GGally, ggthemes, scales)
+```
+
+# Introduction
+
+The market historical data set of real estate valuation are collected from Xindian Dist., New Taipei City, Taiwan. This project aims to predict price of houses in Xindian, New Taipei given some characteristics of buildings.
+
+![Xindian, New Taipei City,Taiwan](https://newtaipei.travel/content/images/travelpurpose/39468/travelpurpose-image-yvttusgjueag-s79qftr3g.jpg)
+
+## The Data
+
+This data is available in the public and is collected from [UC Irvine Machine Learning Repository](https://archive.ics.uci.edu/dataset/477/real+estate+valuation+data+set), for more data to practice machine learning visit [UCirvine](https://archive.ics.uci.edu/).
+
+```{r}
+#| label: import-data
+#| message: false
+
+real_estate <- readxl::read_excel("Real estate valuation data set.xlsx") |> 
+  clean_names()
+
+head(real_estate)
+```
+
+## Data Definition
+
+| Variable Name              | Role                                | Type       | Description                                                                          | Units                                                      | Missing Values |
+|:---------------------------|-------------------------------------|------------|--------------------------------------------------------------------------------------|------------------------------------------------------------|---------------:|
+| No                         | ID                                  | Integer    |                                                                                      |                                                            |             no |
+| X1                         | transaction date                    | Feature    | Continuous                                                                           | for example, 2013.250=2013 March, 2013.500=2013 June, etc. |             no |
+| X2                         | house age                           | Feature    | Continuous                                                                           |                                                            |           year |
+| X3                         | distance to the nearest MRT station | Feature    | Continuous                                                                           |                                                            |          meter |
+| X4                         | number of convenience stores        | Feature    | Integer                                                                              | number of convenience stores in the living circle on foot  |        integer |
+| X5                         | latitude                            | Feature    | Continuous                                                                           | geographic coordinate, latitude                            |         degree |
+| X6                         | longitude                           | Feature    | Continuous                                                                           | geographic coordinate, longitude                           |         degree |
+| Y house price of unit area | Target                              | Continuous | 10000 New Taiwan Dollar/Ping, where Ping is a local unit, 1 Ping = 3.3 meter squared | 10000 New Taiwan Dollar/Ping                               |             no |
+
+## Data Preparation
+
+First, we will split the date from the Taiwan system to year and month.
+
+```{r}
+#| label: split-trans-date-to-month-and-year
+
+real_estate <- real_estate |> 
+  mutate(
+    year = x1_transaction_date %/% 1,
+    month = round((x1_transaction_date %% 1) * 12), # to get month from taiwanese date
+    .before = x2_house_age
+  )
+
+
+real_estate <- real_estate |> 
+  mutate(month = case_when(month == 0 ~ 1, TRUE ~ month)) |> 
+  select(!c(1, 2))
+```
+
+The names of the variables are a bit long and unclear so we will rename them to make coding easy
+
+```{r}
+#| label: rename columns
+real_estate <- real_estate |> 
+  rename(
+    age = x2_house_age,
+    distance_to_station = x3_distance_to_the_nearest_mrt_station,
+    number_convenience_stores = x4_number_of_convenience_stores,
+    latitude = x5_latitude,
+    longitude = x6_longitude,
+    price = y_house_price_of_unit_area
+  )
+
+real_estate <- real_estate |> 
+  mutate(
+    age = ceiling(age),
+    sale_date = make_date(year = as.integer(year), month = month),
+    .before = age
+  ) |> 
+  select(-c(year, month))
+
+names(real_estate)
+```
+
+To get a better grasp of the pricing, the US Dollar will be used, and the size of the houses in square meter will be calculated to give an idea of how big the properties are
+
+```{r}
+#| label: house-size-and-price-in-usd
+real_estate <- real_estate |> 
+  mutate(
+    size_m2 = (price * 10000) / 3.9,
+    price_usd = (price * 10000) * 0.032,
+    .before = price
+  )
+```
+
+## Investigating missing values
+
+Even if the data is having no missing value when imported, it's not a bad idea to look for missing data after the preparation which we have made.
+
+```{r}
+#| label: missing-value
+sum(is.na(real_estate))
+```
+
+We can also check for duplicate data point
+
+```{r}
+sum(duplicated(real_estate))
+```
+
+There are no duplicate data point. We can proceed with our analysis after this.
+
+# Exploratory Data Analysis
+
+## Target Variable
+
+### Univariate
+
+```{r}
+#| label: fig-price-distribution
+#| fig-cap: House price distribution
+price_median <- 
+  tibble(
+    med = median(real_estate$price_usd),
+    label = paste0("$", med)
+  )
+
+ggplot(real_estate, aes(price_usd)) +
+  geom_histogram(binwidth = 500, alpha =0.7, fill = "wheat3") +
+  geom_density(stat = "bin", binwidth = 500, col = "brown") +
+  geom_vline(aes(xintercept = median(price_usd)), col = "violetred3") +
+  geom_text(
+    data = price_median,
+    aes(x = med, y = 30, label = label),
+    hjust = -0.3,
+    col = "red"
+  ) +
+  labs(
+    x = "Price",
+    y = "count",
+    title = "Long-tailed Price distribution"
+  ) +
+  theme_igray() +
+  scale_x_continuous(label = label_dollar())
+```
+
+The most house price ranges between 11000 to 14000 dollars @fig-price-distribution. The distribution shows there seems to be an outlier in our data. fig-outlier shows the outlier
+
+```{r}
+#| label: fig-outlier
+#| fig-cap: Outlier point significantly overprized above 30000 usd
+
+
+outlier <- 
+  tibble(
+    x = 1,
+    max_price = max(real_estate$price_usd),
+  )
+
+    
+ggplot(real_estate, aes(price_usd, x = 1)) +
+  ggbeeswarm::geom_quasirandom(
+    col = "darkgreen",
+    shape = "circle"
+  ) + 
+  geom_point(
+    data = outlier, 
+    aes(x, max_price),
+    shape = "circle filled", stroke = 1.2, size = 3,
+    fill = "red",  col = "orange",
+  ) +
+  geom_text(
+    data = outlier,
+    aes(y = max_price, label = "Outlier"),
+    vjust = 1.7
+  ) +
+  scale_y_continuous(
+    label = label_dollar(),
+    breaks = seq(0, 40000, 5000)
+  ) +
+  labs(
+    x = "",
+    y = "Price",
+    title = "Red dot shows house out that is overprized"
+  ) +
+  coord_flip() +
+  theme(
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    axis.title.y = element_blank()
+  ) +
+  theme_pander()
+```
+
+We need to remove the overprized house
+
+```{r}
+#| label: remove-overprized-house
+
+real_estate <- real_estate |> filter(!price_usd > 30000)
+
+range(real_estate$price_usd)
+```
+
+We will continue our EDA now that the outlier has been removed
+
+### Multivariate
+
+```{r}
+#| label: price-distribution-month
+#| fig-cap: Monthly price distribution of houses, there are some traces of seasonality
+
+
+ggplot(real_estate, aes(factor(sale_date), price_usd)) +
+  geom_violin(fill = "olivedrab3") +
+  geom_jitter(aes(y = price_usd), size = 0.5, alpha = 0.5, col = "red") +
+  theme(axis.text.x = element_text(angle = 20)) +
+  labs(x = "Sale Date", y = "Price", 
+       title = "January and November shows large volume of sales",
+       subtitle = "Mid year (May/June) shows increase in house purchase, as sales in other months declines"
+  ) +
+  scale_y_continuous(label = label_dollar()) +
+  theme_pander()
+```
+
+
+```{r}
+#| label: age-price-relationship
+
+ggplot(real_estate, aes(fct_reorder(cut_number(age, 10), price_usd, .fun = sum), price_usd)) +
+  geom_col(fill = "springgreen3") +
+  labs(
+    x = "Age",
+    y = "Price",
+    title = str_wrap("New houses age 0 to 4 years fetch made more sales in dollar
+                     in general than old houses", width = 60)
+  ) +
+  scale_y_continuous(label = label_dollar()) +
+  coord_flip() +
+  theme_igray()
+```
+
+```{r}
+#| label: fig-correlation-age-price
+#| fig-cap: Correlation between  age and price
+
+correlation <- cor(real_estate$price_usd, real_estate$age)
+
+ggplot(real_estate, aes(price_usd, age)) +
+  geom_smooth(method = "lm", se = F, col = "tomato2") +
+  expand_limits(y = c(0, 45)) +
+  labs(
+    x = "Price",
+    y = "Age",
+    title = "House price reduces as age increases"
+  )+
+  annotate(
+    geom = "label",
+    label = paste("correlation:", round(correlation, 2), sep = " "),
+    x = 15000, y = 25, col = "red"
+  ) +
+  theme_clean()
+```
+
+@fig-correlation-age-price shows the relationship between house price and the age of houses
+
+```{r}
+#| label: fig-cor
+#| fig-cap: Correlation between price and distance to station
+ggplot(real_estate, aes(price_usd, distance_to_station)) +
+  geom_point() +
+  scale_y_log10(label = label_number()) +
+  labs(
+    x = "Price",
+    y = "Distance to Station (m)",
+    title = "Negative relationship between Price and Distance to Station",
+    subtitle = "Houses closer to the station are costlier"
+  ) +
+  theme_pander()
+```
+
+```{r}
+#| label: location-of-houses
+#| fig-cap: Houses get expensive as we move in a northeast direction, 
+
+ggplot(real_estate, aes(longitude, latitude, col = price_usd)) +
+  geom_jitter() +
+  labs(
+    col = "Price (USD)",
+    x = "Longitude",
+    y = "Latitude",
+    title = "The prices of houses increases as we move North East",
+    subtitle = str_wrap("Prices of houses increases where there are clusters\ of house, this
+                        may be due to the proximity to the MRT station", width = 55)
+  ) +
+  scale_colour_gradient(low = "gray", high = "red") +
+  theme_pander() +
+  theme(legend.position = "top") +
+  guides(
+    color = guide_colorbar(barwidth = 15, barheight = 1/2, ticks.colour = "black", title.position = "left", title.theme = element_text(size = 8)))
+```
+
+### Correlation with other variables
+
+```{r}
+#| label: correlation-plot
+#| fig-cap: All the factors shows strong relationship with the price of the building
+
+ggcorr(real_estate |> select(!c(sale_date, price)))
+```
+
+While size, number of convenience store close to the building and the position of the building, i.e., longitude and latitude are positively correlated to the price of a building, the older a building, and the farther it is from the MRT station the more likely it reduces in price.
+
+# Model Development
+
+Before we begin modeling, we need to remove some variables that might not be a big influence, this include:
+
+-   sales_date, as there is just a year span of data, it is better we extract just the month use that
+
+-   price, we have price in US Dollar, already, we do not need the price in Taiwanese dollars.
+
+```{r}
+#| label: final-clean-up
+real_estate <- real_estate |> 
+  mutate(
+    month = month(sale_date),
+    .before = age
+  ) |> 
+  select(-c(sale_date, price))
+
+head(real_estate)
+```
+
+For this analysis, we will use:
+
+-   XGboost
+
+## Data Splitting
+
+```{r}
+#| label: data-sharing
+
+set.seed(333)
+
+
+real_estate_split <- initial_split(real_estate, prop = .8, strata = price_usd)
+
+real_estate_train <- training(real_estate_split)
+real_estate_test <- testing(real_estate_split)
+
+real_estate_split
+```
+
+## Model Specification
+
+Given our choice of model, XGBoost, a tree-based model, a lot of preprocessing is not required, we can going to dive right into our model specification, and tune a lot of the model hyperparameter to reduce the chances of over-fitting and under-fitting.
+
+```{r}
+#| label: boost-tree-model-specs
+
+xg_model <- 
+  boost_tree(
+    mtry = tune(), min_n = tune(),
+    tree_depth = tune(), trees = 1000,
+    loss_reduction = tune(),
+    sample_size = tune(),
+    learn_rate = tune(),
+  ) |> 
+  set_engine("xgboost") |> 
+  set_mode("regression")
+
+xg_model |>  translate()
+```
+
+## Workflow Process
+
+To improve efficiency and streamline processes, we start a modelling workflow.
+
+```{r}
+#| label: boost-tree-model-workflow
+
+xg_wf <- workflow() |> 
+  add_formula(price_usd ~ .) |> 
+  add_model(xg_model)
+
+xg_wf
+```
+
+## Cross Validation
+
+Next, we create resamples for tuning the model, @tbl-cross-validation-resamples.
+
+```{r}
+#| label: tbl-cross-validation-resamples
+#| tbl-cap: 10 Cross Fold Resamples 
+#| tbl-cap-location: top
+set.seed(222)
+
+real_estate_folds <- vfold_cv(real_estate_train, strata = price_usd)
+```
+
+## Tune Grid
+Next, we have to set up some values for our hyperparameter, we don't want to exhaust our computing resource, and face the risk of overfitting. We will use the **Latin Hypercube** grid as this approach can be more computationally efficient than a regular grid, especially when there are many hyperparameters to tune. Random selection can also introduce diversity into the search process.
+
+```{r}
+#| label: tbl-boost-tree-grid
+#| tbl-cap: XGBoost Tune Grid
+#| tbl-cap-location: top
+
+set.seed(3434)
+
+
+xgb_grid <- grid_latin_hypercube(
+  tree_depth(),
+  min_n(),
+  loss_reduction(),
+  sample_size = sample_prop(),
+  finalize(mtry(), real_estate_train),
+  learn_rate(),
+  size = 30
+)
+
+xgb_grid
+```
+
+Since `mtry` depends on the number of predictors, it had to be tuned differently @tbl-boost-tree-grid.
+
+**NOW WE TUNE**. We will use our resamples, the tuneable workflow, and the Latin grid of parameters which we have to try get the best value. To also speed up the process, we will enable parallel computing
+
+```{r}
+#| label: model-tuning
+#| cache: true
+
+
+doParallel::registerDoParallel()
+
+set.seed(222)
+
+xg_tune_res <- tune_grid(
+  xg_wf,
+  resamples = real_estate_folds,
+  grid = xgb_grid,
+  control = control_grid(save_pred = T)
+)
+```
+
+## Exploring Tune Results
+
+```{r}
+#| label: fig-tune-res
+#| fig-cap: Tuning result
+
+xg_tune_res |> 
+  collect_metrics() |> 
+  filter(.metric == "rmse") |> 
+  select(mean, mtry:sample_size) |> 
+  pivot_longer(
+    mtry:sample_size,
+    values_to = "value",
+    names_to = "parameter"
+  ) |> 
+  ggplot(aes(value, mean, color = parameter)) +
+  geom_jitter(show.legend = F, width = .4) +
+  facet_wrap(~parameter, scales = "free_y")
+```
+
+The lower the rmse, the better the model, a simplification, but this is not always the case. We will stick to that for now.
+
+Let's show the best performing set of parameter \
+
+## Best Tune
+
+```{r}
+show_best(xg_tune_res, metric = "rmse")
+```
+
+# Finalize Model Workflow
+
+Let's select the best and use it to finalize our model.
+
+## Select Best Parameter
+
+```{r}
+best_rmse <- select_best(xg_tune_res, metric = "rmse")
+best_rmse
+```
+
+Now we can finalize the model
+
+```{r}
+final_boost_tree <- finalize_workflow(
+  xg_wf,
+  best_rmse
+)
+
+final_boost_tree
+```
+
+## Variable Importance
+
+Let's see the most important variables in the model.
+
+```{r}
+#| label: variable-importance
+#| fig-cap: "Feature importance"
+
+
+library(vip)
+
+final_boost_tree |> 
+  fit(data = real_estate_train) |> 
+  pull_workflow_fit() |> 
+  vip(
+    geom = "col",
+    aesthetics = list(fill = "springgreen3")
+  ) +
+  theme_pander()
+```
+
+The most important predictor of the price of a house are the:
+
+-   Size
+-   Distance to the station,
+-   The latitude of the buildings, and
+-   The number of convenience stores.
+
+# Model Evaluation
+
+Let's test how good the model is with the test data.
+
+```{r}
+#| label: tbl-model-eval
+#| tbl-cap: Model evaluation
+
+
+final_result <- last_fit(final_boost_tree, real_estate_split)
+
+collect_metrics(final_result)
+```
+
+That's a high Rsquared, close to 1, and the RMSE have a very low error of ± 225.4 dollars. Let's plot prediction vs actual values
+
+```{r}
+#| label: fig-mod-par
+#| fig-cap: Model performance
+final_result |> 
+  collect_predictions() |> 
+  select("actual" = price_usd, "prediction" = .pred) |> 
+  ggplot(aes(actual, prediction)) +
+  geom_point(col = "orange2") +
+  geom_label(
+    aes(x = 10500, y = 15000, label = "R-square: 0.9974"),
+    col = "blue"
+  ) +
+  geom_abline(col = "red") +
+  theme_few()
+```
+
+@fig-mod-par shows a good performance of the model. For future prediction on a similar data in the region we extract the model and save it for later use.
+
+```{r}
+real_estate_boost_tree_model <- final_result |> 
+  extract_fit_parsnip()
+```
+
+
+# Conclusion
+
+This project shows the capabilities of R, and the XGBoost algorithm in real estate use. While the model was built to predict price, it could be made better if a time component is give. Given the data used for this project, a time component is ill-advised as seasonality, and other time related components will not be properly studied by the algorithm.
+
+
+Cover photo by <a href="https://unsplash.com/@basglaap?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">Bas Glaap</a> on <a href="https://unsplash.com/photos/white-truck-passing-parked-motorcycles-during-daytime-6WGBumlmwHM?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">Unsplash</a>
+  
+
+[Back to homepage](https://olamideadu.com)
