@@ -1,5 +1,5 @@
 ---
-title: "Prediction Algeria's Forest Fire Weather Index (FWI)"
+title: "Predicting Algeria's Forest Fire Weather Index (FWI)"
 date: "2024-09-10"
 categories: [Machine Learning, Logistic Regression, Regularization]
 code-fold: true
