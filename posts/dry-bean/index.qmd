@@ -1,0 +1,137 @@
+---
+title: "Bean Type Classification Using Multivariate Adaptive Regression Splines"
+date: "2024-02-10"
+categories: [Machine Learning, MARS - Earth]
+code-fold: true
+code-copy: hover
+code-summary: "Show the code"
+image: image.jpg
+draft: true
+---
+
+```{r}
+#| message: false
+#| warning: false
+pacman::p_load(tidymodels, tidyverse, ggthemr, farff, earth, patchwork)
+
+ggthemr(
+  palette = "flat dark",
+  layout = "clean",
+  spacing = 2,
+  type = "outer"
+)
+
+darken_swatch(amount = .1)
+additional_colors <- c("#af4242", "#535364", "#FFC300", "#e09263", "#123367", "salmon", "#c0ca33", "#689f38", "#e53935")
+
+set_swatch(c(unique(swatch()), additional_colors))
+```
+
+
+```{r}
+bean_tbl <- readARFF("data/Dry_Bean_Dataset.arff") |> 
+  janitor::clean_names() |> 
+  as_tibble()
+
+bean_tbl
+```
+
+
+```{r}
+ggplot(bean_tbl, aes(class)) +
+  geom_bar()
+```
+
+```{r}
+#| layout-nrow: 2
+bean_long <- bean_tbl |> 
+  pivot_longer(
+    cols = where(is.double),
+    names_to = "variable",
+    values_to = "value"
+  )
+  
+bean_col <- names(bean_tbl)
+
+a <- bean_long |> 
+filter(str_detect(variable, "shape")) |> 
+  ggplot(aes(value, fill = variable, group = variable)) +
+  geom_density() +
+  scale_y_continuous(labels = label_comma()) +
+  facet_wrap(~variable, scales = "free")
+
+b <- bean_long |> 
+  filter(variable %in% c(bean_col[1:6])) |> 
+  ggplot(aes(value, fill = variable, group = variable)) +
+  geom_density() +
+  scale_y_continuous(labels = label_comma()) +
+  facet_wrap(~variable, scales = "free") 
+
+c <- bean_long |> 
+  filter(variable %in% c(bean_col[7:12])) |> 
+  ggplot(aes(value, fill = variable, group = variable)) +
+  geom_density() +
+  scale_y_continuous(labels = label_comma()) +
+  facet_wrap(~variable, scales = "free")
+
+a
+b
+c
+```
+
+
+
+```{r}
+set.seed(122)
+bean_split <- initial_split(bean_tbl, prop = .7, strata = class)
+```
+
+```{r}
+bean_train <- training(bean_split)
+```
+
+```{r}
+bean_folds <- vfold_cv(bean_train, v = 10)
+```
+
+
+```{r}
+mars_spec <- mars(
+  num_terms = tune(),
+  prod_degree = tune()
+) |> 
+  set_engine("earth", glm = NULL) |> 
+  set_mode("classification")
+```
+
+```{r}
+mars_rec <- recipe(class ~ ., data = bean_train)
+```
+```{r}
+mars_workflow <- workflow() |> 
+  add_recipe(mars_rec) |> 
+  add_model(mars_spec)
+```
+
+```{r}
+set.seed(122)
+mars_grid <- mars_spec |> 
+  extract_parameter_set_dials() |> 
+  update(
+    num_terms = num_terms(range = c(1, 17)),
+    prod_degree = prod_degree(range = c(1, 3))
+  ) |> 
+  grid_regular(levels = 20)
+```
+
+```{r}
+tune_grid(
+  object = mars_workflow,
+  resamples = bean_folds,
+  grid = mars_grid,
+  control = control_grid(save_pred = TRUE, save_workflow = TRUE, verbose = TRUE),
+  metrics = metric_set(accuracy)
+)
+```
+
+

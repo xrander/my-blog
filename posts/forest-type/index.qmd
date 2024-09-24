@@ -1,0 +1,158 @@
+---
+title: "Forest Type Classification using Multivariate Adaptive Regression Splines"
+date: "2024-02-10"
+categories: [Machine Learning, MARS - Earth]
+code-fold: true
+code-copy: hover
+code-summary: "Show the code"
+image: image.jpg
+draft: true
+---
+
+```{r}
+pacman::p_load(tidyverse, tidymodels, ggthemr, earth)
+ggthemr(palette = "flat dark")
+```
+
+```{r}
+#| message: false
+forest_type_training <- read_csv("data/training.csv")
+forest_type_test <- read_csv("data/testing.csv")
+```
+
+```{r}
+skimr::skim(forest_type_training)
+```
+
+
+```{r}
+forest_type_training |> 
+  ggplot(aes(class)) +
+  geom_bar(
+    col = "gray90",
+    fill = "dodgerblue4"
+  ) +
+  geom_text(
+    aes(
+      y = after_stat(count),
+      label = after_stat(count)),
+    stat = "count",
+    vjust = -.5
+  ) +
+  expand_limits(y = c(0, 65)) +
+  guides(fill = "none")
+```
+
+```{r}
+#| cache: true
+forest_type_training |> 
+  select(where(is.double)) |> 
+  cor() |> 
+  knitr::kable()
+```
+```{r}
+ft_folds <- vfold_cv(forest_type_training, v = 10, strata = class)
+```
+
+```{r}
+ft_mars <- mars(
+  prod_degree = tune(),
+  num_terms = tune()
+) |> 
+  set_mode("classification") |> 
+  set_engine("earth", glm = NULL) 
+```
+
+```{r}
+ft_mars |> translate()
+```
+
+```{r}
+ft_rec <- recipe(class ~ ., data = forest_type_training) |> 
+  step_normalize(all_predictors())
+ft_rec
+```
+
+```{r}
+ft_rec |> 
+  prep() |> 
+  juice() |> 
+  head()
+```
+
+```{r}
+ft_wf <- workflow() |> 
+  add_model(ft_mars) |> 
+  add_recipe(ft_rec)
+```
+
+```{r}
+ft_grid <- ft_mars |> 
+  extract_parameter_set_dials() |> 
+  update(
+    num_terms = num_terms(range = c(5, 10)),
+    prod_degree = prod_degree(range=c(1, 3))
+  ) |> 
+  grid_regular(levels = 15)
+```
+
+```{r}
+ft_grid
+```
+
+```{r}
+ft_tune <- 
+  ft_wf |> 
+  tune_grid(
+  resamples = ft_folds,
+  grid = 10,
+  control = control_grid(save_pred = TRUE, save_workflow = TRUE),
+  metrics = metric_set(accuracy)
+)
+```
+
+```{r}
+ft_tune |> 
+  autoplot()
+```
+
+```{r}
+ft_tune |> 
+  collect_metrics()
+```
+
+```{r}
+ft_tune |> 
+  collect_predictions()
+```
+
+
+
+```{r}
+ft_tune |> 
+    show_best(metric = "accuracy")
+```
+
+```{r}
+best_tune <- ft_tune |> 
+  select_best(metric = "accuracy")
+```
+
+```{r}
+ft_workflow <- ft_tune |> 
+  extract_workflow()
+```
+
+```{r}
+final_wf <- finalize_workflow(
+  x = ft_workflow,
+  parameters = best_tune
+)
+```
+
+```{r}
+final_wf |> 
+  fit(forest_type_test)
+```
+
+
