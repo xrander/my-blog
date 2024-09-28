@@ -1,0 +1,42 @@
+---
+title: "Crop Yield Prediction"
+date: "2024-02-10"
+categories: [Machine Learning, MARS - Earth]
+code-fold: true
+code-copy: hover
+code-summary: "Show the code"
+image: cover.jpg
+draft: true
+---
+
+Image from freepik.com
+
+```{r}
+#| label: load-packagees
+#| message: false
+#| warning: false
+
+pacman::p_load(tidyverse, tidymodels, earth, ggthemr)
+```
+ 
+```{r}
+#| label: load-data
+#| message: false
+crop_yield <- read_csv("data/crop_yield.csv") |> 
+  janitor::clean_names()
+```
+ 
+```{r}
+#| label: tbl-prev
+#| tbl-cap: Data Properties
+#| tbl-subcap: true
+skimr::skim_without_charts(crop_yield)
+```
+ 
+```{r}
+crop_yield <- crop_yield |> 
+  mutate(
+    across(where(is.character), factor)
+  )
+```
+ 
