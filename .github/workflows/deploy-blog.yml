@@ -1,0 +1,51 @@
+name: Deploy Quarto Blog
+
+on:
+  push:
+   branches:
+    - main
+  
+  workflow_dispatch:
+  schedule:
+    - cron: "30 23 * * *"
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_PAT: ${{ secrets.BLOG_TOKEN }}
+      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_BLOG_TOKEN }}
+      NETLIFY_SITE_ID: ${{ secrets.NETLIFY_BLOG_ID }}
+    
+    steps:
+     - name: Checkout Repository
+     - uses: actions/checkout@v2
+
+     - name: Set up Quarto
+       uses: quarto-dev/quarto-actions/setup@v2
+        with:
+          version: "1.5.57"
+          # Installation of tinytex
+          tinytex: true
+        
+    - name: Set up R
+      uses: r-lib/actions/setup-r@v2
+
+    - name: install R dependencies
+      uses: r-lib/actions/setup-r-dependencies@v2
+    
+    
+    - name: Render Blog
+      run: quarto render
+
+    - name: Commit and push changes
+      id: netlify-deploy
+      uses: nwtgck/actions-netlify@v1.1
+      with:
+        publish-dir: './_site'
+        production-branch: main
+        github-token: ${{ secrets.BLOG_TOKEN }}
+        deploy_message:
+            "Automated site render"
+        enable-pull-request-comment: false
+        enable-commit-comment: false
