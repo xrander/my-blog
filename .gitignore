@@ -1,4 +1,5 @@
 /.quarto/
-.Rproj.user
+.Rproj.user/
 .Rhistory
 posts/wine-qual
+_site/
