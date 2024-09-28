@@ -23,10 +23,10 @@ jobs:
 
      - name: Set up Quarto
        uses: quarto-dev/quarto-actions/setup@v2
-        with:
-          version: "1.5.57"
-          # Installation of tinytex
-          tinytex: true
+       with:
+         version: "1.5.57"
+         # Installation of tinytex
+         tinytex: true
         
     - name: Set up R
       uses: r-lib/actions/setup-r@v2
