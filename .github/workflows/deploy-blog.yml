@@ -42,7 +42,7 @@ jobs:
           Rscript -e 'install.packages(c("quarto", "tidymodels", "tidyverse", "ggthemr",
           "ggthemes", "janitor", "skimr", "car", "magick", "rvest", "ggimage", "vip", "xgboost",
           "pacman", "gt", "kableExxtra", "patchwork", "nanoparquet", "GGally", "themis", "finetune",
-          "bonsai", "gtExtras", "ggtextures", "ggtext", "countrycode", "hrbrthemes")
+          "bonsai", "gtExtras", "ggtextures", "ggtext", "countrycode", "hrbrthemes")'
 
       - name: Render Blog
         run: quarto render
