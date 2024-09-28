@@ -10,16 +10,16 @@ on:
     - cron: "30 23 * * *"
 
 jobs:
-  build-deploy: 
+  build-deploy:
     runs-on: ubuntu-latest
     env:
-      GITHUB_PAT: ${{ secrets.BLOG_TOKEN }}
-      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_BLOG_TOKEN }}
-      NETLIFY_SITE_ID: ${{ secrets.NETLIFY_BLOG_ID }}
-    
+      GITHUB_PAT: ${{ secrets.GH_TOKEN }}
+      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+      NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+      
     steps:
-     - name: Checkout Repository
-     - uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
      - name: Set up Quarto
        uses: quarto-dev/quarto-actions/setup@v2
