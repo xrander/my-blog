@@ -7,25 +7,27 @@ code-copy: hover
 code-summary: "Show the code"
 image: cover.jpg
 draft: true
+footertext: Image from freepik.com
 ---
 
-Image from freepik.com
-
+## Loading Packages
 ```{r}
 #| label: load-packagees
 #| message: false
 #| warning: false
 
 pacman::p_load(tidyverse, tidymodels, earth, ggthemr)
+ggthemr(palette = "fresh", layout = "scientific", spacing = 3)
 ```
- 
+
+## Importing Data 
 ```{r}
 #| label: load-data
 #| message: false
 crop_yield <- read_csv("data/crop_yield.csv") |> 
   janitor::clean_names()
 ```
- 
+
 ```{r}
 #| label: tbl-prev
 #| tbl-cap: Data Properties
@@ -39,4 +41,184 @@ crop_yield <- crop_yield |>
     across(where(is.character), factor)
   )
 ```
+
+```{r}
+ggplot(
+  data = crop_yield, 
+  aes(region, fill = crop)
+) +
+  geom_bar(position = "dodge") +
+  coord_flip()
+```
+
+```{r}
+ggplot(
+  crop_yield,
+  aes(soil_type, yield_tons_per_hectare, fill = crop)
+) +
+  geom_col(position = "dodge")
+```
  
+```{r}
+crop_yield |> 
+  ggplot(aes(yield_tons_per_hectare)) +
+  geom_histogram()
+```
+
+```{r}
+set.seed(1012)
+crop_yield_split <- crop_yield |> initial_split(prop = c(.7))
+```
+
+```{r}
+crop_train <- training(crop_yield_split)
+crop_test <- testing(crop_yield_split)
+```
+
+```{r}
+crop_fold <- vfold_cv(crop_train, v = 5)
+```
+
+
+```{r}
+mars_spec <- mars(
+  prod_degree = tune(),
+  num_terms = tune()
+) |> 
+  set_mode("regression") |> 
+  set_engine("earth")
+```
+
+```{r}
+mars_rec <- recipe(
+  yield_tons_per_hectare ~ .,
+  data = crop_train
+  ) |> 
+  step_mutate(across(where(is_logical), \(x) factor(x))) |> 
+  step_pca(all_numeric_predictors()) |> 
+  step_dummy(all_factor_predictors())
+```
+
+```{r}
+mars_rec |> 
+  prep() |> 
+  juice()
+```
+
+
+```{r}
+mars_wf <- workflow() |> 
+  add_model(mars_spec) |> 
+  add_recipe(mars_rec)
+```
+
+```{r}
+yield_grid <- extract_parameter_set_dials(mars_spec) |> 
+  update(
+    prod_degree = prod_degree(range = c(1, 3)),
+    num_terms = num_terms(range = c(2, 14))
+  ) |> 
+  grid_regular(levels = 20)
+
+```
+
+
+```{r}
+#| cache: true
+#| warning: false
+#| message: false
+crop_tune <- tune_grid(
+  mars_wf,
+  mars_rec,
+  resamples = crop_fold,
+  grid = yield_grid,
+  control = control_grid(save_pred = TRUE, save_workflow = TRUE)
+)
+```
+
+```{r}
+collect_metrics(crop_tune)
+```
+
+```{r}
+collect_metrics(crop_tune) |> 
+  ggplot(aes(num_terms, mean, col = factor(prod_degree))) +
+  geom_point() +
+  geom_errorbar(
+    aes(ymin = mean - std_err, ymax = mean + std_err),
+    position = "dodge"
+  ) +
+  labs(
+    title = "Tune Result from MARS (Earth) Model",
+    x = "Number of Terms Used in Model",
+    col = "Degree of Interaction"
+  ) +
+  facet_wrap(~.metric, scales = "free_y")
+```
+
+```{r}
+mars_wf <- extract_workflow(crop_tune)
+```
+
+
+```{r}
+best_params <- select_best(crop_tune, metric = "rmse")
+```
+
+```{r}
+crop_mars_wf <- finalize_workflow(
+  mars_wf, 
+  best_params
+)
+```
+
+```{r}
+crop_final_fit <- last_fit(
+  crop_mars_wf,
+  crop_yield_split
+)
+```
+
+```{r}
+crop_final_fit |> 
+  collect_metrics()
+```
+
+```{r}
+#| cache: true
+
+test_pred <- crop_final_fit |> 
+  collect_predictions()
+```
+
+
+```{r}
+set.seed(3234)
+
+test_pred |> 
+  janitor::clean_names() |> 
+  slice_sample(n = 100000) |> 
+  ggplot(aes(yield_tons_per_hectare, pred)) +
+  geom_jitter(alpha = .4) +
+  geom_abline(col = "red") +
+  labs(
+    x = "Measured",
+    y = "Predicted",
+    title = "Predicted vs Measured Crop Yield (tons per ha)"
+  )
+```
+
+```{r}
+crop_final_fit |> 
+  extract_fit_engine() |> 
+  plot()
+```
+
+```{r}
+vip::vip(
+  crop_final_fit |> 
+    extract_fit_engine(),
+  num_of_features_features = 10
+)
+```
+
