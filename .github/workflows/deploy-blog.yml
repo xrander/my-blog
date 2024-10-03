@@ -42,9 +42,13 @@ jobs:
       - name: Set up R
         uses: r-lib/actions/setup-r@v2
         
-      - name: Install dependencies
+      - name: Install R dependencies
         run: |
-          Rscript -e 'install.packages(c("quarto", "tidyverse", "skimr", "ggthemr", "janitor", "stats4nr", "ggthemes", "TukeyC", "tidymodels", "gt", "kableExtra", "patchwork", "rvest", "magick", "ggimage", "pacman", "knitr", "nanoparquet", "GGally", "scales", "themis", "earth", "bonsai", "finetune", "countrycode", "ggtext", "ggtextures", "gtExtras", "earth", "xgboost", "lightgbm", "hrbrthemes", "farff"))'
+          install.packages("devtools")
+          devtools::install_github("Mikata-Project/ggthemr")
+          devtools::install_github("clauswilke/ggtextures")
+          devtools::install_github("mbrussell/stats4nr")
+          Rscript -e 'install.packages(c("quarto", "tidyverse", "skimr", "janitor", "ggthemes", "TukeyC", "tidymodels", "gt", "kableExtra", "patchwork", "rvest", "magick", "ggimage", "pacman", "knitr", "nanoparquet", "GGally", "scales", "themis", "earth", "bonsai", "finetune", "countrycode", "ggtext", "ggtextures", "gtExtras", "earth", "xgboost", "lightgbm", "hrbrthemes", "farff"))'
 
 
       - name: Render Blog
