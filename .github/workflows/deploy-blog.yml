@@ -43,7 +43,7 @@ jobs:
           "janitor", "stats4nr", "ggthemes", "TukeyC", "tidymodels", "gt", "kableExtra",
           "patchwork", "rvest", "magick", "ggimage", "pacman", "knitr", "nanoparquet" "GGally",
           "scales", "themis", "earth", "bonsai", "finetune", "countrycode", "ggtext",
-          "ggtextures", "gtExtras", "earth", "xgboost", "lightgbm", "hrbrthemes", "farff"))'
+          "ggtextures", "gtExtras", "earth", "xgboost", "lightgbm", "hrbrthemes", "farff", "rmarkdown"))'
 
 
       - name: Render Blog
