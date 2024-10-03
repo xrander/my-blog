@@ -209,16 +209,24 @@ test_pred |>
 ```
 
 ```{r}
+#| layout-ncol: 2
 crop_final_fit |> 
   extract_fit_engine() |> 
-  plot()
+  plot(3)
+
+crop_final_fit |> 
+  extract_fit_engine(4) |> 
+  plot(1)
+
+crop_final_fit |> 
+  extract_fit_engine() |> 
+  plot(4)
 ```
 
 ```{r}
 vip::vip(
   crop_final_fit |> 
-    extract_fit_engine(),
-  num_of_features_features = 10
+    extract_fit_engine()
 )
 ```
 
