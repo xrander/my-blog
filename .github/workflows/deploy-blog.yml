@@ -26,6 +26,11 @@ jobs:
       
       - name: Cache R packages
         uses: actions/cache@v3
+        
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install libcurl4-openssl-dev libharfbuzz-dev libfribidi-dev libfreetype6-dev
 
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
