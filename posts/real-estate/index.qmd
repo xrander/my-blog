@@ -16,8 +16,7 @@ draft: false
 #| include: false
 #| message: false
 
-pacman::p_load(tidyverse, janitor, tidymodels, janitor,
-               GGally, ggthemes, scales)
+pacman::p_load(tidyverse, janitor, tidymodels, GGally, ggthemes, scales)
 ```
 
 # Introduction
