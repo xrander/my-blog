@@ -2173,6 +2173,24 @@
       ],
       "Hash": "e23fb9ecb1258207bcb763d78d513439"
     },
+    "pdp": {
+      "Package": "pdp",
+      "Version": "0.8.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "foreach",
+        "ggplot2",
+        "grDevices",
+        "lattice",
+        "methods",
+        "rlang",
+        "stats",
+        "utils"
+      ],
+      "Hash": "28b7a52ee2e8e2ff5685506032b91331"
+    },
     "pillar": {
       "Package": "pillar",
       "Version": "1.9.0",
@@ -3161,6 +3179,22 @@
         "rlang"
       ],
       "Hash": "c03fa420630029418f7e6da3667aac4a"
+    },
+    "vip": {
+      "Package": "vip",
+      "Version": "0.4.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "foreach",
+        "ggplot2",
+        "stats",
+        "tibble",
+        "utils",
+        "yardstick"
+      ],
+      "Hash": "4bfee1f7181f71d552a4b63485f8fc25"
     },
     "viridisLite": {
       "Package": "viridisLite",

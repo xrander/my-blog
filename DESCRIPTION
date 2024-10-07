@@ -27,6 +27,8 @@ Imports:
   ggimage,
   pacman,
   knitr,
+  vip,
+  pdp,
   nanoparquet,
   GGally,
   scales,
