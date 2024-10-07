@@ -44,11 +44,6 @@ jobs:
         with:
           use-public-rspm: true
       
-      - name: Install R Packages
-        run: |
-          install.packages(c("knitr", "rmarkdown"))
-          renv::restore()
-
       - name: Render Blog
         run: quarto render
 
