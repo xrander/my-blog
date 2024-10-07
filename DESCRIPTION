@@ -1,0 +1,52 @@
+Package: my blog
+Title: Olamide Adu Blog.
+Version: 0.1.0
+Authors@R: person("Olamide", "Adu", email = "olamide@example.com", role = c("aut", "cre"))
+URL: https://github.com/xrander/r4r
+Description: This Quarto project powers a personal website and blog, including data analyses, visualizations, and other content.
+License: MIT
+Depends:
+    R (>= 3.1.0)
+Encoding: UTF-8
+Imports:
+  quarto,
+  tidyverse,
+  skimr,
+  ggthemr,
+  janitor,
+  stats4nr,
+  ggthemes,
+  TukeyC,
+  tidymodels,
+  gt,
+  kableExtra,
+  patchwork,
+  rvest,
+  magick,
+  ggimage,
+  pacman,
+  knitr,
+  nanoparquet,
+  GGally,
+  scales,
+  themis,
+  earth,
+  bonsai,
+  finetune,
+  countrycode,
+  ggtext,
+  ggtextures,
+  gtExtras,
+  xgboost,
+  lightgbm,
+  hrbrthemes,
+  farff
+Suggests:
+    downlit,
+    jpeg,
+    knitr,
+    sessioninfo
+Remotes:
+    Mikata-Project/ggthemr,
+    clauswilke/ggtextures,
+    mbrussell/stats4nr

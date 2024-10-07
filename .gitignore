@@ -3,3 +3,4 @@
 .Rhistory
 _site/
 .Rprofile
+.Rbuildignore
