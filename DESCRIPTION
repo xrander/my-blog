@@ -10,6 +10,7 @@ Depends:
 Encoding: UTF-8
 Imports:
   quarto,
+  rmarkdown,
   tidyverse,
   skimr,
   ggthemr,
