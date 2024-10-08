@@ -1,26 +1,45 @@
 ---
 title: "Crop Yield Prediction"
 date: "2024-02-10"
-categories: [Machine Learning, MARS - Earth]
+categories: [Machine Learning, Multivariate Adaptive Regression Splines (Earth MARS)]
 code-fold: true
 code-copy: hover
 code-summary: "Show the code"
 image: cover.jpg
-draft: true
+draft: false
 footertext: Image from freepik.com
 ---
 
+## Introduction
+This project aims to predict crop yield using Multivariate Adaptive Regression Splines (MARS) implemented with the [earth](http://www.milbo.users.sonic.net/earth/) package by Stephen Milborrow. In this project we will walk through data loading, some exploratory data analysis, preprocessing, model specification, tuning, and performance evaluation.
+
 ## Loading Packages
+We'll load tidymodels, ggthemr, earth and vip packages using `pacman`'s `p_load()` function.
 ```{r}
 #| label: load-packagees
 #| message: false
 #| warning: false
 
-pacman::p_load(tidyverse, tidymodels, earth, ggthemr)
+pacman::p_load(tidymodels, earth, ggthemr, vip, patchwork)
 ggthemr(palette = "fresh", layout = "scientific", spacing = 3)
 ```
 
-## Importing Data 
+## Data Import
+Here, we load the dataset and clean up column names for easier reference. Then, we review the data structure and conduct an initial exploration of its properties.
+The data was gotten from [kaggle data repository](https://www.kaggle.com/datasets/samuelotiattakorah/agriculture-crop-yield). The dataset contains agricultural data for 1,000,000 samples aimed at predicting crop yield (in tons per hectare) based on various factors. The features of the data are:
+
+
+-    **Region**: The geographical region where the crop is grown (North, East, South, West).
+-    **Soil Type**: The type of soil in which the crop is planted (Clay, Sandy, Loam, Silt, Peaty, Chalky).
+-    **Crop**: The type of crop grown (Wheat, Rice, Maize, Barley, Soybean, Cotton).
+-    **Rainfall mm**: The amount of rainfall received in millimeters during the crop growth period.
+-    **Temperature Celsius**: The average temperature during the crop growth period, measured in degrees Celsius.
+-   **Fertilizer Used**: Indicates whether fertilizer was applied (True = Yes, False = No).
+-    **Irrigation Used**: Indicates whether irrigation was used during the crop growth period (True = Yes, False = No).
+-    **Weather Condition**: The predominant weather condition during the growing season (Sunny, Rainy, Cloudy).
+-    **Days to Harvest**: The number of days taken for the crop to be harvested after planting.
+-    **Yield tons per hectare**: The total crop yield produced, measured in tons per hectare.
+
 ```{r}
 #| label: load-data
 #| message: false
@@ -28,13 +47,17 @@ crop_yield <- read_csv("data/crop_yield.csv") |>
   janitor::clean_names()
 ```
 
+To get a detailed summary of the data, we use `skimr()`
 ```{r}
 #| label: tbl-prev
 #| tbl-cap: Data Properties
 #| tbl-subcap: true
 skimr::skim_without_charts(crop_yield)
 ```
- 
+The result from @tbl-prev shows the data is complete.
+
+To ensure proper model performance, we mutate character columns into factors. This prepares the categorical variables for further analysis.
+
 ```{r}
 crop_yield <- crop_yield |> 
   mutate(
@@ -42,43 +65,84 @@ crop_yield <- crop_yield |>
   )
 ```
 
-```{r}
-ggplot(
-  data = crop_yield, 
-  aes(region, fill = crop)
-) +
-  geom_bar(position = "dodge") +
-  coord_flip()
-```
+## Exploratory Data Analysis
+Let's explore some of the relationship between the target variables and the predictors.
+
 
 ```{r}
+#| label: fig-crop-counts
+#| fig-cap:| Crop frequency across regions is equal. Figure show equal number of replication for the crops across regions
+
+ggplot(
+  data = crop_yield, 
+  aes(region, y = after_stat(count), fill = crop)
+) +
+  geom_bar(position = "dodge") +
+  coord_flip() +
+  labs(
+    x = "Count",
+    y = "Regions",
+    title = "Equal distibution of crops across regions"
+  ) +
+  theme(
+    axis.ticks.x = element_blank()
+  )
+```
+@fig-crop-count shows that crops are fairly equal in distribution across the regions. The same can also be said for the yield across across the different soil types @fig-yield.
+
+```{r}
+#| label: fig-yield
+#| fig-cap: Yield from the soil types for the different crops are the same
 ggplot(
   crop_yield,
   aes(soil_type, yield_tons_per_hectare, fill = crop)
 ) +
-  geom_col(position = "dodge")
+  geom_col(position = "dodge") _
+labs(
+  x = "Soil Type",
+  y = "Yield (tons per hectare)"
+)
 ```
  
 ```{r}
+#| label: fig-target-distribution
+#| fig-cap: Yield distribution
+
 crop_yield |> 
   ggplot(aes(yield_tons_per_hectare)) +
-  geom_histogram()
+  geom_histogram() +
+  labs(
+    x = "Yield (tons per hectare)",
+    y = "Count",
+    title = "Target variable distribution"
+  ) +
+  theme(
+    plot.title = element_text(hjust = .5)
+  )
 ```
+
+
+## Modeling
+
+### Data sharing
+The data will be split into two part. The first which is the training data will be 70 % of all data and the second, the testing data will be 30 % of all the data.
 
 ```{r}
 set.seed(1012)
 crop_yield_split <- crop_yield |> initial_split(prop = c(.7))
-```
 
-```{r}
 crop_train <- training(crop_yield_split)
 crop_test <- testing(crop_yield_split)
 ```
+
+Given the size of the training data, `{r} dim(crop_train)[1]` rows, 5 folds cross validation data will be used for evaluating the models.
 
 ```{r}
 crop_fold <- vfold_cv(crop_train, v = 5)
 ```
 
+### Model Specification
+As stated in the start, we'll be using the multivariate adaptive regression splines (MARS) model. Two parameters, the `prod_degree`, which captures the maximum degree of interactions, and the `num_terms` which determine the maximum number of features to retain in the final model will be tuned.
 
 ```{r}
 mars_spec <- mars(
@@ -89,6 +153,9 @@ mars_spec <- mars(
   set_engine("earth")
 ```
 
+
+### Feature Engineering
+MARS model generally require less preprocessing except creating dummy variables. Feature engineering methods and steps such as feature decorrelation and data transformation are not needed but might help the model.
 ```{r}
 mars_rec <- recipe(
   yield_tons_per_hectare ~ .,
@@ -99,30 +166,39 @@ mars_rec <- recipe(
   step_dummy(all_factor_predictors())
 ```
 
+The preprocessed data can be seen in @tbl-preproc
+
 ```{r}
+#| label: tbl-preproc
+#| tbl-cap: Preprocessed crop yield data. Logical features were firstly converted to factors, and principal component analysis applied on all numeric predictors to decorrelate the data before converting all factor variables to dummy data.
+
 mars_rec |> 
   prep() |> 
-  juice()
+  juice() |> 
+  knitr::kable()
 ```
 
-
+### model Workflow
+We continue with a workflow to tie the model and feature engineering process together using the [workflows](https://workflows.tidymodels.org/index.html) package.
 ```{r}
 mars_wf <- workflow() |> 
   add_model(mars_spec) |> 
   add_recipe(mars_rec)
 ```
 
+### Parameter Grid
+The tuning parameters are updated, the maximum interaction, `prod_degree` used should not be more than 3rd degree, as there's rarely any benefit when it's above such degree. `num_terms` is set to include also possible interaction terms, as data includes `{r} dim(crop_yield)[2]` features.
 ```{r}
 yield_grid <- extract_parameter_set_dials(mars_spec) |> 
   update(
     prod_degree = prod_degree(range = c(1, 3)),
-    num_terms = num_terms(range = c(2, 14))
+    num_terms = num_terms(range = c(2, 20))
   ) |> 
   grid_regular(levels = 20)
 
 ```
 
-
+### Model Tuning
 ```{r}
 #| cache: true
 #| warning: false
@@ -136,11 +212,17 @@ crop_tune <- tune_grid(
 )
 ```
 
+#### Tune Evaluation
+After tuning the result can be seen in @tbl-tune-res and @fig-tune-res
 ```{r}
+#| label: tbl-tune-res
+#| tbl-cap: Result from tuning
 collect_metrics(crop_tune)
 ```
 
 ```{r}
+#| label: fig-tune-res
+#| tbl-cap: Model tune result
 collect_metrics(crop_tune) |> 
   ggplot(aes(num_terms, mean, col = factor(prod_degree))) +
   geom_point() +
@@ -156,15 +238,19 @@ collect_metrics(crop_tune) |>
   facet_wrap(~.metric, scales = "free_y")
 ```
 
+### Making Use of Best tune Parameter
+The original workflow which was initially set will be extracted. This is a very crucial step when comparing performance across different ML method.
 ```{r}
 mars_wf <- extract_workflow(crop_tune)
+mars_wf
 ```
 
-
+To get the absolute model performance, **rmse** will be used instead of **rsq** when selecting the best tune parameter.
 ```{r}
 best_params <- select_best(crop_tune, metric = "rmse")
 ```
 
+Next, we combine both workflow and parameters together to get a finalized workflow.
 ```{r}
 crop_mars_wf <- finalize_workflow(
   mars_wf, 
@@ -172,12 +258,17 @@ crop_mars_wf <- finalize_workflow(
 )
 ```
 
+## Final Model FIt
+After getting our finalized we make the final model fit on the split object of our data.
 ```{r}
 crop_final_fit <- last_fit(
   crop_mars_wf,
   crop_yield_split
 )
 ```
+
+## Model Evaluation
+We collect the metrics from our final model showing the predicted and observed data on the test of the split in @tbl-final-eval. A goodness of fit test can be seen in @fig-good-fit
 
 ```{r}
 crop_final_fit |> 
@@ -186,15 +277,19 @@ crop_final_fit |>
 
 ```{r}
 #| cache: true
-
+#| label: tbl-final-eval
+#| tbl-cap: Predictions from model vs observed data
 test_pred <- crop_final_fit |> 
   collect_predictions()
+
+head(test_pred, n = 1000)
 ```
 
 
 ```{r}
 set.seed(3234)
-
+#| label: fig-final-eval
+#| 
 test_pred |> 
   janitor::clean_names() |> 
   slice_sample(n = 100000) |> 
@@ -209,22 +304,31 @@ test_pred |>
 ```
 
 ```{r}
-#| layout-ncol: 2
-crop_final_fit |> 
+#| label: fig-good-fit
+#| fig-cap: Goodness-of-fit test for MARS -earth model
+
+
+a <- crop_final_fit |> 
   extract_fit_engine() |> 
   plot(3)
 
-crop_final_fit |> 
+b <- crop_final_fit |> 
   extract_fit_engine(4) |> 
   plot(1)
 
-crop_final_fit |> 
+c <- crop_final_fit |> 
   extract_fit_engine() |> 
   plot(4)
+
+(a + b) / c
 ```
 
+## Variable importance
+
 ```{r}
-vip::vip(
+#| label: fig-vip
+#| fig-cap: Variable importance plot of the mars model
+vip(
   crop_final_fit |> 
     extract_fit_engine()
 )
