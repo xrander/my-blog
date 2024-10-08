@@ -1,7 +1,7 @@
 ---
 title: "Crop Yield Prediction"
 date: "2024-02-10"
-categories: [Machine Learning, Multivariate Adaptive Regression Splines (Earth MARS)]
+categories: [Machine Learning, Multivariate Adaptive Regression Splines (Earth MARS), Tuning]
 code-fold: true
 code-copy: hover
 code-summary: "Show the code"
@@ -292,7 +292,8 @@ crop_final_fit |>
 test_pred <- crop_final_fit |> 
   collect_predictions()
 
-head(test_pred, n = 1000)
+head(test_pred, n = 1000) |> 
+  knitr::kable()
 ```
 
 
@@ -316,21 +317,20 @@ test_pred |>
 ```{r}
 #| label: fig-good-fit
 #| fig-cap: Goodness-of-fit test for MARS -earth model
+#| fig-subcap: true
+#| layout-ncol: 2
 
-
-a <- crop_final_fit |> 
+crop_final_fit |> 
   extract_fit_engine() |> 
   plot(3)
 
-b <- crop_final_fit |> 
+crop_final_fit |> 
   extract_fit_engine(4) |> 
   plot(1)
 
-c <- crop_final_fit |> 
+crop_final_fit |> 
   extract_fit_engine() |> 
   plot(4)
-
-(a + b) / c
 ```
 
 ## Variable importance
