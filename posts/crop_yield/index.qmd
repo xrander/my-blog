@@ -210,15 +210,13 @@ yield_grid |>
 
 ### Model Tuning
 ```{r}
-#| cache: true
 #| warning: false
 #| message: false
 crop_tune <- tune_grid(
   mars_wf,
   mars_rec,
   resamples = crop_fold,
-  grid = yield_grid,
-  control = control_grid(save_pred = TRUE, save_workflow = TRUE)
+  grid = yield_grid
 )
 ```
 
