@@ -250,17 +250,21 @@ collect_metrics(crop_tune) |>
 ### Making Use of Best tune Parameter
 The original workflow which was initially set will be extracted. This is a very crucial step when comparing performance across different ML method.
 ```{r}
+#| label: extract-workflow
 mars_wf <- extract_workflow(crop_tune)
 mars_wf
 ```
 
 To get the absolute model performance, **rmse** will be used instead of **rsq** when selecting the best tune parameter.
 ```{r}
+#| label: extract-best-params
+
 best_params <- select_best(crop_tune, metric = "rmse")
 ```
 
 Next, we combine both workflow and parameters together to get a finalized workflow.
 ```{r}
+#| label:  finalize-wf
 crop_mars_wf <- finalize_workflow(
   mars_wf, 
   best_params
@@ -270,6 +274,7 @@ crop_mars_wf <- finalize_workflow(
 ## Final Model FIt
 After getting our finalized we make the final model fit on the split object of our data.
 ```{r}
+#| label: final-fit
 crop_final_fit <- last_fit(
   crop_mars_wf,
   crop_yield_split
@@ -280,6 +285,7 @@ crop_final_fit <- last_fit(
 We collect the metrics from our final model showing the predicted and observed data on the test of the split in @tbl-final-eval. A goodness of fit test can be seen in @fig-good-fit
 
 ```{r}
+#| label: collect-metrics
 crop_final_fit |> 
   collect_metrics()
 ```
@@ -288,6 +294,7 @@ crop_final_fit |>
 #| cache: true
 #| label: tbl-final-eval
 #| tbl-cap: Predictions from model vs observed data
+
 test_pred <- crop_final_fit |> 
   collect_predictions()
 
@@ -299,7 +306,9 @@ head(test_pred, n = 1000) |>
 ```{r}
 set.seed(3234)
 #| label: fig-final-eval
-#| 
+#| fig-cap: Model evaluation measured vs predicted
+
+
 test_pred |> 
   janitor::clean_names() |> 
   slice_sample(n = 100000) |> 
