@@ -20,7 +20,7 @@ We'll load tidymodels, ggthemr, earth and vip packages using `pacman`'s `p_load(
 #| message: false
 #| warning: false
 
-pacman::p_load(tidymodels, earth, ggthemr, vip, patchwork)
+pacman::p_load(tidymodels, readr, earth, ggthemr, vip, patchwork)
 ggthemr(palette = "fresh", layout = "scientific", spacing = 3)
 ```
 
