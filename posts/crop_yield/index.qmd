@@ -16,7 +16,7 @@ This project aims to predict crop yield using Multivariate Adaptive Regression S
 ## Loading Packages
 We'll load tidymodels, ggthemr, earth and vip packages using `pacman`'s `p_load()` function.
 ```{r}
-#| label: load-packagees
+#| label: load-packages
 #| message: false
 #| warning: false
 
@@ -92,6 +92,7 @@ ggplot(
 
 ```{r}
 #| label: fig-yield
+#| cache: true
 #| fig-cap: Yield from the soil types for the different crops are the same
 
 ggplot(
@@ -171,6 +172,7 @@ The preprocessed data can be seen in @tbl-preproc
 
 ```{r}
 #| label: tbl-preproc
+#| cache: true
 #| tbl-cap: Preprocessed crop yield data. Logical features were firstly converted to factors, and principal component analysis applied on all numeric predictors to decorrelate the data before converting all factor variables to dummy data.
 
 mars_rec |> 
@@ -188,8 +190,12 @@ mars_wf <- workflow() |>
 ```
 
 ### Parameter Grid
-The tuning parameters are updated, the maximum interaction, `prod_degree` used should not be more than 3rd degree, as there's rarely any benefit when it's above such degree. `num_terms` is set to include also possible interaction terms, as data includes `{r} dim(crop_yield)[2]` features.
+The tuning parameters are updated, the maximum interaction, `prod_degree` used should not be more than 3rd degree, as there's rarely any benefit when it's above such degree. `num_terms` is set to include also possible interaction terms, as data includes `{r} dim(crop_yield)[2]` features. The grid table can be seen in @tbl-grid-tbl
 ```{r}
+#| label: tbl-grid-tbl
+#| tbl-cap: Grid table
+
+
 yield_grid <- extract_parameter_set_dials(mars_spec) |> 
   update(
     prod_degree = prod_degree(range = c(1, 3)),
@@ -197,6 +203,7 @@ yield_grid <- extract_parameter_set_dials(mars_spec) |>
   ) |> 
   grid_regular(levels = 20)
 
+yield_grid
 ```
 
 ### Model Tuning
