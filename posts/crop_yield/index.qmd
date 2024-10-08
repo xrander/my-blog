@@ -227,7 +227,8 @@ After tuning the result can be seen in @tbl-tune-res and @fig-tune-res
 ```{r}
 #| label: tbl-tune-res
 #| tbl-cap: Result from tuning
-collect_metrics(crop_tune)
+collect_metrics(crop_tune) |> 
+  knitr::kable()
 ```
 
 ```{r}
