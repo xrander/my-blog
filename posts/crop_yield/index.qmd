@@ -93,15 +93,16 @@ ggplot(
 ```{r}
 #| label: fig-yield
 #| fig-cap: Yield from the soil types for the different crops are the same
+
 ggplot(
   crop_yield,
   aes(soil_type, yield_tons_per_hectare, fill = crop)
 ) +
-  geom_col(position = "dodge") _
-labs(
-  x = "Soil Type",
-  y = "Yield (tons per hectare)"
-)
+  geom_col(position = "dodge") +
+  labs(
+    x = "Soil Type",
+    y = "Yield (tons per hectare)"
+  )
 ```
  
 ```{r}
