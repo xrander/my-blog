@@ -177,7 +177,8 @@ The preprocessed data can be seen in @tbl-preproc
 
 mars_rec |> 
   prep() |> 
-  juice() |> 
+  juice() |>
+  head(n = 1000) |> 
   knitr::kable()
 ```
 
@@ -203,7 +204,8 @@ yield_grid <- extract_parameter_set_dials(mars_spec) |>
   ) |> 
   grid_regular(levels = 20)
 
-yield_grid
+yield_grid |> 
+  knitr::kable()
 ```
 
 ### Model Tuning
