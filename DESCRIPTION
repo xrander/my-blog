@@ -13,6 +13,7 @@ Imports:
   rmarkdown,
   tidyverse,
   skimr,
+  kknn,
   ggthemr,
   janitor,
   stats4nr,
