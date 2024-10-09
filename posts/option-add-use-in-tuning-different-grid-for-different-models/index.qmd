@@ -64,7 +64,7 @@ head(heart_disease) |>
 
 ```{r}
 #| label: tbl-preview-data
-#| tbl-cap: Quick description of the data
+#| tbl-cap: "Quick description of the data"
 
 skimr::skim_without_charts(heart_disease) |> 
   gt() |> 

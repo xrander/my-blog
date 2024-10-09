@@ -139,7 +139,7 @@ crypto_summary <- crypto |>
 
 ## Crytocurrencies by Market Capitalization
 ```{r}
-#| labels: fig-market-cao
+#| label: fig-market-cap
 #| fig-cap: Crypto Asset Market Cap
 ggplot(
   crypto_summary,

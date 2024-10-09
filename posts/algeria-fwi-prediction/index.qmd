@@ -367,7 +367,7 @@ lr_wf <- workflow() |>
 
 ## Model Result
 ```{r}
-#| lable: tbl-model-sum
+#| label: tbl-model-sum
 #| tbl-cap: Model summary
 lr_wf |> tidy()
 ```
