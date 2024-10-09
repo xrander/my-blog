@@ -1,12 +1,11 @@
 ---
 title: "Crop Yield Prediction"
 date: "2024-02-10"
-categories: [Machine Learning, Multivariate Adaptive Regression Splines (Earth MARS), Tuning]
+categories: [Machine Learning, MARS (earth), Tuning]
 code-fold: true
 code-copy: hover
 code-summary: "Show the code"
 image: cover.jpg
-draft: false
 footertext: Image from freepik.com
 ---
 
