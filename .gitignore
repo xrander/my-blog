@@ -4,3 +4,5 @@
 _site/
 .Rprofile
 .Rbuildignore
+posts/crop_yield/index_files/
+posts/crop_yield/index_cache/
