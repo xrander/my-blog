@@ -216,7 +216,8 @@ crop_tune <- tune_grid(
   mars_wf,
   mars_rec,
   resamples = crop_fold,
-  grid = yield_grid
+  grid = yield_grid,
+  control = control_grid(save_pred = FALSE, save_workflow = TRUE)
 )
 ```
 
@@ -251,8 +252,8 @@ collect_metrics(crop_tune) |>
 The original workflow which was initially set will be extracted. This is a very crucial step when comparing performance across different ML method.
 ```{r}
 #| label: extract-workflow
-mars_wf <- extract_workflow(crop_tune)
-mars_wf
+mars_wf_extract <- extract_workflow(crop_tune)
+mars_wf_extract
 ```
 
 To get the absolute model performance, **rmse** will be used instead of **rsq** when selecting the best tune parameter.
@@ -266,9 +267,11 @@ Next, we combine both workflow and parameters together to get a finalized workfl
 ```{r}
 #| label:  finalize-wf
 crop_mars_wf <- finalize_workflow(
-  mars_wf, 
+  mars_wf_extract, 
   best_params
 )
+
+crop_mars_wf
 ```
 
 ## Final Model FIt
