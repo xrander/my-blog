@@ -14,7 +14,7 @@ Imports:
   tidyverse,
   skimr,
   kknn,
-  palmerspenguin,
+  palmerpenguins,
   ggthemr,
   janitor,
   stats4nr,
