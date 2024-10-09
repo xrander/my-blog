@@ -15,6 +15,7 @@ Imports:
   skimr,
   kknn,
   palmerpenguins,
+  ggrepel,
   ggthemr,
   janitor,
   stats4nr,
