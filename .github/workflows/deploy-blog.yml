@@ -3,9 +3,9 @@ name: Quarto Blog Auto-Render and Deploy
 on:
   push:
     branches:
-      - main
+      - master
   pull_request:
-    branches: main
+    branches: master
   
   workflow_dispatch:
   schedule:
@@ -51,7 +51,7 @@ jobs:
         uses: nwtgck/actions-netlify@v1.1
         with:
           publish-dir: './_site'
-          production-branch: main
+          production-branch: master
           github-token: ${{ secrets.BLOG_TOKEN }}
           deploy_message: "Automated blog render"
           enable-pull-request-comment: false
