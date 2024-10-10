@@ -1,16 +1,26 @@
 ---
-title: "Forest Type Classification using Multivariate Adaptive Regression Splines"
-date: "2024-02-10"
-categories: [Machine Learning, MARS - Earth]
+title: "Sugi or Hinoki?"
+subtitle: "Forest Type Classification using K-Nearest Neighbors"
+date: "2024-08-10"
+categories: [Machine Learning, Nearest Neighbor]
 code-fold: true
 code-copy: hover
 code-summary: "Show the code"
 image: image.jpg
-draft: true
 ---
 
+For this project, I will be using a K-Nearest Neighbors (KNN) machine learning algorithm to predict the types of forest in the [forest type mapping data](https://archive.ics.uci.edu/dataset/333/forest+type+mapping) on [UC Irvine ML repository](https://archive.ics.uci.edu). The data is a multi-temporal remote sensing data of a forested area collected using ASTER satellite imagery in Japan. Using this spectral data different forest types were mapped into for different classes:
+
+- Sugi forest (s)
+- Hinoki forest (h)
+- Mixed deciduous forest (d)
+- "Others", that is non-forest land (o)
+
+
+## Load Packages and Data
+To begin I will load the necessary packages and the dataset. 
 ```{r}
-pacman::p_load(tidyverse, tidymodels, ggthemr, earth)
+pacman::p_load(tidyverse, tidymodels, ggthemr)
 ggthemr(palette = "flat dark")
 ```
 
@@ -20,139 +30,287 @@ forest_type_training <- read_csv("data/training.csv")
 forest_type_test <- read_csv("data/testing.csv")
 ```
 
+## Data Summary
+Initial exploration and preview is necessary to understand the data.
 ```{r}
+#| label: tbl-prev
+#| tbl-cap: Data Summary
+#| tbl-subcap: true
 skimr::skim(forest_type_training)
 ```
 
+Result from @tbl-prev-1 shows that the data is having one character variable, our target variable class and the rest are numeric. There are no missing data in the data for the target variable, @tbl-prev-2, and the features, @tbl-prev-3.
+
+## Exploratory Data Analysis
+A quick check on the number of occurrence for each forest class is given below
 
 ```{r}
+#| label: fig-freq
+#| fig-cap: Frequency of Forest Classee
 forest_type_training |> 
-  ggplot(aes(class)) +
+  mutate(
+    class = case_when(
+      class == "d" ~ "Mixed",
+      class == "s" ~ "Sugi",
+      class == "h" ~ "Hinoki",
+      .default = "Others"
+    )
+  ) |> 
+  ggplot(aes(fct_infreq(class))) +
   geom_bar(
     col = "gray90",
-    fill = "dodgerblue4"
+    fill = "tomato4"
   ) +
   geom_text(
     aes(
       y = after_stat(count),
       label = after_stat(count)),
     stat = "count",
-    vjust = -.5
+    vjust = -.4
+  ) +
+  labs(
+    x = "Forest Class",
+    y = "Count",
+    title = "Frequency of The Forest Classes"
   ) +
   expand_limits(y = c(0, 65)) +
   guides(fill = "none")
 ```
-
+Furthermore, @fig-corplot hows the heatmap of the numeric variables
 ```{r}
 #| cache: true
+#| label: fig-corplot
+#| fig-cap: Correlation Matrix
+
+
 forest_type_training |> 
   select(where(is.double)) |> 
   cor() |> 
-  knitr::kable()
+  as.data.frame() |> 
+  rownames_to_column() |> 
+  pivot_longer(
+    cols = b1:pred_minus_obs_S_b9,
+    names_to = "variables",
+    values_to = "value"
+  ) |> 
+  ggplot(aes(rowname, variables, fill = value)) +
+  geom_tile() +
+  scale_fill_distiller() +
+  theme(
+    axis.text.x = element_text(angle = 90),
+    axis.title = element_blank()
+  )
 ```
+## Modeling
+Since the data is readily splitted into testing and training, I will proceed with resampling for model evaluation.
+
 ```{r}
 ft_folds <- vfold_cv(forest_type_training, v = 10, strata = class)
 ```
 
+
+### Model Specification
+A classification model specification will be set using `parsnip`'s `nearest_neighbor()` function.
 ```{r}
-ft_mars <- mars(
-  prod_degree = tune(),
-  num_terms = tune()
+ft_knn <- nearest_neighbor(
+  dist_power = tune(),
+  neighbors = tune()
 ) |> 
   set_mode("classification") |> 
-  set_engine("earth", glm = NULL) 
+  set_engine("kknn")
+
+ft_knn |> translate()
 ```
 
-```{r}
-ft_mars |> translate()
-```
+### Feature Engineering
+K-NN requires quite the preprocessing due to Euclidean distance being sensitive to outliers, as distance measures are sensitive to the scale of the features. To prevent bias from the different features and allowing large predictors contribute the most to the distance between samples I will use the following preprocessing step:
+
+- remove near zero or zero variance features
+- normalize, center and scale numeric predictors
+- perform PCA to decorrelate features
 
 ```{r}
-ft_rec <- recipe(class ~ ., data = forest_type_training) |> 
-  step_normalize(all_predictors())
+ft_rec <- recipe(
+  class ~ .,
+  data = forest_type_training
+) |> 
+  step_nzv(all_numeric_predictors()) |> 
+  step_zv(all_numeric_predictors()) |> 
+  step_normalize(all_numeric_predictors()) |> 
+  step_center(all_numeric_predictors()) |> 
+  step_scale(all_numeric_predictors()) |> 
+  step_pca(all_numeric_predictors())
+
 ft_rec
 ```
+The preprocessed data can be seen in @tbl-prep-data. The features has been reduced to 5 excluding the target variable.
 
 ```{r}
+#| label: tbl-prep-data
 ft_rec |> 
   prep() |> 
   juice() |> 
-  head()
+  head(n = 50)
 ```
 
+### Workflow
+Next to streamline the whole process, the model specification and `recipe` object or preprocessing object are combined to ensure they run together.
 ```{r}
 ft_wf <- workflow() |> 
-  add_model(ft_mars) |> 
+  add_model(ft_knn) |> 
   add_recipe(ft_rec)
-```
 
+ft_wf
+```
+### Tuning
+
+#### Tune Grid 
+To ensure we get the best value for k, that is the neighbors and the right type of distance metric to use, **Minkowski distance** to determine if Manhattan or Euclidean will be optimal.
 ```{r}
-ft_grid <- ft_mars |> 
+set.seed(2323)
+ft_grid <- ft_knn |> 
   extract_parameter_set_dials() |> 
-  update(
-    num_terms = num_terms(range = c(5, 10)),
-    prod_degree = prod_degree(range=c(1, 3))
-  ) |> 
   grid_regular(levels = 15)
-```
 
-```{r}
 ft_grid
 ```
 
+#### Parameter tuning
+Below the tuning is done on the resamples and result displayed in @fig-col-metric.
 ```{r}
 ft_tune <- 
   ft_wf |> 
   tune_grid(
   resamples = ft_folds,
   grid = 10,
-  control = control_grid(save_pred = TRUE, save_workflow = TRUE),
-  metrics = metric_set(accuracy)
+  control = control_grid(save_pred = TRUE, save_workflow = TRUE)
 )
-```
 
-```{r}
-ft_tune |> 
-  autoplot()
-```
-
-```{r}
 ft_tune |> 
   collect_metrics()
 ```
 
+
+#### Tune Evaluation
 ```{r}
+#| label: fig-col-metric
+#| fig-cap: Tune Result
+#| fig-align: center
 ft_tune |> 
-  collect_predictions()
+  collect_metrics() |> 
+  janitor::clean_names() |> 
+  pivot_longer(
+    cols = c(neighbors, dist_power),
+    names_to = "params",
+    values_to = "values"
+  ) |> 
+  ggplot(aes(values, mean, col = metric)) +
+  geom_point() +
+  geom_line() +
+  scale_x_continuous(breaks = seq(0, 15, 1)) +
+  facet_grid(metric~params, scales = "free")
+```
+
+```{r}
+#| echo: false
+
+roc_acc <- ft_tune |> 
+  select_best(metric = "roc_auc")
+
+br_score <- ft_tune |> 
+  select_best(metric = "brier_class")
 ```
 
 
+The three evaluation metrics have high mean at different points, roc_auc and accuracy has their best mean at neighbor = `{r} pull(roc_acc, neighbors)` and distance power = `{r} pull(roc_acc, dist_power)` while brier class or score is having it's best neighbor at `{r} pull(br_score, neighbors)` and distance power at `{r} pull(br_score, dist_power)`.
 
-```{r}
-ft_tune |> 
-    show_best(metric = "accuracy")
-```
+Since I am interested in how well the model distinguishes between the ranking of the classes, I will use the roc_auc. Given that, we will fit the best parameter based on roc_auc to the workflow.
 
 ```{r}
 best_tune <- ft_tune |> 
-  select_best(metric = "accuracy")
-```
+  select_best(metric = "roc_auc")
 
-```{r}
 ft_workflow <- ft_tune |> 
   extract_workflow()
+
+best_tune |> 
+  knitr::kable()
 ```
 
+## Final Model Fit
+Euclidean distance is best metric with  `{r} pull(roc_acc, neighbors)` neighbor.
+The final workflow when the best parameters are fitted is given below:
 ```{r}
 final_wf <- finalize_workflow(
   x = ft_workflow,
   parameters = best_tune
 )
-```
 
-```{r}
+
 final_wf |> 
   fit(forest_type_test)
 ```
+Next, we fit the model on the training data and see how well it performs on the test data.
+
+```{r}
+final_fit <- final_wf |> 
+  fit(forest_type_training)
+```
 
 
+## Model Evaluation
+Now let's evaluate how well this can performed. First, I pred
+```{r}
+model_res <- predict(final_fit, forest_type_test, type = "prob") |> 
+  bind_cols(forest_type_test) |> 
+  mutate(
+    across(where(is.character), factor)
+  )
+```
+
+
+### Area Under The Curve and ROC_AUC
+
+The model have a roc_auc of 0.93, @tbl-roc-auc, the roc_curve is shown in @fig-roc-auc.
+```{r}
+#| label: tbl-roc-auc
+#| tbl-cap: Evaluation metric of model
+
+roc_auc(
+  model_res,
+  truth =  class,
+  contains(".pred_")
+) |> 
+  knitr::kable()
+```
+
+
+```{r}
+#| label: fig-roc-auc
+#| fig-cap: Area Under the Curve
+roc_curve(
+  model_res,
+  truth = class,
+  contains(".pred_") 
+) |> 
+  autoplot(roc_data)
+
+```
+ Next, I checked the confusion matrix, @tbl-conf. 
+ 
+```{r}
+#| label: tbl-conf
+#| tbl-cap: Confusion Matrix
+
+predict(final_fit, forest_type_test) |> 
+  bind_cols(forest_type_test) |> 
+  mutate(class = factor(class)) |> 
+  conf_mat(class, .pred_class)
+```
+ 
+ ## Conclusion
+After fitting the final K-NN workflow on the training data and predicting on the test set, we calculated the ROC AUC to evaluate the model’s classification performance based on the predicted probabilities. The ROC AUC helps assess how well the model discriminates between the different classes. For multi-class classification, the AUC can be computed for each class to assess overall performance.
+
+The plotted ROC curve visually represents the trade-off between the true positive rate (sensitivity) and the false positive rate at different threshold settings, giving further insight into how well the model separates the classes.
+
+An AUC of 0.93 indicates a very good discriminatory power. Based on the ROC curve and AUC score, the model is well suited for classification tasks.
