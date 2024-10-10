@@ -162,7 +162,7 @@ ggplot(
     legend.position = "none"
   )
 ```
-As shown in @fig-market-cap, Bitcoin, and ETH are clearly dominating the crypto space in market capitalization. Assets such as BNB, SOL and USDT are slowly increasing their dominance ranging from 3 - 6%.
+As shown in @fig-market-cap Bitcoin, and ETH are clearly dominating the crypto space in market capitalization. Assets such as BNB, SOL and USDT are slowly increasing their dominance ranging from 3 - 6%.
 
 ## Top 20 Cryptocurrencies Price
 :::{.justify}
@@ -171,7 +171,7 @@ I downloaded logos for the top 20 cryptocurrencies and added them as an "images"
 The code then creates a bar chart to visualize individual cryptocurrency prices, with labels indicating the price for each currency.
 :::
 ```{r}
-#| lable: get-images
+#| label: get-images
 images <- list.files(path = "images", full.names = TRUE)
 
 crypto <- crypto |> 
