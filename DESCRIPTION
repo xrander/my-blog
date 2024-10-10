@@ -16,6 +16,7 @@ Imports:
   kknn,
   palmerpenguins,
   ggrepel,
+  rpart.plot,
   ggthemr,
   janitor,
   stats4nr,
