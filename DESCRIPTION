@@ -16,6 +16,7 @@ Imports:
   kknn,
   palmerpenguins,
   ggrepel,
+  doParallel,
   rpart.plot,
   rsvg,
   car,
