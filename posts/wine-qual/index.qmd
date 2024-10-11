@@ -773,13 +773,11 @@ The result shows that our parameters from tuning have been inserted into the mod
 ```{r}
 #| label: final-fit
 
-doParallel::registerDoParallel(cores = 6)
 final_model <- last_fit(
   object = recommended_workflow,
   split = wine_split
 )
 
-doParallel::stopImplicitCluster()
 ```
 
 
