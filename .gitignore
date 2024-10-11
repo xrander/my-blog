@@ -6,3 +6,7 @@ _site/
 .Rbuildignore
 /_freeze/
 /site_libs/
+posts/crop_yield/index_cache
+posts/crop_yield/index_files
+posts/pos*/index_files/
+posts/real-estate/index_files/
