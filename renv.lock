@@ -1167,6 +1167,22 @@
       ],
       "Hash": "1547863db3b472cf7181973acf649f1a"
     },
+    "ggrepel": {
+      "Package": "ggrepel",
+      "Version": "0.9.6",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "Rcpp",
+        "ggplot2",
+        "grid",
+        "rlang",
+        "scales",
+        "withr"
+      ],
+      "Hash": "3d4156850acc1161f2f24bc61c9217c1"
+    },
     "ggstats": {
       "Package": "ggstats",
       "Version": "0.6.0",
@@ -2150,6 +2166,16 @@
       ],
       "Hash": "ac364dee7ff8277fb4144fcc1e26302f"
     },
+    "palmerpenguins": {
+      "Package": "palmerpenguins",
+      "Version": "0.1.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R"
+      ],
+      "Hash": "6c6861efbc13c1d543749e9c7be4a592"
+    },
     "parallelly": {
       "Package": "parallelly",
       "Version": "1.38.0",
@@ -2670,6 +2696,17 @@
         "stats"
       ],
       "Hash": "b3d390424f41d04174cccf84d49676c2"
+    },
+    "rpart.plot": {
+      "Package": "rpart.plot",
+      "Version": "3.1.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "rpart"
+      ],
+      "Hash": "e12f184bd338d7a931da0e8fe12790fe"
     },
     "rsample": {
       "Package": "rsample",
