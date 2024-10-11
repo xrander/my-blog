@@ -777,7 +777,6 @@ final_model <- last_fit(
   object = recommended_workflow,
   split = wine_split
 )
-
 ```
 
 

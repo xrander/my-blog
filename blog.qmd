@@ -15,4 +15,4 @@ page-layout: full
 title-block-banner: true
 ---
 
-## Recent Post by Adu
+## Recent Post by AduK
