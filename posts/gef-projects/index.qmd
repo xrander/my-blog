@@ -51,7 +51,7 @@ Let's start by loading the data.
 library(pacman)
 p_load(
   tidyverse, janitor, gt, countrycode, scales, ggimage, ggthemes,
-  ggtext, magick, ggtextures, gtExtras
+  ggtext, magick, ggtextures, gtExtras, rsvg
 )
 
 theme_set(theme_hc() +
