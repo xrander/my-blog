@@ -5,3 +5,4 @@ _site/
 .Rprofile
 .Rbuildignore
 /_freeze/
+/site_libs/
