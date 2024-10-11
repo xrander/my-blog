@@ -4,5 +4,6 @@
 _site/
 .Rprofile
 .Rbuildignore
+/_freeze/
 posts/crop_yield/index_files/
 posts/crop_yield/index_cache/
