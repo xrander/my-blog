@@ -17,6 +17,8 @@ Imports:
   palmerpenguins,
   ggrepel,
   rpart.plot,
+  rsvg,
+  car,
   ggthemr,
   janitor,
   stats4nr,
