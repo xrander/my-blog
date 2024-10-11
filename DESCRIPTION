@@ -43,6 +43,7 @@ Imports:
   GGally,
   scales,
   themis,
+  ggbeeswarm,
   earth,
   bonsai,
   finetune,
