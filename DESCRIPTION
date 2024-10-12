@@ -64,4 +64,5 @@ Suggests:
 Remotes:
     Mikata-Project/ggthemr,
     clauswilke/ggtextures,
-    mbrussell/stats4nr
+    mbrussell/stats4nr,
+    hadley/emo
