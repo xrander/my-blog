@@ -41,7 +41,7 @@ To begin, we load the necessary packages. I also set the extra swatch color, jus
 #| message: false
 #| warning: false
 pacman::p_load(
-  tidymodels, tidyverse, ggthemr, farff, emo,
+  tidymodels, tidyverse, ggthemr, farff,
   earth, rpart.plot, vip, corrplot, skimr
 )
 
@@ -58,7 +58,7 @@ additional_colors <- c("#af4242", "#535364", "#FFC300", "#e09263", "#123367", "s
 set_swatch(c(unique(swatch()), additional_colors))
 ```
 
-This is the first time I am seeing a data with a `.arff`extension, so, I searched online immediately to see if there's a package to import a data with an `arff` extension in R. The best place to search for this is [CRAN](https://cran.r-project.org/web/packages/available_packages_by_name.html), of course Google will also give very good result, but I choose [CRAN](https://cran.r-project.org/web/packages/available_packages_by_name.html) regardless `r emo::ji("grin")`. Fortunately, there's the [farrf](https://github.com/mlr-org/farff) package with development starting in 2015 by [mlr-org](). The package is also pretty straightforward to use. Interestingly the package imports data as data.frame, which is great. Afterwards, I converted to tibble.
+This is the first time I am seeing a data with a `.arff`extension, so, I searched online immediately to see if there's a package to import a data with an `arff` extension in R. The best place to search for this is [CRAN](https://cran.r-project.org/web/packages/available_packages_by_name.html), of course Google will also give very good result, but I choose [CRAN](https://cran.r-project.org/web/packages/available_packages_by_name.html) regardless. Fortunately, there's the [farrf](https://github.com/mlr-org/farff) package with development starting in 2015 by [mlr-org](). The package is also pretty straightforward to use. Interestingly the package imports data as data.frame, which is great. Afterwards, I converted to tibble.
 
 ```{r}
 #| label: import-data
@@ -125,14 +125,14 @@ bean_split
 bean_train <- training(bean_split)
 ```
 
-Resamples of the training data was also set at 10 folds, which I think has continuously been the go-to value for number of folds `r emo::ji("eyes")`.
+Resamples of the training data was also set at 10 folds, which I think has continuously been the go-to value for number of folds.
 
 ```{r}
 bean_folds <- vfold_cv(bean_train, v = 10)
 ```
 
 ### Model Specification
-As stated earlier `r emo::ji("horns")` decision tree model will be used in this post.
+As stated earlier, decision tree model will be used in this post.
 ```{r}
 dt_spec <- decision_tree(
   cost_complexity = tune(),
@@ -145,7 +145,7 @@ dt_spec <- decision_tree(
 dt_spec
 ```
 
-Decision trees does not require a lot of preprocessing. So, the stating the family will be the only preprocessing step `r emo::ji("wink")`.
+Decision trees does not require a lot of preprocessing. So, the stating the family will be the only preprocessing step.
 ```{r}
 dt_rec <- recipe(class ~ ., data = bean_train)
 
