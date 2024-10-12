@@ -62,8 +62,7 @@ Suggests:
     jpeg,
     knitr,
     sessioninfo
-Remotes:
-    Mikata-Project/ggthemr,
-    clauswilke/ggtextures,
-    mbrussell/stats4nr,
-    github::hadley/emo
+Remotes: Mikata-Project/ggthemr,
+  clauswilke/ggtextures,
+  mbrussell/stats4nr,
+  hadley/emo
