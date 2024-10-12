@@ -69,7 +69,7 @@ Let's explore some of the relationship between the target variables and the pred
 
 
 ```{r}
-#| label: fig-crop-counts
+#| label: fig-crop-count
 #| fig-cap: Crop frequency across regions is equal. Figure show equal number of replication for the crops across regions
 
 ggplot(

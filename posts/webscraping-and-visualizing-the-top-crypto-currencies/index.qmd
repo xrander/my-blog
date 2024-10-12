@@ -185,6 +185,7 @@ crypto_img <- crypto |>
 ```
 
 Now we can visualize the prices of each asset.
+
 ```{r}
 crypto_img |> 
   ggplot(aes(price, fct_reorder(images, price))) +
