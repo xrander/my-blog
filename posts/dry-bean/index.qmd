@@ -1,7 +1,7 @@
 ---
-title: "Bean Type Classification Using Multivariate Adaptive Regression Splines"
-date: "2024-02-10"
-categories: [Machine Learning, MARS - Earth]
+title: "Bean Type Classification Using Decision Trees"
+date: "2024-10-12"
+categories: [Machine Learning, Decision Trees, Tuning]
 code-fold: true
 code-copy: hover
 code-summary: "Show the code"
@@ -9,10 +9,42 @@ image: image.jpg
 draft: true
 ---
 
+## Introduction
+
+The aim of this blog post is to use decision tree machine learning algorithm to classify dry bean based on some features. This is a [Kaggle challenge dataset](https://www.kaggle.com/datasets/gauravduttakiit/dry-bean-classification). Images of 13,611 grains of 7 different registered dry beans were taken with a high-resolution camera. A total of 16 features; 12 dimensions and 4 shape forms, were obtained from the grains.  The features of the data are:
+
+|Feature|Description|
+|:------------|----------------------:|
+| Area (A) | The area of a bean zone and the number of pixels within its boundaries.|
+| Perimeter (P) | Bean circumference is defined as the length of its border.|
+| Major axis length (L) | The distance between the ends of the longest line that can be drawn from a bean. |
+| Minor axis length (l) | The longest line that can be drawn from the bean while standing perpendicular to the main axis. |
+| Aspect ratio (K) | Defines the relationship between L and l. |
+| Eccentricity (Ec)| Eccentricity of the ellipse having the same moments as the region. |
+| Convex area (C) | Number of pixels in the smallest convex polygon that can contain the area of a bean seed. |
+| Equivalent diameter (Ed) | The diameter of a circle having the same area as a bean seed area. |
+| Extent (Ex) | The ratio of the pixels in the bounding box to the bean area. |
+| Solidity (S) | Also known as convexity. The ratio of the pixels in the convex shell to those found in beans.  |
+| Roundness (R) | Calculated with the following formula: (4piA)/(P^2) |
+| Compactness (CO) | Measures the roundness of an object: Ed/L |
+| ShapeFactor1 (SF1) | |
+| ShapeFactor2 (SF2) | |
+| ShapeFactor3 (SF3) | |
+| ShapeFactor4 (SF4) | |
+| Class | Seker, Barbunya, Bombay, Cali, Dermosan, Horoz and Sira |
+
+: Dry Beans Featured.
+
+
+## Load Packages
+To begin, we load the necessary packages. I also set the extra swatch color, just in case we have more than the default provided by ggthemr. I have recently fell in love with using the [ggthemr package](https://github.com/Mikata-Project/ggthemr) by [Mikata-Project](https://github.com/Mikata-Project).
 ```{r}
 #| message: false
 #| warning: false
-pacman::p_load(tidymodels, tidyverse, ggthemr, farff, earth, patchwork)
+pacman::p_load(
+  tidymodels, tidyverse, ggthemr, farff,
+  earth, rpart.plot, vip, corrplot, skimr
+)
 
 ggthemr(
   palette = "flat dark",
@@ -27,115 +59,225 @@ additional_colors <- c("#af4242", "#535364", "#FFC300", "#e09263", "#123367", "s
 set_swatch(c(unique(swatch()), additional_colors))
 ```
 
+This is the first time I am seeing a data with a `.arff`extension, so, I searched online immediately to see if there's a package to import a data with an `arff` extension in R. The best place to search for this is [CRAN](https://cran.r-project.org/web/packages/available_packages_by_name.html), of course Google will also give very good result, but I choose [CRAN](https://cran.r-project.org/web/packages/available_packages_by_name.html) regardless `r emo::ji("grin")`. Fortunately, there's the [farrf](https://github.com/mlr-org/farff) package with development starting in 2015 by [mlr-org](). The package is also pretty straightforward to use. Interestingly the package imports data as data.frame, which is great. Afterwards, I converted to tibble immediately afterwards `r emo::ji("eyes")`.
 
 ```{r}
+#| label: import-data
+#| warning: false
+#| message: false
+
 bean_tbl <- readARFF("data/Dry_Bean_Dataset.arff") |> 
   janitor::clean_names() |> 
   as_tibble()
 
-bean_tbl
+head(bean_tbl)
 ```
 
 
+## Exploratory Datta Analysis
+Next is EDA, this will be quick and short. @tbl-data-summary shows a good summary of the data including the data types, and information on the completeness of the data. From what the result in @tbl-data-summary-1 and @tbl-data-summary-2 the data is complete. @fig-corrplot shows the correlation matrix of the numeric variables.
 ```{r}
-ggplot(bean_tbl, aes(class)) +
-  geom_bar()
+#| label: tbl-data-summary
+#| tbl-cap: Data summary
+#| tbl-subcap: true
+
+skim(bean_tbl)
 ```
 
 ```{r}
-#| layout-nrow: 2
-bean_long <- bean_tbl |> 
-  pivot_longer(
-    cols = where(is.double),
-    names_to = "variable",
-    values_to = "value"
+#| message: false
+#| warning: false
+#| label: fig-corrplot
+#| fig-cap: Correlation of bean features
+corrplot(
+  cor(bean_tbl[, 1:16]),
+  method = "circle",
+  addrect = 2,
+  pch = 5,
+  title = "Correlation of Numeric Features in Dry Bean Data",
+  type = "lower"
+)
+```
+
+The frequency of the different types of dry bean is shown in @fig-dry-bean
+
+```{r}
+#| label: fig-dry-bean
+#| fig-cap: Frequency distribution of dry-bean varieties. Dermason occurs the most and Bombay is the least occuring bean type.
+
+
+bean_tbl |> 
+  ggplot(aes(fct_infreq(class))) +
+  geom_bar() +
+  labs(
+    x = "Dry Bean Type",
+    y = "Frequency",
+    title = "Frequency Distribution of Dry Bean Varieties"
   )
-  
-bean_col <- names(bean_tbl)
-
-a <- bean_long |> 
-filter(str_detect(variable, "shape")) |> 
-  ggplot(aes(value, fill = variable, group = variable)) +
-  geom_density() +
-  scale_y_continuous(labels = label_comma()) +
-  facet_wrap(~variable, scales = "free")
-
-b <- bean_long |> 
-  filter(variable %in% c(bean_col[1:6])) |> 
-  ggplot(aes(value, fill = variable, group = variable)) +
-  geom_density() +
-  scale_y_continuous(labels = label_comma()) +
-  facet_wrap(~variable, scales = "free") 
-
-c <- bean_long |> 
-  filter(variable %in% c(bean_col[7:12])) |> 
-  ggplot(aes(value, fill = variable, group = variable)) +
-  geom_density() +
-  scale_y_continuous(labels = label_comma()) +
-  facet_wrap(~variable, scales = "free")
-
-a
-b
-c
 ```
+## Modeling
 
-
-
+### Data Shairing
+The data was split to two, a testing data, which is 30% the number of records of the original data and 70% for  the training data. To ensure reproducibility, a seed was set. 
 ```{r}
 set.seed(122)
 bean_split <- initial_split(bean_tbl, prop = .7, strata = class)
-```
-
-```{r}
+bean_split
 bean_train <- training(bean_split)
 ```
+
+Resamples of the training data was also set at 10 folds, which I think is continuously becoming the go-to value for number of folds `r emo::ji("eyes")`.
 
 ```{r}
 bean_folds <- vfold_cv(bean_train, v = 10)
 ```
 
-
+### Model Specification
+As stated earlier `r emo::ji("smug")` decision tree model will be used in this post.
 ```{r}
-mars_spec <- mars(
-  num_terms = tune(),
-  prod_degree = tune()
+dt_spec <- decision_tree(
+  cost_complexity = tune(),
+  tree_depth = tune(),
+  min_n = tune()
 ) |> 
-  set_engine("earth", glm = NULL) |> 
-  set_mode("classification")
+  set_mode("classification") |> 
+  set_engine("rpart")
+
+dt_spec
 ```
 
+Decision trees does not require a lot of preprocessing. So, the stating the family will be the only preprocessing step `r emo::ji("eyes)"`.
 ```{r}
-mars_rec <- recipe(class ~ ., data = bean_train)
-```
-```{r}
-mars_workflow <- workflow() |> 
-  add_recipe(mars_rec) |> 
-  add_model(mars_spec)
+dt_rec <- recipe(class ~ ., data = bean_train)
+
+dt_wf <- workflow() |> 
+  add_recipe(dt_rec) |> 
+  add_model(dt_spec)
+
+dt_wf
 ```
 
+### Model Tuning
+
+After model specification, a grid can be randomly generated from the tune parameters. see @fig-dec-tree for the tune grid.
 ```{r}
+#| label: fig-dec-tree
+#| fig-cap: Decision tune parameter grid
+
 set.seed(122)
-mars_grid <- mars_spec |> 
+
+dt_grid <- dt_spec |> 
   extract_parameter_set_dials() |> 
-  update(
-    num_terms = num_terms(range = c(1, 17)),
-    prod_degree = prod_degree(range = c(1, 3))
-  ) |> 
-  grid_regular(levels = 20)
+  grid_random(size = 20)
+
+
+dt_grid |> 
+  ggplot(aes(tree_depth, min_n, col = cost_complexity)) +
+  geom_point() +
+  scale_color_continuous() 
 ```
 
+
+After the ground works are down. The parameter needs to be tuned.
 ```{r}
-tune_grid(
-  object = mars_workflow,
+#| cache: true
+#| label: tune-mod
+
+dt_tune <- tune_grid(
+  object = dt_wf,
   resamples = bean_folds,
-  grid = mars_grid,
-  control = control_grid(save_pred = TRUE, save_workflow = TRUE, verbose = TRUE),
-  metrics = metric_set(accuracy)
+  grid = dt_grid,
+  control = control_grid(save_pred = TRUE, save_workflow = TRUE)
 )
 ```
 
+Results from tuning is shown in @tbl-tune-res with, represented visually in @fig-tune-res three metrics to measure which combination of the parameters would give the best result.
+```{r}
+#| label: tbl-tune-res
+#| tbl-cap: Tuning result from tuning parameters with three metric from two estimators to measure the best model from the combination of the three parameters
+dt_tune |> 
+  collect_metrics()
+```
+Visually, this is represented below:
 
 ```{r}
-Orange |> knitr::kable()
+#| label: fig-tune-res
+#| figc-cap: Tuning result from decision tree parameters tuning.
+dt_tune |> 
+  collect_metrics() |> 
+  pivot_longer(
+    cols = cost_complexity:min_n,
+    names_to = "params",
+    values_to = "values"
+  ) |> 
+  ggplot(aes(values, mean, colour = .metric)) +
+  geom_point() +
+  geom_line() +
+  facet_grid(.metric~params, scales = "free")
+```
+
+## Final  FIt
+
+Next we extract the best combination of the parameters using `roc_auc` as the evaluation metric.
+
+```{r}
+best_tune <- dt_tune |> 
+  select_best(metric = "roc_auc")
+
+best_tune
+```
+Next, we refit the best tune parameter to the workflow.
+
+```{r}
+dt_wf <- dt_tune |>
+  extract_workflow()
+
+dt_fwf <- finalize_workflow(
+  dt_wf,
+  best_tune
+)
+
+dt_fwf
+```
+
+```{r}
+dt_final_fit <- dt_fwf |> 
+  last_fit(bean_split)
+```
+
+
+A visualization of how the features are used in determining the class of the dry-beans is shown in @fig-rpart.
+```{r}
+#| message: false
+#| label: fig_rpart
+#| fig-cap: Dendrogram showing how decision trees predict their variables.
+#| warning: false 
+dt_final_fit |> 
+  extract_fit_engine() |> 
+  rpart.plot::rpart.plot()
+```
+
+
+## Variable Importance Plot
+The feature perimeter have the largest effect on the model, while solidity have the least effect. Check @fig-cap
+
+```{r}
+#| label: fig-vip
+#| fig-cap: |
+#|  Variable importance plots shows solidity, shape_factor4, extent, and roundness
+#|  contribute less to the model, while perimeter, area related features and
+#|  minor_axis_length contibuted the most to the model.
+
+dt_final_fit |> 
+  extract_fit_engine() |> 
+  vip(
+    geom = "col",
+    num_features = 17,
+    aesthetics = list(
+      fill = "gray",
+      size = 1.5
+    )
+  ) +
+  ggtitle("Features Importance")
 ```
 
