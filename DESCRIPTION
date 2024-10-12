@@ -55,7 +55,8 @@ Imports:
   xgboost,
   lightgbm,
   hrbrthemes,
-  farff
+  farff,
+  corrplot
 Suggests:
     downlit,
     jpeg,
@@ -64,4 +65,5 @@ Suggests:
 Remotes:
     Mikata-Project/ggthemr,
     clauswilke/ggtextures,
-    mbrussell/stats4nr
+    mbrussell/stats4nr,
+    github::hadley/emo
