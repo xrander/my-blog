@@ -22,4 +22,5 @@ format:
   html:
     theme: darkly
     css: styles.css
+code-fold: false
 
