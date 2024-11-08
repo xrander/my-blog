@@ -44,7 +44,8 @@ We can use the [pip](https://pip.pypa.io/en/stable/installation/) to also instal
 
 ```{python}
 #| label: install-py-pak
-#| eval: false
+#| message: false
+#| warning: false
 
 # Python Code
 !pip install pandas numpy
