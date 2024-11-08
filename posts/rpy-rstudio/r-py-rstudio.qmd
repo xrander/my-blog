@@ -21,7 +21,8 @@ The reticulate package provides a set of tool for the coordination between pytho
 The version of R used is `{r} R.version.string` and RStudio is `Cranberry Hibiscus Release (c8fc7aee, 2024-09-16) for Ubuntu Jammy`. To ensure interoperability between R and Python there are some things we need to put in place.  First, we need to ensure that python is properly configured to work in R studio. On the menus click on `Tools` > `Global Options` > `Python` > `find interpreter` and choose a python version of your choice. Next we have to install the reticulate package. Entering the command below to install reticulate
 ```{r}
 #| label: install-reticulate
-#| eval: false
+#| message: false
+#| warning: false
 
 # R Code
 install.packages("reticulate")
