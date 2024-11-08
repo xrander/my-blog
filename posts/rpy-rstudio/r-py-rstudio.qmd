@@ -22,12 +22,16 @@ The version of R used is `{r} R.version.string` and RStudio is `Cranberry Hibisc
 ```{r}
 #| label: install-reticulate
 #| eval: false
+
+# R Code
 install.packages("reticulate")
 ```
 
 After that, load the package into your current session and that is it. The other R packages to be used for this project in R will also be loaded at once.
 ```{r}
 #| label: load-reticulate
+
+# R Code
 library(reticulate)
 library(tidyverse)
 library(ggthemes)
@@ -41,6 +45,7 @@ We can use the [pip](https://pip.pypa.io/en/stable/installation/) to also instal
 #| label: install-py-pak
 #| eval: false
 
+# Python Code
 !pip install pandas numpy
 ```
 
@@ -48,7 +53,7 @@ The above code which is not evaluated/executed would install numpy and pandas.
 
 ```{python}
 #| label: import-python-packages
-
+# Python Code
 import pandas as pd
 ```
 
@@ -58,38 +63,53 @@ On running the above command, reticulate will call the `repl_python()` function 
 The approach to this post will be direct Python will be used for data importation and summaries and R for visualization. I'm using R for visualization because in my opinion it possesses the best visualization library. The palmerpenguins data is saved as a csv file and we'll start with a python code to read the data.
 
 ```{python}
+#| label: import-data
+# Python Code
 penguins = pd.read_csv("data/penguins")
 ```
 
 
 Next we check the basic characteristics of the data.
 ```{python}
+# Python Code
 penguins.info()
 ```
 
 The `Unnamed` column is not needed and will be dropped.
 
 ```{python}
+# Python Code
 penguins_norm = penguins.drop("Unnamed: 0", axis=1)
 ```
 
 We can check to see the column names
 
 ```{python}
+# Python Code
 penguins_norm.columns
 ```
 
 Next let's investigate the data for missingness
 ```{python}
+# Python Code
 penguins_norm.isna().sum()
 ```
 
 Some of the columns such as sex, flipper_length_mm, and body_mass_g among others are having missing values. We can remove this and proceed with the analysis.
 
 ```{python}
+# Python Code
 penguins_clean = penguins_norm.dropna()
 penguins_clean.isna().sum()
 ```
+
+We can easily get a good description of the data.
+```{python}
+#| label: data-summary
+# Python Code
+penguins_clean.describe()
+```
+
 
 This has worked sweetly so far for python. Just to let us know we can replicate the processes above using R. We can do this by interacting with the python main module using the reticulate object [py](https://rstudio.github.io/reticulate/reference/py.html). This helps us interacts with all python objects created so. The syntax is straightforward. We use the `$` with `py` to access the object of interest in Python's session.
 ```{r}
@@ -97,6 +117,7 @@ This has worked sweetly so far for python. Just to let us know we can replicate 
 #| warning: false
 #| message: false
 
+# R Code
 penguins_r <- py$penguins |> 
   select(-`Unnamed: 0`) |> 
   drop_na()
@@ -107,6 +128,8 @@ head(penguins_r)
 Just like `py`, we have `r` to access objects of R session within python. Instead of using `$`, the dot, (`.`) is used instead. `penguins_r` is the same as `penguins_clean`. We will do some quick summaries using the `penguins_r` to show how we get R objects into python sessions
 
 ```{python}
+# Python Code
+
 penguins_cleaned = r.penguins_r
 penguins_cleaned.head()
 ```
@@ -114,6 +137,8 @@ penguins_cleaned.head()
 A good start to our analysis would be to count the total number of penguins according to species, then according to their sex
 
 ```{python}
+
+# Python Code
 penguins_cleaned.groupby(["species", "sex"]).count()
 ```
 
@@ -121,6 +146,8 @@ penguins_cleaned.groupby(["species", "sex"]).count()
 Now let's make quick summaries using the data. But first we'll get all numeric data variable.
 
 ```{python}
+
+# Python Code
 numeric_var = penguins_cleaned.loc[:, penguins_cleaned.dtypes == "float64"].columns
 numeric_var = numeric_var.drop("year")
 numeric_var
@@ -129,22 +156,27 @@ Using this, we can make good summaries.
 
 Average body mass, bill length, bill depth, and flipper length of penguins according to species and their sexes.
 ```{python}
+
+# Python Code
 penguins_cleaned.groupby(["species", "sex"])[numeric_var].aggregate("mean").round(1)
 ```
 It seems male generally have higher body mass, flipper length, bill length and depth than females for each species. It would be interesting to see if there's a significant difference in the variables between these species and sexes.
 
 We can also make a pivot table of these metrics according and include the `island`.
 ```{python}
+# Python Code
 penguins_cleaned.pivot_table(values=numeric_var, index="island", columns=["species", "sex"], aggfunc=["mean", "std"], fill_value=0).round(1).unstack()
 ```
 
 Given all that's done we can start visualizing the data. First we get our data from the python environment.
 ```{r}
+# R Code
 penguins_tbl <- py$penguins_cleaned
 ```
 
 ### Body Mass vs Flipper Length
 ```{r}
+# R Code
 ggplot(penguins_tbl, aes(flipper_length_mm, body_mass_g, col = species)) +
   geom_point() +
   geom_smooth(
@@ -164,6 +196,9 @@ ggplot(penguins_tbl, aes(flipper_length_mm, body_mass_g, col = species)) +
 
 ### Key Metrics Distribution
 ```{r}
+
+# R Code
+
 penguins_long <- penguins_tbl |> 
   pivot_longer(
     cols = bill_length_mm:body_mass_g
