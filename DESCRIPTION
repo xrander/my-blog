@@ -24,6 +24,7 @@ Imports:
   ggthemr,
   janitor,
   stats4nr,
+  reticulate,
   ggthemes,
   TukeyC,
   tidymodels,
