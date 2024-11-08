@@ -12,6 +12,7 @@ Imports:
   quarto,
   rmarkdown,
   tidyverse,
+  latex2exp,
   skimr,
   kknn,
   palmerpenguins,
