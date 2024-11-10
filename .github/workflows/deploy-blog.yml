@@ -43,6 +43,16 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
       
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9.19'  
+
+      - name: Install Python packages
+        run: |
+          pip install pandas
+
+      
       - name: Render Blog
         run: quarto render
 
