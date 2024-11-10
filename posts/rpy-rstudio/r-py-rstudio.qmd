@@ -33,7 +33,6 @@ After that, load the package into your current session and that is it. The other
 #| label: load-reticulate
 
 # R Code
-library(reticulate)
 library(tidyverse)
 library(ggthemes)
 library(latex2exp)
@@ -44,11 +43,12 @@ We can use the [pip](https://pip.pypa.io/en/stable/installation/) to also instal
 
 ```{python}
 #| label: install-py-pak
+#| eval: false
 #| message: false
 #| warning: false
 
 # Python Code
-!pip install pandas numpy
+!pip install pandas
 ```
 
 The above code which is not evaluated/executed would install numpy and pandas.
@@ -118,8 +118,10 @@ This has worked sweetly so far for python. Just to let us know we can replicate 
 #| label: using-r
 #| warning: false
 #| message: false
-
 # R Code
+
+library(reticulate)
+
 penguins_r <- py$penguins |> 
   select(-`Unnamed: 0`) |> 
   drop_na()
