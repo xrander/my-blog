@@ -1,7 +1,7 @@
 ---
 title: Using R and Python in a Quarto Document
 subtitle: Why debate which is better when you can use both
-date: "2024-10-12"
+date: "2024-11-12"
 categories: [News, Python]
 code-fold: false
 code-copy: hover
