@@ -16,4 +16,4 @@ page-layout: article
 title-block-banner: true
 ---
 
-## Blog
+## All posts
