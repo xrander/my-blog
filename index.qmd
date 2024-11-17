@@ -18,7 +18,7 @@ about:
       href: www.x.com/fp_talk
 ---
 
-Olamide Adu is the CEO and Founder of EU StudyAssist. He is a Data Scientist with background in Sustainable Forest and Nature Management, a recipient and graduate of the EMJMD SUFONAMA program from the Swedish University of Agricultural Sciences in 2023. A passionate Data Science with love for growth and learning new things and a big lover of R programming Language.
+Olamide Adu is the Founder and academic lead of EU StudyAssist. He is a freelance Data Scientist with background in Sustainable Forest and Nature Management, a recipient of the Erasmus Mundus Joint Master's Degree Sustainable Forest and Nature Management (EMJMD SUFONAMA) program from the Swedish University of Agricultural Sciences in 2023. A passionate Data Science with love for growth and learning new things and a big lover of R programming Language.
 
 ## Education
 
@@ -33,11 +33,13 @@ Olamide Adu is the CEO and Founder of EU StudyAssist. He is a Data Scientist wit
 
 ## Experiences
 
+- **EU StudyAssist** | Academic Lead | August 2023 - Present
+
 - **Swedish University of Agricultural Sciences** | Data Analyst | November 2022 - January 2023
 
-- HP Tech Venture Group LLC | Summer Research Analyst (Externship) | January 2022 - July 2022
+- **HP Tech Venture Group LLC** | Summer Research Analyst (Externship) | January 2022 - July 2022
 
-- Federal College of Education, Pankshin | Teaching Assistant | March 2020 - February 2021
+- **Federal College of Education, Pankshin** | Teaching Assistant | March 2020 - February 2021
 
 ## Languages
 

@@ -6,3 +6,18 @@ freeze: true
 
 # Enable banner style title blocks
 title-block-banner: true
+
+# Author name
+author: "Olamide Adu"
+
+# Table of content settings
+toc: true
+toc-depth: 3
+toccolor: "purple"
+
+# Page setting
+page-layout: article
+
+comments:
+  utterances: 
+    repo: xrander/blogcomments

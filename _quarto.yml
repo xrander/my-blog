@@ -3,21 +3,33 @@ project:
   output-dir: _site
 
 website:
-  title: ""
+  title: "Olamide Adu"
+  site-url: https://blog.olamideadu.com
   favicon: "image/badger.png"
   navbar:
-    logo: "image/badger.png"
-    right:
+    left:
       - icon: github
         href: https://github.com/xrander
       - icon: twitter
         href: https://x.com/fp_talk
       - icon: linkedin
         href: https://www.linkedin.com/in/olamide-adu
-    left: 
-      - blog.qmd
       - icon: house-fill
         href: https://olamideadu.com
+      - text: Blog
+        href: blog.qmd
+    right:
+      - text: Resources
+        menu: 
+          - text: R for Research
+            href: https://r4r.olamideadu.com
+          - text: R Weekly
+            href: https://rweekly.org/
+          - text: R Bloggers
+            href: https://www.r-bloggers.com 
+      - icon: rss
+        href: blog.xml
+      
 format:
   html:
     theme: darkly
