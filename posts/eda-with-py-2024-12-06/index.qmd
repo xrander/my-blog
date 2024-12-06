@@ -1,0 +1,256 @@
+---
+title: "Palmers Penguin EDA with Python"
+subtitle: "Artwork by @allison_horst"
+date: "2024-12-06"
+categories: [Python, exploratory data analysis]
+code-fold: false
+code-copy: hover
+jupyter: python3
+code-summary: "Show the code"
+image: image.png
+footertext: Image from freepik.com
+---
+
+## Introduction
+ Python is referred to as an easy and beginner friendly language, and that is in some ways true. Python is not my first language, R is, and I have been using it for a while now, but about time I add another language to my arsenal. It's been 3 months since I picked up Python as the next language, and I think a project is about due. My method of learning has most been reading text books, all not covered but more than 50% - 80% of the books covered. The books read are:
+
+- [Python for Data Analysis 3e](https://wesmckinney.com/book/) by the creator of the pandas package, [Wes Mckinney](https://wesmckinney.com/), and
+
+- [Python Data Science Handbook 2E](https://jakevdp.github.io/PythonDataScienceHandbook/) by (Jake VanderPlas)[http://vanderplas.com/].
+
+## The Project
+My first project would be an exploratory data analysis project performed on the Palmer penguins data. The goal of this blog post is to document just how well I have grown within the last 3 months. Without think much about it I prompted chatGPT to generate some EDA questions on the Palmer Penguins data. 
+
+### Questions Generated
+The questions generated is below:
+
+- How many missing values are there in the dataset, and in which columns?
+- What is the average body mass of penguins for each species?
+- Are there any differences in bill length among the three islands in the dataset?
+- What is the distribution of flipper length for each penguin species?
+- Is there any relationship between bill length and bill depth?
+- How does the average body mass compare between male and female penguins and its weight for each sex across the species?
+- What is the proportion of penguin species found on each island?
+- How does flipper length vary across the different species and islands?
+- What are the maximum and minimum body masses recorded in the dataset?
+- Are there any outliers in the bill length measurements for each species?
+
+
+### Prep
+Firstly, I imported the necessary packages that will be used for this project. Oh, you'll need to install the packages first if not installed. Use `!pip install <package_name>`
+
+```{python}
+# Import library -----------------------------
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+```
+
+Next, I set the themes for graphs.
+```{python}
+## Set style and themes for plots ---------------------
+sns.set_style("whitegrid")
+plt.style.use("tableau-colorblind10")
+```
+
+## Solution
+To begin we import the data and get a quick preview
+```{python}
+# Import data --------------------------------
+penguins = pd.read_csv("penguins.csv")
+penguins.head()
+```
+
+Since the data is imported, I will proceed with answering the questions. Some questions will be answered with graphs, while others may have tables as their result output.
+
+1. How many missing values are there in the dataset, and in which columns?
+
+```{python}
+# Find and Remove missing data
+penguins.isna().sum()
+```
+
+```{python}
+## Rows with one or more missing data
+
+print(f" The total number of missing observation is: {len(penguins.loc[penguins.isna().any(axis=1)])}")
+```
+The observations with the missing data is given below:
+```{python}
+penguins[penguins.isna().any(axis=1)]
+```
+
+Before proceeding with to the next question, I will remove observations with missing data. I thing we can do without 11 observations.
+
+```{python}
+penguins_cleaned = penguins.dropna()
+
+penguins_cleaned.isna().sum() # rows with NAs removed
+```
+
+2. What is the average body mass of penguins for each species?
+
+```{python}
+## Average Body Mass for Each Species
+penguins_cleaned.groupby("species").agg(
+    mean_weight = pd.NamedAgg(column="body_mass_g", aggfunc="mean")
+)
+```
+
+3. Are there any differences in bill length among the three islands in the dataset?
+
+```{python}
+penguins_cleaned.groupby("island").agg(
+  mean_bill_length = pd.NamedAgg(column="bill_length_mm", aggfunc="mean")
+).round(2)
+
+```
+4. What is the distribution of flipper length for each penguin species?
+
+```{python}
+#| fig-align: center
+
+adelie_species = penguins_cleaned[penguins_cleaned.species == "Adelie"]
+gentoo_species = penguins_cleaned[penguins_cleaned.species == "Gentoo"]
+chinstrap_species = penguins_cleaned[penguins_cleaned.species == "Chinstrap"]
+
+plt.figure()
+plt.hist(adelie_species.flipper_length_mm, label="Adelie")
+plt.hist(gentoo_species.flipper_length_mm, label="Gentoo")
+plt.hist(chinstrap_species.flipper_length_mm, label="Chinstrap")
+plt.title(
+    "Distribution of Flipper Length for the Three Penguin Species", 
+    size=13, loc="left", fontweight="bold"
+)
+plt.xlabel("Flipper Length ($mm$)", size=9, fontweight="bold", loc="right")
+plt.ylabel("Count", size=9, weight="bold", loc="top")
+plt.legend()
+```
+
+5. Is there any relationship between bill length and bill depth?
+
+```{python}
+#| fig-align: center
+
+plt.figure()
+rel_plt = sns.scatterplot(
+    x="bill_length_mm",
+    y="bill_depth_mm",
+    data=penguins_cleaned,
+    hue="species",  
+)
+sns.move_legend(
+    rel_plt,
+    "upper right",
+    frameon=True
+)
+plt.title("Relationship between Bill length($mm$) and Bill depth($mm$)", size=13, weight="bold")
+plt.xlabel("Bill length ($mm$)", size=9)
+plt.ylabel("Bill depth ($mm$)", size=9)
+rel_plt = sns.lmplot(
+    x="bill_length_mm",
+    y="bill_depth_mm",
+    data=penguins_cleaned,
+    hue="species",
+    markers=["+", "o", "p"]
+)
+plt.tight_layout()
+
+```
+
+
+6. How does the average body mass compare between male and female penguins and its weight for each sex across the species?
+```{python}
+penguins_cleaned.groupby("sex").agg(
+    mean_weight = pd.NamedAgg(column="body_mass_g", aggfunc="mean")
+).round(2)
+```
+
+Comparison of penguins weight according to sex across penguins species
+```{python}
+plt_dt = penguins_cleaned.groupby(["sex", "species"])["body_mass_g"].agg("mean")
+
+plt_dt = plt_dt.reset_index()
+plt_dt
+```
+
+7. What is the proportion of penguin species found on each island?
+
+```{python}
+# Proportion of penguin species found on each island?
+
+penguins_cleaned.value_counts(
+    subset=["island","species"],
+     normalize=True, sort=False
+     ).round(2).reset_index()
+```
+
+8. How does flipper length vary across the different species and islands?
+
+```{python}
+#| fig-align: center
+
+# How does flipper length vary across the different species and islands?
+
+plt.figure()
+sns.boxplot(
+    x="island",
+    y="flipper_length_mm",
+    hue="species",
+    data=penguins_cleaned
+)
+plt.xlabel("Island", loc="right", size=9, weight=900, style="italic")
+plt.ylabel("Flipper Length ($mm$)",size=9, loc="top", style="italic", weight=900)
+plt.title(
+    "Distribution of Flipper Length ($mm$), Penguins Species Across Different Islands",
+    weight="heavy", size=14
+)
+```
+
+9. What are the maximum and minimum body masses recorded in the dataset?
+
+```{python}
+# Find max and min body_mass
+## max
+penguins_cleaned[penguins_cleaned.body_mass_g == penguins_cleaned.body_mass_g.max()]
+```
+
+
+```{python}
+penguins_cleaned.body_mass_g.max()
+```
+
+
+```{python}
+## min
+penguins_cleaned[penguins_cleaned.body_mass_g == penguins_cleaned.body_mass_g.min()]
+```
+
+
+```{python}
+penguins_cleaned.body_mass_g.min()
+```
+
+10. Are there any outliers in the bill length measurements for each species?
+
+```{python}
+#| fig-align: center
+
+sns.boxplot(
+    x="bill_length_mm",
+    y="species",
+    data=penguins_cleaned,
+    hue="species"
+)
+plt.xlabel("Bill Length ($mm$)", weight="bold", size=9, loc="right")
+plt.ylabel("Species", weight="bold", size=9, loc="top")
+plt.title("Distribution of Bill Length According to Species", size=14, weight="bold")
+```
+
+## Conclusion
+This was a wrap and I think its a good start to getting familiar with python. In this project, the following have been done, data aggregation, handling missing data, and visualization. 
+
+
+
+
