@@ -134,20 +134,20 @@ plt.legend()
 #| fig-align: center
 
 plt.figure()
-rel_plt = sns.scatterplot(
+sns.scatterplot(
     x="bill_length_mm",
     y="bill_depth_mm",
     data=penguins_cleaned,
     hue="species",  
 )
-sns.move_legend(
-    rel_plt,
-    "upper right",
-    frameon=True
-)
 plt.title("Relationship between Bill length($mm$) and Bill depth($mm$)", size=13, weight="bold")
 plt.xlabel("Bill length ($mm$)", size=9)
 plt.ylabel("Bill depth ($mm$)", size=9)
+```
+
+Alternatively I can fit a linear regression line for each species to investigate the relationship between bill length and depth.
+
+```{python}
 rel_plt = sns.lmplot(
     x="bill_length_mm",
     y="bill_depth_mm",
@@ -156,6 +156,14 @@ rel_plt = sns.lmplot(
     markers=["+", "o", "p"]
 )
 plt.tight_layout()
+sns.move_legend(
+    rel_plt,
+    "upper right",
+    frameon=True
+)
+plt.title("Relationship between Bill length($mm$) and Bill depth($mm$)", size=13, weight="bold")
+plt.xlabel("Bill length ($mm$)", size=9)
+plt.ylabel("Bill depth ($mm$)", size=9)
 
 ```
 
