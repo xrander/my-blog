@@ -1,5 +1,5 @@
 ---
-title: "Gee-gee Plot Two Series"
+title: "Series: gee-gee Plot Two"
 listing:
   contents: posts/ggplot2-series
   sort: "date desc"
@@ -10,5 +10,5 @@ listing:
   fields: [date, title, reading-time, description]
 page-layout: full
 title-block-banner: true
-title-block-banner-color: "red"
+title-block-banner-color: "yellow"
 ---

@@ -20,5 +20,5 @@ title-block-banner: true
 ### [Python series](python-series.html)
 A series where all python related posts will be available on.
 
-### [ggplot2-series](ggplot-series.html)
+### [ggplot2-series](ggplot2-series.html)
 A series that provides tips on using ggplot2 {Still fresh at the moment}
