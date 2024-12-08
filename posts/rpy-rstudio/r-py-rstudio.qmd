@@ -49,7 +49,7 @@ We can use the [pip](https://pip.pypa.io/en/stable/installation/) to also instal
 #| warning: false
 
 # Python Code
-!pip install pandas
+!pip install pandas numpy
 ```
 
 The above code which is not evaluated/executed would install numpy and pandas.

@@ -16,6 +16,9 @@ page-layout: article
 title-block-banner: true
 ---
 
-A lot of the posts here are my opinion, first to practice what I know, second to keep updated. Some posts are purely my opinion. I'd like to hear some opinion on any of the posts. If you also want me to post about a particular topic do well to reach me on [linkedin](https://www.linkedin.com/in/olamide-adu)
+# Series
+### [Python series](python-series.html)
+A series where all python related posts will be available on.
 
-## All posts
+### [ggplot2-series](ggplot-series.html)
+A series that provides tips on using ggplot2 {Still fresh at the moment}
