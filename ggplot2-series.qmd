@@ -1,5 +1,5 @@
 ---
-title: "Series: gee-gee Plot Two"
+title: "Series: gee-gee-plot-two"
 listing:
   contents: posts/ggplot2-series
   sort: "date desc"

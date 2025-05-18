@@ -23,6 +23,10 @@ Olamide Adu is the founder and academic lead of EU StudyAssist. He is a freelanc
 ## Professional Experience
 - **EU StudyAssist** | Academic Lead | August 2023 - Present
 
+- **Lakshyaa Infotech** | Consulting RShiny App Developer | October 2024 - March 2025
+
+- **Michigan Medicine** | R Consultant | February 2024 - September 2024
+
 - **Swedish University of Agricultural Sciences** | Graduate Assistant | November 2022 - January 2023
 
 - **HP Tech Venture Group LLC** | Summer Research Analyst (Externship) | January 2022 - July 2022
@@ -49,8 +53,19 @@ Bachelor of Agricultural Technology in Forestry and Wood Technology | January 20
       - Python
       
       - Javascript
+
+### Markup
+
+      - LaTex
+      
+      - RMarkdown / Markdown
+      
+      - HTML
+      
+      - CSS
       
 ### Softwares
+      
       - ArcGIS
       
       - QGIS

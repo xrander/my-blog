@@ -9,6 +9,7 @@ Depends:
     R (>= 3.1.0)
 Encoding: UTF-8
 Imports:
+  reticulate,
   quarto,
   rmarkdown,
   tidyverse,
@@ -25,7 +26,6 @@ Imports:
   ggthemr,
   janitor,
   stats4nr,
-  reticulate,
   ggthemes,
   TukeyC,
   tidymodels,
