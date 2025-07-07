@@ -9,23 +9,18 @@ code-summary: "Show the code"
 image: image.jpeg
 ---
 
-```{css, echo = FALSE}
-.justify {
-  text-align:justify !important
-}
-```
 
-::: {.justify}
+
 Cryptocurrencies have captivated the financial world, bringing immense joy to some and heartache to many. One thing is certain: when you get it right and strike gold with cryptocurrencies, it can set you up for life (depending on your frugality and investment amount). As a data scientist, I know the thrill of diving into this dynamic market.
 
 This post, however, isn’t about trading strategies or price forecasting. Instead, it's a exploring the capabilities of R in web scraping using the `rvest` package. Since I like to spend time in creating good visuals, I will be making some interesting visualization here.
-:::
+
 
 ## Getting Our data
 
-::: {.justify}
+
 First, I scraped data from CoinMarketCap using the URL https://coinmarketcap.com/all/views/all/. The code extracts a specific table and selects relevant columns like name, symbol, market cap, and price.
-:::
+
 ```{r}
 #| label: load-packages
 library(pacman)
@@ -43,9 +38,9 @@ head(crypto)
 ```
 
 ## Data Exploration and Cleaning
-::: {.justify}
+
 I started by cleaning the column names using `janitor::clean_names()` and selecting the columns I needed. Then, I ensured data types were appropriate by converting *market_cap* and *price* to numeric values.
-:::
+
 ```{r}
 #| label: data-clean-up
 
@@ -56,10 +51,10 @@ crypto <- crypto |>
 glimpse(crypto)
 ```
 
-::: {.justify}
+
 **Is the data structure as expected?**
 From the data which we have above, there are some columns that needs their data types changed. The *market_cap* and *price* column should be numeric/double data type and not character.
-:::
+
 ```{r}
 #| label: missing-data-check
 crypto <- crypto |> 
@@ -73,10 +68,10 @@ str(crypto)
 ```
 
 ## Handling missing Data
-::: {.justify}
+
 I used the `skimr` package to identify missing data. The code then filtered the 
 *crypto* data frame to keep only complete rows with values in all columns.
-:::
+
 ```{r}
 #| label: check-missing
 skimr::n_missing(crypto)
@@ -94,15 +89,14 @@ skimr::skim_without_charts(crypto)
 ```
 
 ## Data Visualization
-::: {.justify}
+
 Now, let's visualize the data! I created a donut chart to represent the market cap distribution of the top six cryptocurrencies. The remaining currencies are grouped into an "Other" category.
 
 The code calculates the market cap share for each currency, along with cumulative values and labels for the chart.
-:::
+
 ```{r}
 #| label: tbl-crypto-compression
 #| tbl-cap: "Top Six Cryptocurrencies according to Market Capitalization"
-#| tbl-subcap: "20 Cryptocurrencies has been compressed to 7 "
 crypto <- crypto |> 
   mutate(
     new_sym = fct_lump(
@@ -117,9 +111,9 @@ crypto |>
     count = n()
   )
 ```
-::: {.justify}
+
 @tbl-crypto-compression shows that the market cap has been compressed into 7, 6 for the top cryptocurrency and 14 lumped together into a new category, *Other*.
-:::
+
 ```{r}
 crypto_summary <- crypto |> 
   summarize(
@@ -165,11 +159,11 @@ ggplot(
 As shown in @fig-market-cap Bitcoin, and ETH are clearly dominating the crypto space in market capitalization. Assets such as BNB, SOL and USDT are slowly increasing their dominance ranging from 3 - 6%.
 
 ## Top 20 Cryptocurrencies Price
-:::{.justify}
+{.justify}
 I downloaded logos for the top 20 cryptocurrencies and added them as an "images" column to the data frame.
  
 The code then creates a bar chart to visualize individual cryptocurrency prices, with labels indicating the price for each currency.
-:::
+
 ```{r}
 #| label: get-images
 images <- list.files(path = "images", full.names = TRUE)
@@ -214,6 +208,5 @@ crypto_img |>
 ```
 
 ## Conclusion
-::: {.justify}
+
 In this project, I successfully scraped cryptocurrency data, cleaned it for analysis, and created visualizations to explore market cap distribution and individual cryptocurrency prices. This process demonstrates the power of web scraping and data visualization in R.
-:::

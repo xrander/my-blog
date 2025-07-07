@@ -36,3 +36,4 @@ format:
     css: styles.css
 code-fold: false
 
+bibliography: references.bib

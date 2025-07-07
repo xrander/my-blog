@@ -7,7 +7,6 @@ draft: False
 code-fold: true
 code-copy: hover
 code-summary: "Show the code"
-bibliography: references.bib
 image: image_2.jpeg
 ---
 

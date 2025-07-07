@@ -7,7 +7,6 @@ code-copy: hover
 code-summary: "Show the code"
 image: image.jpg
 draft: false
-bibliography: references.bib
 ---
 
 # Introduction
