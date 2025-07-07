@@ -44,7 +44,7 @@ We can use the [pip](https://pip.pypa.io/en/stable/installation/) to also instal
 
 ```{python}
 #| label: install-py-pak
-#| eval: false
+#| eval: true
 #| message: false
 #| warning: false
 
