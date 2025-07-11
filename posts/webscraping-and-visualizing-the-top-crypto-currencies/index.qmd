@@ -9,8 +9,6 @@ code-summary: "Show the code"
 image: image.jpeg
 ---
 
-
-
 Cryptocurrencies have captivated the financial world, bringing immense joy to some and heartache to many. One thing is certain: when you get it right and strike gold with cryptocurrencies, it can set you up for life (depending on your frugality and investment amount). As a data scientist, I know the thrill of diving into this dynamic market.
 
 This post, however, isn’t about trading strategies or price forecasting. Instead, it's a exploring the capabilities of R in web scraping using the `rvest` package. Since I like to spend time in creating good visuals, I will be making some interesting visualization here.

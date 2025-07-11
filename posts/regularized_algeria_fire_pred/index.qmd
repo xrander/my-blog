@@ -7,6 +7,7 @@ code-copy: hover
 code-summary: "Show the code"
 image: image.jpg
 draft: false
+cache: true
 ---
 
 # Introduction
@@ -219,6 +220,8 @@ elastic_tune |>
 As shown in @fig-performance, the elastic-net regularized model performed the best. We can pick the best model from this and get the final model.
 
 ```{r}
+#| label: tbl-final-wf
+
 best_tune <- elastic_tune |> 
   select_best(metric = "rmse")
 
@@ -233,7 +236,7 @@ final_wf
 ## Feature Importance
 
 
-Above @final-fw we parameters fitted accordingly and can note that the tune parameter in @sec-workflow has been replace accordingly. Before We finally fit the model to the whole of the data. we can investigate to see the most important variables
+in the above  output we parameters fitted accordingly and can note that the tune parameter in @sec-workflow has been replace accordingly. Before We finally fit the model to the whole of the data. we can investigate to see the most important variables
 
 ```{r}
 library(vip)

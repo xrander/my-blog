@@ -9,9 +9,9 @@
     ]
   },
   "Python": {
-    "Version": "3.13.5",
+    "Version": "3.10.12",
     "Type": "virtualenv",
-    "Name": "blog.venv"
+    "Name": "/home/xrander/.virtualenvs/blog.venv"
   },
   "Packages": {
     "BBmisc": {
@@ -1368,7 +1368,7 @@
         "rlang",
         "scales"
       ],
-      "Hash": "3d78959cedd587be77e4b3cdd62b4169"
+      "Hash": "0df6ca66f066b4bec2070345fd3b8cb1"
     },
     "ggthemes": {
       "Package": "ggthemes",
@@ -1403,7 +1403,7 @@
         "ggplot2",
         "scales"
       ],
-      "Hash": "c2faedb7f9e001550dc3f88fdf53a905"
+      "Hash": "434b822aa682c58cbc43d770549590f2"
     },
     "glmnet": {
       "Package": "glmnet",
@@ -3254,7 +3254,7 @@
       "Requirements": [
         "R"
       ],
-      "Hash": "2125cbb748ea6b104d6768e69c056143"
+      "Hash": "4630c39dc98e1c77954ce076e66eadb2"
     },
     "stringi": {
       "Package": "stringi",

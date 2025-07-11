@@ -25,6 +25,7 @@ The version of R used is `{r} R.version.string` and RStudio is `Cranberry Hibisc
 #| warning: false
 #| eval: false
 # R Code
+
 install.packages("reticulate")
 ```
 
@@ -44,7 +45,7 @@ We can use the [pip](https://pip.pypa.io/en/stable/installation/) to also instal
 
 ```{python}
 #| label: install-py-pak
-#| eval: true
+#| eval: false
 #| message: false
 #| warning: false
 
