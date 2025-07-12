@@ -59,15 +59,7 @@ We can use the [pip](https://pip.pypa.io/en/stable/installation/) to also instal
 !pip install pandas 
 ```
 
-The above code which is not evaluated/executed would install pandas. It's better to use the below instead since we are using reticulate:
-
-```{r}
-
-if (!py_module_available("pandas")) {
-  py_install("pandas")
-}
-```
-
+The above code which is not evaluated/executed would install pandas. 
 
 ```{python}
 #| label: import-python-packages
