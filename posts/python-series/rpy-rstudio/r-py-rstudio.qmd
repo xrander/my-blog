@@ -7,6 +7,7 @@ code-fold: false
 code-copy: hover
 code-summary: "Show the code"
 image: image.png
+engine: jupyter
 ---
 
 ## A Short Introduction
