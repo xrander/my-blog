@@ -41,6 +41,12 @@ library(latex2exp)
 ```
 
 
+```{r}
+use_python("/usr/bin/python3", required = TRUE)
+py_config()
+```
+
+
 We can use the [pip](https://pip.pypa.io/en/stable/installation/) to also install necessary packages we'll be needing.
 
 ```{python}
@@ -53,7 +59,15 @@ We can use the [pip](https://pip.pypa.io/en/stable/installation/) to also instal
 !pip install pandas 
 ```
 
-The above code which is not evaluated/executed would install numpy and pandas.
+The above code which is not evaluated/executed would install pandas. It's better to use the below instead since we are using reticulate:
+
+```{r}
+
+if (!py_module_available("pandas")) {
+  py_install("pandas")
+}
+```
+
 
 ```{python}
 #| label: import-python-packages
@@ -71,7 +85,7 @@ The approach to this post will be direct Python will be used for data importatio
 ```{python}
 #| label: import-data
 # Python Code
-penguins = pd.read_csv("data/penguins")
+penguins = pd.read_csv("data/penguins.csv")
 ```
 
 
