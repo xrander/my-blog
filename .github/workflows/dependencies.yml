@@ -28,7 +28,7 @@ jobs:
       - name: Restore R environment with renv
         run: |
           Rscript -e "
-          install.packages("magick", type = "source");
+          install.packages('magick', type = "source");
           install.packages('renv');
           renv::restore();
           "
