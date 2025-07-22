@@ -48,8 +48,10 @@ jobs:
           install.packages('renv');
           renv::restore();
           "
-
-
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10.12'
 
       - name: Create virtualenv + install Python packages
         run: |
