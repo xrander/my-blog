@@ -39,11 +39,6 @@ jobs:
           key: ${{ runner.os }}-renv-${{ hashFiles('**/renv.lock') }}
           restore-keys: ${{ runner.os }}-renv-
           
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.10"
-
       - name: Restore R environment with renv
         run: |
           Rscript -e "
@@ -60,6 +55,12 @@ jobs:
         run: |
           Rscript -e "
             library(reticulate);
+            install_python(
+              version = '3.10:latest',
+              list = FALSE,
+              force = FALSE,
+              optimized = TRUE
+            );
             virtualenv_create('r-reticulate', python = 'python3.10');
             use_virtualenv('r-reticulate', required = TRUE);
             py_install('requirements.txt', pip = TRUE)
