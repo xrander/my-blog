@@ -1,9 +1,16 @@
-name: Setup Blog Environment and Quarto
+name: Quarto Blog Auto-Render and Deploy
 
 on:
-  workflow_dispatch:
   push:
-    branches: [master]
+    branches:
+      - master
+  pull_request:
+    branches: master
+  
+  workflow_dispatch:
+  schedule:
+    - cron: "0 08 * * *"
+
   
 jobs:
   build-deploy:
@@ -13,32 +20,36 @@ jobs:
       NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_BLOG_TOKEN }}
       NETLIFY_SITE_ID: ${{ secrets.NETLIFY_BLOG_ID }}
       
-      
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        
+        with:
+          fetch-depth: 0
+          
       - name: Cache system dependencies
         uses: actions/cache@v4
         with:
           path: /var/cache/apt
           key: ${{ runner.os }}-apt-${{ hashFiles('**/apt-packages.txt') }}
-          restore-keys: ${{ runner.os }}-apt-
-
+          restore-keys: |
+            ${{ runner.os }}-apt-
+      
       - name: Install system dependencies
-        runs: |
+        run: |
           sudo apt-get update
-          sudo apt-get install -y librcurl4-openssl-dev libharfbuzz-dev libfribidi-dev libfreetype6-dev
-        
+          sudo apt-get install libcurl4-openssl-dev libharfbuzz-dev libfribidi-dev libfreetype6-dev
+      
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
         with:
-          version: "latest"
+          version: "1.5.57"
+          # LaTeX installation
           tinytex: false
-          
-      - name: Cache Quarto Install
+      
+      - name: Cache Quarto
         uses: actions/cache@v4
         with:
           path: ~/.quarto
-          key: ${{ runner.os }}-quarto-${{ hashFiles('**/*.qmd', '**/*.ipynb', '_quarto.yml') }}
-          restore-keys: ${{ runner.os }}-quarto-
+          key: ${{ runner.os }}-quarto-${{ hashFiles('**/*.qmd', '**/*.ipynb') }}
+          restore-keys: |
+            ${{ runner.os }}-quarto-
