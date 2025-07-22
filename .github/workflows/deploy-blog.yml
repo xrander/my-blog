@@ -87,7 +87,10 @@ jobs:
       
       - name: Install Python dependencies
         run: |
-           Rscript -e "library(reticulate); virtualenv_install(packages='requirements.txt', pip_options='-r')"
+           Rscript -e "library(reticulate); 
+           virtualenv_create('r-reticulate', python = 'python3.13.5')
+           use_virtualenv('r-reticulate', required = TRUE);
+           virtualenv_install(packages='requirements.txt', pip_options='-r')"
       
       - name: Cache Quarto render output
         uses: actions/cache@v4
