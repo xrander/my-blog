@@ -1,0 +1,23 @@
+name: Install and Cache Quarto
+
+on:
+  workflow_run:
+    workflows: ["Setup Blog Environment"]
+    types: [completed]
+    
+    
+jobs:
+  dependencies:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Install Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+        
+      - name: Cache Quarto
+        uses: actions/cache@v4
+        with:
+          path: ~/.quarto
+          key: ${{ runner.os }}-quarto-${{ hashFiles('**/*.qmd', '**/*.ipynb') }}
+          restore-keys: |
+            ${{ runner.os }}-quarto-
