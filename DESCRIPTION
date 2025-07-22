@@ -61,7 +61,8 @@ Imports:
   COUNT,
   multilevelmod, 
   poissonreg, 
-  agua
+  agua,
+  devtools
 Suggests:
     downlit,
     jpeg,
