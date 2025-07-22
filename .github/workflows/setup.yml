@@ -34,18 +34,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-apt-
       
-      - name: Install system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y gsfonts \
-            libcurl4-openssl-dev \
-            libmagick++-dev \
-            libharfbuzz-dev \
-            libfribidi-dev \
-            imagemagick \
-            libmagickcore-6.q16-6-extra \
-            libfreetype6-dev
-      
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
         with:

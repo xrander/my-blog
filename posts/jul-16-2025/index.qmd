@@ -3,21 +3,36 @@ title: "Effect of Different Insecticides on Insects"
 author: "Olamide Adu"
 date: "2024-05-21"
 image: "https://images.pexels.com/photos/32893669/pexels-photo-32893669.jpeg"
-image-alt: Image of an insect standing on a leaf
+image-alt: An insect on a green leaf, emphasizing the importance of pest control in agricultural and ecological contexts.
 description: "Analyzing the effectiveness of insecticides"
 categories: [Machine Learning, GLM, Poisson Regression]
 draft: true
 ---
 
 ![Image by Arjun MJ](https://images.pexels.com/photos/14944259/pexels-photo-14944259.jpeg)
+## Introduction
+Understanding the efficacy of various insecticides is crucial in agriculture, environmental science, and pest control. The effectiveness of a spray determines both economic and ecological outcomes—ensuring crops are protected while minimizing chemical overuse.
+
+In this post, we’ll analyze the InsectSprays dataset, a classic dataset in R, using generalized linear modeling with a Poisson regression framework. We’ll explore which spray kills the most insects on average and whether there's a statistically significant difference among them.
+
+## Loading the Data and Required Libraries
+
+To begin, we load the necessary libraries:
 ```{r}
 pacman::p_load(tidyverse, tidymodels, poissonreg)
 ```
 
-
+Next we access the dataset.
 ```{r}
 insect_spray <- InsectSprays
+head(insect_spray)
 ```
+
+This dataset consists of insect counts (count) across different spray types (spray), giving us a perfect use case for modeling count data.
+
+## Summary Statistics
+
+Let’s start by computing basic summaries to understand the distribution of effectiveness across sprays:
 
 ```{r}
 insect_spray |> 
@@ -27,6 +42,9 @@ insect_spray |>
     times_used = n()
   )
 ```
+This output gives us the average number of insects killed per spray and how many observations are available for each.
+
+## Visualizing the Results
 
 ```{r}
 insect_spray |> 
@@ -35,7 +53,7 @@ insect_spray |>
   labs(
     x = "Spray",
     y = "Frequency",
-    title = "Total Insects Killed per "
+    title = "Total Insects Killed per Spray"
   ) +
   coord_flip() +
   theme_light(
@@ -49,7 +67,7 @@ insect_spray |>
     )    
   )
 ```
-
+This bar chart gives a clear view of the total effectiveness of each insecticide. Some sprays--`B`,`F`, and `A`--clearly outperform others.
 ```{r}
 insect_spray |> 
   summarise(
@@ -69,6 +87,11 @@ insect_spray |>
   coord_flip()
 ```
 
+This visualization highlights the average efficacy of each spray. The difference in means provides a strong foundation for statistical modeling.
+
+## Modeling Insecticide Effectiveness with Poisson Regression
+
+Since we are dealing with count data, Poisson regression is a natural choice. We’ll fit a Generalized Linear Model (GLM) with a Poisson distribution to examine the differences between spray types.
 ```{r}
 insect_mod <- poisson_reg() |> 
   set_mode("regression") |> 
@@ -79,9 +102,27 @@ insect_mod <- poisson_reg() |>
   )
 ```
 
+## Interpreting the Model
+
+Let’s extract and interpret the coefficients:
 ```{r}
 insect_mod |> 
   extract_fit_engine() |> 
   tidy()
 ```
 
+The output shows the log-mean counts relative to the reference spray (often the first alphabetical level unless changed). A negative coefficient implies lower effectiveness compared to the baseline, while positive values indicate improved performance.
+
+Each coefficient can be exponentiated (exp(coef)) to interpret the relative rate of insect death compared to the baseline.
+
+## Conclusion
+
+Through this simple analysis, we’ve:
+
+    Explored the insecticide effectiveness visually and numerically
+
+    Modeled the count of insects using a Poisson GLM
+
+    Identified which sprays perform significantly better than others
+
+This kind of analysis not only helps in selecting the most effective spray but also supports data-driven decision-making in ecological management and agricultural planning.
