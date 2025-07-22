@@ -1,0 +1,451 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "---\n",
+        "title: Using R and Python in a Quarto Document\n",
+        "subtitle: Why debate which is better when you can use both\n",
+        "date: \"2024-11-12\"\n",
+        "categories: [News, Python]\n",
+        "code-fold: false\n",
+        "code-copy: hover\n",
+        "code-summary: \"Show the code\"\n",
+        "image: image.png\n",
+        "engine: jupyter\n",
+        "---\n",
+        "\n",
+        "\n",
+        "## A Short Introduction\n",
+        "I saw an interesting blog post by Nicole Renner on [combining R and Python in a Quarto document](https://nrennie.rbind.io/blog/combining-r-and-python-with-reticulate-and-quarto/) and I decided to replicate that. Quarto has been seen as the next generation of RMarkdown with support for multiple languages. In this blog post we will interchangeably use the R and Python for a simple EDA on the Palmer penguins dataset. To ensure easy interchange between both languages, we will use the [reticulate package](https://rstudio.github.io/reticulate/) by Thomasz Kalinowski, Kevin Ushey, J. J. Allaire, and Yuan Tang. \n",
+        "\n",
+        "\n",
+        "## The Reticulate Package\n",
+        "The reticulate package provides a set of tool for the coordination between python and R. This means that it allows python to be used interactively within an R session. This is beautiful, because the strength of both packages can be utilized to the fullest. To know more about the reticulate package the [documentation](https://rstudio.github.io/reticulate/).\n",
+        "\n",
+        "\n",
+        "## Initial Set Up\n",
+        "The version of R used is `{r} R.version.string` and RStudio is `Cranberry Hibiscus Release (c8fc7aee, 2024-09-16) for Ubuntu Jammy`. To ensure interoperability between R and Python there are some things we need to put in place.  First, we need to ensure that python is properly configured to work in R studio. On the menus click on `Tools` > `Global Options` > `Python` > `find interpreter` and choose a python version of your choice. Next we have to install the reticulate package. Entering the command below to install reticulate\n",
+        "\n",
+        "```{r}\n",
+        "#| label: install-reticulate\n",
+        "#| message: false\n",
+        "#| warning: false\n",
+        "#| eval: false\n",
+        "# R Code\n",
+        "\n",
+        "install.packages(\"reticulate\")\n",
+        "```\n",
+        "\n",
+        "\n",
+        "After that, load the package into your current session and that is it. The other R packages to be used for this project in R will also be loaded at once.\n",
+        "\n",
+        "```{r}\n",
+        "#| label: load-reticulate\n",
+        "\n",
+        "# R Code\n",
+        "library(reticulate)\n",
+        "library(tidyverse)\n",
+        "library(ggthemes)\n",
+        "library(latex2exp)\n",
+        "```\n",
+        "\n",
+        "```{r}\n",
+        "use_python(\"/usr/bin/python3\", required = TRUE)\n",
+        "py_config()\n",
+        "```\n",
+        "\n",
+        "\n",
+        "\n",
+        "We can use the [pip](https://pip.pypa.io/en/stable/installation/) to also install necessary packages we'll be needing.\n"
+      ],
+      "id": "6285fed5"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "message": false
+      },
+      "source": [
+        "#| label: install-py-pak\n",
+        "#| eval: false\n",
+        "#| warning: false\n",
+        "\n",
+        "# Python Code\n",
+        "!pip install pandas "
+      ],
+      "id": "install-py-pak",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "The above code which is not evaluated/executed would install pandas. \n"
+      ],
+      "id": "97d75c48"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| label: import-python-packages\n",
+        "# Python Code\n",
+        "\n",
+        "\n",
+        "import pandas as pd"
+      ],
+      "id": "import-python-packages",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "On running the above command, reticulate will call the `repl_python()` function which makes us interact with python in rstudio. This switches the rstudio console from `>` of R to `>>>` of python. Seeing these symbols indicates that we can execute python commands. To return to R you can enter `exit` or `quit` in the console, but you probably won't want to exit and restart python interpreter. I'll show a better way to use both program(R and Python) and using them with quarto seems to make them work seamlessly.\n",
+        "## EDA on Palmer Penguins\n",
+        "\n",
+        "The approach to this post will be direct Python will be used for data importation and summaries and R for visualization. I'm using R for visualization because in my opinion it possesses the best visualization library. The palmerpenguins data is saved as a csv file and we'll start with a python code to read the data.\n"
+      ],
+      "id": "2641e82e"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| label: import-data\n",
+        "# Python Code\n",
+        "penguins = pd.read_csv(\"data/penguins.csv\")"
+      ],
+      "id": "import-data",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "Next we check the basic characteristics of the data."
+      ],
+      "id": "e6fb04b8"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "# Python Code\n",
+        "penguins.info()"
+      ],
+      "id": "6fdf09bb",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "The `Unnamed` column is not needed and will be dropped.\n"
+      ],
+      "id": "5ad7e4fc"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "# Python Code\n",
+        "penguins_norm = penguins.drop(\"Unnamed: 0\", axis=1)"
+      ],
+      "id": "73363726",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "We can check to see the column names\n"
+      ],
+      "id": "e04c8f0c"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "# Python Code\n",
+        "penguins_norm.columns"
+      ],
+      "id": "0aaf99e2",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "Next let's investigate the data for missingness"
+      ],
+      "id": "9bb6b363"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "# Python Code\n",
+        "penguins_norm.isna().sum()"
+      ],
+      "id": "8d715532",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "Some of the columns such as sex, flipper_length_mm, and body_mass_g among others are having missing values. We can remove this and proceed with the analysis.\n"
+      ],
+      "id": "049d2aa3"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "# Python Code\n",
+        "penguins_clean = penguins_norm.dropna()\n",
+        "penguins_clean.isna().sum()"
+      ],
+      "id": "351189fb",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "We can easily get a good description of the data."
+      ],
+      "id": "451fe336"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| label: data-summary\n",
+        "# Python Code\n",
+        "penguins_clean.describe()"
+      ],
+      "id": "data-summary",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "This has worked sweetly so far for python. Just to let us know we can replicate the processes above using R. We can do this by interacting with the python main module using the reticulate object [py](https://rstudio.github.io/reticulate/reference/py.html). This helps us interacts with all python objects created so. The syntax is straightforward. We use the `$` with `py` to access the object of interest in Python's session.\n",
+        "\n",
+        "```{r}\n",
+        "#| label: using-r\n",
+        "#| warning: false\n",
+        "#| message: false\n",
+        "# R Code\n",
+        "\n",
+        "penguins_r <- py$penguins |> \n",
+        "  select(-`Unnamed: 0`) |> \n",
+        "  drop_na()\n",
+        "\n",
+        "head(penguins_r)\n",
+        "```\n",
+        "\n",
+        "\n",
+        "Just like `py`, we have `r` to access objects of R session within python. Instead of using `$`, the dot, (`.`) is used instead. `penguins_r` is the same as `penguins_clean`. We will do some quick summaries using the `penguins_r` to show how we get R objects into python sessions\n"
+      ],
+      "id": "ba9056ef"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "# Python Code\n",
+        "\n",
+        "penguins_cleaned = r.penguins_r\n",
+        "\n",
+        "penguins_cleaned.head()"
+      ],
+      "id": "bb70b294",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "A good start to our analysis would be to count the total number of penguins according to species, then according to their sex\n"
+      ],
+      "id": "554d320e"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "# Python Code\n",
+        "penguins_cleaned.groupby([\"species\", \"sex\"]).count()"
+      ],
+      "id": "8e91412b",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "Now let's make quick summaries using the data. But first we'll get all numeric data variable.\n"
+      ],
+      "id": "0945b1a7"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "# Python Code\n",
+        "numeric_var = penguins_cleaned.loc[:, penguins_cleaned.dtypes == \"float64\"].columns\n",
+        "numeric_var = numeric_var.drop(\"year\")\n",
+        "numeric_var"
+      ],
+      "id": "987c0492",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "Using this, we can make good summaries. \n",
+        "\n",
+        "Average body mass, bill length, bill depth, and flipper length of penguins according to species and their sexes."
+      ],
+      "id": "2a7e4c07"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "# Python Code\n",
+        "penguins_cleaned.groupby([\"species\", \"sex\"])[numeric_var].aggregate(\"mean\").round(1)"
+      ],
+      "id": "4e16b68a",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "It seems male generally have higher body mass, flipper length, bill length and depth than females for each species. It would be interesting to see if there's a significant difference in the variables between these species and sexes.\n",
+        "\n",
+        "We can also make a pivot table of these metrics according and include the `island`."
+      ],
+      "id": "3b46c5f0"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "# Python Code\n",
+        "penguins_cleaned.pivot_table(values=numeric_var, index=\"island\", columns=[\"species\", \"sex\"], aggfunc=[\"mean\", \"std\"], fill_value=0).round(1).unstack()"
+      ],
+      "id": "e1b507e8",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "Given all that's done we can start visualizing the data. First we get our data from the python environment.\n",
+        "\n",
+        "```{r}\n",
+        "# R Code\n",
+        "penguins_tbl <- py$penguins_cleaned\n",
+        "```\n",
+        "\n",
+        "\n",
+        "### Body Mass vs Flipper Length\n",
+        "\n",
+        "```{r}\n",
+        "# R Code\n",
+        "ggplot(penguins_tbl, aes(flipper_length_mm, body_mass_g, col = species)) +\n",
+        "  geom_point() +\n",
+        "  geom_smooth(\n",
+        "    method = \"lm\",\n",
+        "    se = FALSE,\n",
+        "    linewidth = .5\n",
+        "  ) +\n",
+        "  scale_fill_colorblind() +\n",
+        "  labs(\n",
+        "    x = TeX(r\"(Flipper Length ($mm$))\"),\n",
+        "    y = TeX(r\"(Body Mass ($g$))\"),\n",
+        "    title = TeX(\"Body Mass vs Flipper Length\", bold = TRUE),\n",
+        "    col = TeX(\"Species\", bold = TRUE)\n",
+        "  ) + \n",
+        "  theme_fivethirtyeight()\n",
+        "```\n",
+        "\n",
+        "\n",
+        "### Key Metrics Distribution\n",
+        "\n",
+        "```{r}\n",
+        "\n",
+        "# R Code\n",
+        "\n",
+        "penguins_long <- penguins_tbl |> \n",
+        "  pivot_longer(\n",
+        "    cols = bill_length_mm:body_mass_g\n",
+        "  ) |> \n",
+        "  mutate(\n",
+        "    name = str_replace_all(name, \"_\", \" \"),\n",
+        "    name = str_to_title(name),\n",
+        "    name = str_replace_all(name, \"Mm\", \"(mm)\"),\n",
+        "    name = str_replace(name, \"G\", \"(g)\")\n",
+        "  )\n",
+        "\n",
+        "penguins_long |> \n",
+        "  ggplot(aes(factor(year), value, fill = species)) +\n",
+        "  geom_boxplot(\n",
+        "    position = \"dodge\",\n",
+        "    outlier.colour = \"red\",\n",
+        "    linewidth = 1\n",
+        "  ) +\n",
+        "  geom_violin(\n",
+        "    position = \"dodge\",\n",
+        "    alpha = .2\n",
+        "  ) +\n",
+        "  facet_wrap(~name, scales = \"free\") +\n",
+        "  labs(\n",
+        "    x = \"Year\",\n",
+        "    title = TeX(r\"(\\textbf{Distribution of Key Characteristics from 2007 to 2009})\")\n",
+        "  ) +\n",
+        "  scale_fill_calc() +\n",
+        "  theme_fivethirtyeight() \n",
+        "```\n",
+        "\n",
+        "\n",
+        "## Conclusion\n",
+        "This project highlights one of the strength of using quarto and RMarkdown, and that's their compatibility with other languages. Here, I used both R and Python in the same project and switched the use of both languages. This is possible using the [reticulate](https://rstudio.github.io/reticulate/index.html) package in R, and there's a similar package to allow easy integration of R in python with the [rpy2](https://pypi.org/project/rpy2/) package."
+      ],
+      "id": "982c14aa"
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "name": "python3",
+      "language": "python",
+      "display_name": "Python 3 (ipykernel)",
+      "path": "/home/xrander/.virtualenvs/blog.venv/share/jupyter/kernels/python3"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}

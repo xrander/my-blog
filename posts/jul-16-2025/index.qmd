@@ -1,0 +1,87 @@
+---
+title: "Effect of Different Insecticides on Insects"
+author: "Olamide Adu"
+date: "2024-05-21"
+image: "https://images.pexels.com/photos/32893669/pexels-photo-32893669.jpeg"
+image-alt: Image of an insect standing on a leaf
+description: "Analyzing the effectiveness of insecticides"
+categories: [Machine Learning, GLM, Poisson Regression]
+draft: true
+---
+
+![Image by Arjun MJ](https://images.pexels.com/photos/14944259/pexels-photo-14944259.jpeg)
+```{r}
+pacman::p_load(tidyverse, tidymodels, poissonreg)
+```
+
+
+```{r}
+insect_spray <- InsectSprays
+```
+
+```{r}
+insect_spray |> 
+  summarise(
+    .by = spray,
+    average_count = mean(count),
+    times_used = n()
+  )
+```
+
+```{r}
+insect_spray |> 
+  ggplot(aes(fct_reorder(spray, count), count)) +
+  geom_col(fill = "dodgerblue4") +
+  labs(
+    x = "Spray",
+    y = "Frequency",
+    title = "Total Insects Killed per "
+  ) +
+  coord_flip() +
+  theme_light(
+    base_family = "Inter"
+  ) +
+  theme(
+    plot.title = element_text(
+      hjust = .5,
+      size = 14,
+      face = "bold"
+    )    
+  )
+```
+
+```{r}
+insect_spray |> 
+  summarise(
+    .by = spray,
+    average_count = mean(count)
+  ) |> 
+  ggplot(
+    aes(fct_reorder(spray, average_count), average_count)
+  ) +
+  geom_col(fill = "coral3") +
+  labs(
+    x = "Spray",
+    y = "Mean Insect Killed",
+    title = "Mean insect killed by Sprays"
+  ) +
+  theme_light(base_family = "Inter") +
+  coord_flip()
+```
+
+```{r}
+insect_mod <- poisson_reg() |> 
+  set_mode("regression") |> 
+  set_engine("glm") |> 
+  fit(
+    count ~ spray,
+    data = insect_spray
+  )
+```
+
+```{r}
+insect_mod |> 
+  extract_fit_engine() |> 
+  tidy()
+```
+
