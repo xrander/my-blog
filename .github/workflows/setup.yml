@@ -6,9 +6,14 @@ on:
     branches: [master]
   
 jobs:
-  setup:
+  build-deploy:
     runs-on: ubuntu-latest
-
+    env:
+      GITHUB_PAT: ${{ secrets.BLOG_TOKEN }}
+      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_BLOG_TOKEN }}
+      NETLIFY_SITE_ID: ${{ secrets.NETLIFY_BLOG_ID }}
+      
+      
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
