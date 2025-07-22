@@ -6,3 +6,4 @@ _site/
 .Rbuildignore
 /_freeze/
 /site_libs/
+.github/workflows/deploy-blog.yml
