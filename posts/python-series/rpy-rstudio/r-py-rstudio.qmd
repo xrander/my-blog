@@ -2,12 +2,12 @@
 title: Using R and Python in a Quarto Document
 subtitle: Why debate which is better when you can use both
 date: "2024-11-12"
-categories: [News, Python]
+categories: [R, Python]
 code-fold: false
 code-copy: hover
 code-summary: "Show the code"
 image: image.png
-engine: jupyter
+
 ---
 
 ## A Short Introduction
@@ -19,7 +19,8 @@ The reticulate package provides a set of tool for the coordination between pytho
 
 
 ## Initial Set Up
-The version of R used is `{r} R.version.string` and RStudio is `Cranberry Hibiscus Release (c8fc7aee, 2024-09-16) for Ubuntu Jammy`. To ensure interoperability between R and Python there are some things we need to put in place.  First, we need to ensure that python is properly configured to work in R studio. On the menus click on `Tools` > `Global Options` > `Python` > `find interpreter` and choose a python version of your choice. Next we have to install the reticulate package. Entering the command below to install reticulate
+The version of R used is `{r} R.version.string` and RStudio is `Cranberry Hibiscus Release (c8fc7aee, 2024-09-16) for Ubuntu Jammy`. To ensure interoperability between R and Python there are some things we need to put in place.  First, we need to ensure that python is properly configured to work in R studio. On the menus click on `Tools` > `Global Options` > `Python` > `find interpreter` and choose a python version of your choice. Ideally its better to use a virtual environment.
+Next we have to install the reticulate package.
 ```{r}
 #| label: install-reticulate
 #| message: false
@@ -36,17 +37,9 @@ After that, load the package into your current session and that is it. The other
 
 # R Code
 library(reticulate)
-library(tidyverse)
-library(ggthemes)
-library(latex2exp)
+library(pacman)
+p_load(tidyverse, ggthemes, latex2exp)
 ```
-
-
-```{r}
-use_python("/usr/bin/python3", required = TRUE)
-py_config()
-```
-
 
 We can use the [pip](https://pip.pypa.io/en/stable/installation/) to also install necessary packages we'll be needing.
 
@@ -144,6 +137,7 @@ Just like `py`, we have `r` to access objects of R session within python. Instea
 # Python Code
 
 penguins_cleaned = r.penguins_r
+
 penguins_cleaned.head()
 ```
 
