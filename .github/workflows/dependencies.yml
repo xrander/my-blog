@@ -26,7 +26,7 @@ jobs:
           restore-keys: ${{ runner.os }}-renv-
 
       - name: Restore R environment with renv
-        run: Rscript -e "install.packages('renv'); renv::restore(); renv::install('magick')"
+        run: Rscript -e "install.packages('renv'); renv::install('magick'); renv::restore();"
 
       - name: Set up Python
         uses: actions/setup-python@v5
