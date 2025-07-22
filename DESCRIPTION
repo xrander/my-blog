@@ -23,7 +23,6 @@ Imports:
   rpart.plot,
   rsvg,
   car,
-  ggthemr,
   janitor,
   stats4nr,
   ggthemes,
@@ -58,13 +57,18 @@ Imports:
   lightgbm,
   hrbrthemes,
   farff,
-  corrplot
+  corrplot,
+  COUNT,
+  multilevelmod, 
+  poissonreg, 
+  agua
 Suggests:
     downlit,
     jpeg,
     knitr,
     sessioninfo
-Remotes: Mikata-Project/ggthemr,
+Remotes: 
+  Mikata-Project/ggthemr,
   clauswilke/ggtextures,
   mbrussell/stats4nr,
   hadley/emo
