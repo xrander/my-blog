@@ -61,7 +61,5 @@ jobs:
               force = FALSE,
               optimized = TRUE
             );
-            virtualenv_create('r-reticulate', python = 'python3.10');
-            use_virtualenv('r-reticulate', required = TRUE);
             py_install('requirements.txt', pip = TRUE)
           "
