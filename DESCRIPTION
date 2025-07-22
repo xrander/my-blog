@@ -22,7 +22,7 @@ Imports:
     earth,
     farff,
     finetune,
-    ggbeswarm,
+    ggbeeswarm,
     ggimage,
     GGally,
     ggrepel,
