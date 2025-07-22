@@ -29,6 +29,8 @@ jobs:
         run: |
           Rscript -e "
           install.packages('magick', type = 'source');
+          setRepositories(ind=1:2);
+          install.packages('ggimage');
           install.packages('renv');
           renv::restore();
           "
