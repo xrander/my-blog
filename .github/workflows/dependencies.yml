@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-            
+
       - name: Install system dependencies
         run: |
           sudo apt-get update
@@ -38,7 +38,7 @@ jobs:
           path: renv/library
           key: ${{ runner.os }}-renv-${{ hashFiles('**/renv.lock') }}
           restore-keys: ${{ runner.os }}-renv-
-          
+
       - name: Restore R environment with renv
         run: |
           Rscript -e "
@@ -48,17 +48,28 @@ jobs:
           install.packages('renv');
           renv::restore();
           "
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
 
-      - name: Create virtualenv + install Python packages
+      - name: Set up pyenv and Python
         run: |
+          curl https://pyenv.run | bash
+          export PYENV_ROOT="$HOME/.pyenv"
+          export PATH="$PYENV_ROOT/bin:$PATH"
+          eval "$(pyenv init -)"
+          eval "$(pyenv virtualenv-init -)"
+          pyenv install 3.11.9
+          pyenv virtualenv 3.11.9 r-reticulate-env
+          pyenv global 3.11.9/envs/r-reticulate-env
+          echo "Python version:"
+          python --version
+
+      - name: Use Python in R via reticulate
+        run: |
+          export PYENV_ROOT="$HOME/.pyenv"
+          export PATH="$PYENV_ROOT/bin:$PATH"
+          eval "$(pyenv init -)"
+          eval "$(pyenv virtualenv-init -)"
           Rscript -e "
             library(reticulate);
-            install_python(version=3.11);
-            virtualenv_create('r-reticulate', python = 'python3.11');
-            use_virtualenv('r-reticulate', required = TRUE);
+            use_virtualenv(Sys.getenv('PYENV_ROOT') %+% '/versions/3.11.9/envs/r-reticulate-env', required = TRUE);
             py_install('requirements.txt', pip = TRUE);
           "
