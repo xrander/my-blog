@@ -6,7 +6,6 @@ image: "https://images.pexels.com/photos/32893669/pexels-photo-32893669.jpeg"
 image-alt: An insect on a green leaf, emphasizing the importance of pest control in agricultural and ecological contexts.
 description: "Analyzing the effectiveness of insecticides"
 categories: [Machine Learning, GLM, Poisson Regression]
-draft: true
 ---
 
 ![Image by Arjun MJ](https://images.pexels.com/photos/14944259/pexels-photo-14944259.jpeg)
