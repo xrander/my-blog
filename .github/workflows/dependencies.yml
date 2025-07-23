@@ -47,6 +47,7 @@ jobs:
           install.packages('ggimage');
           install.packages('renv');
           renv::restore();
+          renv::status();
           "
 
       - name: Set up pyenv and Python
