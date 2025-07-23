@@ -1,0 +1,26 @@
+name: Deploy Blog
+
+on: 
+  workflow_run:
+    workflows: ["Render Blog"]
+    types: [completed]
+    
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    env:
+      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_BLOG_TOKEN }}
+      NETLIFY_SITE_ID: ${{ secrets.NETLIFY_BLOG_ID }}
+      GITHUB_PAT: ${{ secrets.BLOG_TOKEN }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Deploy to Netlify
+        uses: nwtgck/actions-netlify@v3.0
+        with:
+          publish-dir: './_site'
+          production-branch: master
+          github-token: ${{ secrets.BLOG_TOKEN }}
+          deploy-message: "Auto Deploy - ${{ github.sha }}"
