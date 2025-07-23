@@ -14,9 +14,6 @@ jobs:
       GITHUB_PAT: ${{ secrets.BLOG_TOKEN }}
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
       - name: Download site artifact
         uses: actions/download-artifact@v4
         with:

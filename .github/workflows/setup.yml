@@ -68,13 +68,14 @@ jobs:
       - name: Restore renv cache
         uses: actions/cache@v4
         with:
-          path: renv/library/R-4.3/x86_64-pc-linux-gnu/
+          path: renv/library/R-4.5.1/x86_64-pc-linux-gnu/
           key: ${{ runner.os }}-renv-${{ hashFiles('**/renv.lock') }}
           restore-keys: ${{ runner.os }}-renv-
 
       - name: Restore R environment
         run: |
-          Rscript -e "install.packages('renv'); renv::restore()"
+          Rscript -e "install.packages('renv'); 
+          renv::restore()"
 
       - name: Set up Python
         uses: actions/setup-python@v5
