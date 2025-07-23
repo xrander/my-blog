@@ -6,12 +6,10 @@ on:
       - master
   pull_request:
     branches: master
-  
   workflow_dispatch:
   schedule:
     - cron: "0 08 * * *"
 
-  
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
@@ -19,13 +17,13 @@ jobs:
       GITHUB_PAT: ${{ secrets.BLOG_TOKEN }}
       NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_BLOG_TOKEN }}
       NETLIFY_SITE_ID: ${{ secrets.NETLIFY_BLOG_ID }}
-      
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          
+
       - name: Cache system dependencies
         uses: actions/cache@v4
         with:
@@ -33,18 +31,65 @@ jobs:
           key: ${{ runner.os }}-apt-${{ hashFiles('**/apt-packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-apt-
-      
+
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
         with:
           version: "1.5.57"
-          # LaTeX installation
           tinytex: false
-      
+
       - name: Cache Quarto
         uses: actions/cache@v4
         with:
-          path: ~/.quarto
+          path: ~/.local/share/quarto
           key: ${{ runner.os }}-quarto-${{ hashFiles('**/*.qmd', '**/*.ipynb') }}
           restore-keys: |
             ${{ runner.os }}-quarto-
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gsfonts \
+            libcurl4-openssl-dev \
+            libmagick++-dev \
+            libharfbuzz-dev \
+            libfribidi-dev \
+            imagemagick \
+            libmagickcore-6.q16-6-extra \
+            libfreetype6-dev \
+            libmagickwand-dev \
+            libglpk-dev
+
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      - name: Restore renv cache
+        uses: actions/cache@v4
+        with:
+          path: renv/library/R-4.3/x86_64-pc-linux-gnu/
+          key: ${{ runner.os }}-renv-${{ hashFiles('**/renv.lock') }}
+          restore-keys: ${{ runner.os }}-renv-
+
+      - name: Restore R environment
+        run: |
+          Rscript -e "install.packages('renv'); renv::restore()"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Render Quarto site
+        run: quarto render
+
+      - name: Upload site artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: _site/
