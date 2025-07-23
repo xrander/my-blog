@@ -64,12 +64,11 @@ jobs:
 
       - name: Use Python in R via reticulate
         run: |
-          export PYENV_ROOT="$HOME/.pyenv"
-          export PATH="$PYENV_ROOT/bin:$PATH"
-          eval "$(pyenv init -)"
-          eval "$(pyenv virtualenv-init -)"
           Rscript -e "
-            library(reticulate);
-            use_virtualenv(Sys.getenv('PYENV_ROOT') %+% '/versions/3.11.9/envs/r-reticulate-env', required = TRUE);
-            py_install('requirements.txt', pip = TRUE);
+          library(reticulate);
+          virtualenv_install(
+            packages = 'requirements.txt',
+            pip_options = '-r'
+          );
           "
+          
