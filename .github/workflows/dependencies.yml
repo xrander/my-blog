@@ -57,7 +57,7 @@ jobs:
         run: |
           Rscript -e "
             library(reticulate);
-            virtualenv_create("r-reticulate", python = 'python3.11')
-          use_virtualenv('r-reticulate', required = TRUE)
-          py_install('requirements.txt', pip = TRUE)
+            virtualenv_create('r-reticulate', python = 'python3.11')
+            use_virtualenv('r-reticulate', required = TRUE)
+            py_install('requirements.txt', pip = TRUE)
           "
