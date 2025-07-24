@@ -58,7 +58,7 @@ jobs:
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
         with:
-          version: "latest"
+          version: "1.7.32"
           tinytex: false
 
       - name: Cache Quarto
