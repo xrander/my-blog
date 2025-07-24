@@ -1,0 +1,160 @@
+name: 02 - Render Quarto Site
+on:
+  workflow_run:
+    workflows: ["01 - Setup Dependencies"]
+    types: [completed]
+    branches: [master]
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    env:
+      GITHUB_PAT: ${{ secrets.BLOG_TOKEN }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download setup artifact
+        uses: actions/github-script@v7
+        with:
+          script: |
+            let allArtifacts = await github.rest.actions.listWorkflowRunArtifacts({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               run_id: context.payload.workflow_run.id,
+            });
+            let matchArtifact = allArtifacts.data.artifacts.filter((artifact) => {
+              return artifact.name == "setup-complete"
+            })[0];
+            if (matchArtifact) {
+              let download = await github.rest.actions.downloadArtifact({
+                 owner: context.repo.owner,
+                 repo: context.repo.repo,
+                 artifact_id: matchArtifact.id,
+                 archive_format: 'zip',
+              });
+              let fs = require('fs');
+              fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/setup-complete.zip`, Buffer.from(download.data));
+            }
+
+      - name: Extract setup artifact
+        run: |
+          if [ -f setup-complete.zip ]; then
+            unzip setup-complete.zip
+            cat setup_complete.txt
+          fi
+
+      - name: Restore environment from setup
+        run: |
+          echo "Using pre-built environment from setup workflow"
+          echo "This step will be replaced with a more efficient method"
+
+      - name: Restore system dependencies cache
+        uses: actions/cache@v4
+        with:
+          path: /var/cache/apt
+          key: ${{ runner.os }}-apt-${{ hashFiles('**/apt-packages.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-apt-
+
+      - name: Install system dependencies (from cache)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gsfonts \
+            libcurl4-openssl-dev \
+            libmagick++-dev \
+            libharfbuzz-dev \
+            libfribidi-dev \
+            imagemagick \
+            libmagickcore-6.q16-6-extra \
+            libfreetype6-dev \
+            libmagickwand-dev \
+            libglpk-dev
+
+      - name: Set up Quarto (from cache)
+        uses: quarto-dev/quarto-actions/setup@v2
+        with:
+          version: "latest"
+          tinytex: false
+
+      - name: Restore Quarto cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/share/quarto
+          key: ${{ runner.os }}-quarto-${{ hashFiles('**/*.qmd', '**/*.ipynb') }}
+          restore-keys: |
+            ${{ runner.os }}-quarto-
+
+      - name: Set up R (from cache)
+        uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      - name: Restore R environment cache
+        uses: actions/cache@v4
+        with:
+          path: renv/library/R-4.5.1/x86_64-pc-linux-gnu/
+          key: ${{ runner.os }}-renv-${{ hashFiles('**/renv.lock') }}
+          restore-keys: ${{ runner.os }}-renv-
+
+      - name: Restore R packages (fast restore)
+        run: |
+          if [ -d "renv/library" ]; then
+            echo "R packages restored from cache"
+            Rscript -e "renv::activate(); print('R environment ready')"
+          else
+            echo "Cache miss - installing R packages"
+            Rscript -e "install.packages('renv'); renv::restore()"
+          fi
+
+      - name: Set up Python (from cache)
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Restore Python cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install Python dependencies (from cache)
+        run: |
+          if pip list | grep -q "$(head -1 requirements.txt | cut -d'=' -f1)"; then
+            echo "Python packages already available"
+          else
+            echo "Installing Python packages from cache"
+            pip install -r requirements.txt
+          fi
+
+      - name: Render Quarto site
+        run: |
+          echo "Starting render at $(date)"
+          quarto render
+          echo "Render completed at $(date)"
+          ls -la _site/
+
+      - name: Upload rendered site
+        uses: actions/upload-artifact@v4
+        with:
+          name: rendered-site
+          path: _site/
+          retention-days: 7
+
+      - name: Create render summary
+        run: |
+          echo "Render completed successfully at $(date)" > render_summary.txt
+          echo "Site size: $(du -sh _site/)" >> render_summary.txt
+          echo "Files generated: $(find _site -type f | wc -l)" >> render_summary.txt
+
+      - name: Upload render summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: render-summary
+          path: render_summary.txt
+          retention-days: 1

@@ -1,0 +1,117 @@
+name: 01 - Setup Dependencies
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches: 
+      - master
+  workflow_dispatch:
+  schedule:
+    - cron: "0 08 * * *"
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_PAT: ${{ secrets.BLOG_TOKEN }}
+    outputs:
+      cache-key-r: ${{ steps.cache-keys.outputs.r-key }}
+      cache-key-quarto: ${{ steps.cache-keys.outputs.quarto-key }}
+      cache-key-apt: ${{ steps.cache-keys.outputs.apt-key }}
+      
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate cache keys
+        id: cache-keys
+        run: |
+          echo "r-key=${{ runner.os }}-renv-${{ hashFiles('**/renv.lock') }}" >> $GITHUB_OUTPUT
+          echo "quarto-key=${{ runner.os }}-quarto-${{ hashFiles('**/*.qmd', '**/*.ipynb') }}" >> $GITHUB_OUTPUT
+          echo "apt-key=${{ runner.os }}-apt-${{ hashFiles('**/apt-packages.txt') }}" >> $GITHUB_OUTPUT
+
+      - name: Cache system dependencies
+        uses: actions/cache@v4
+        with:
+          path: /var/cache/apt
+          key: ${{ steps.cache-keys.outputs.apt-key }}
+          restore-keys: |
+            ${{ runner.os }}-apt-
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gsfonts \
+            libcurl4-openssl-dev \
+            libmagick++-dev \
+            libharfbuzz-dev \
+            libfribidi-dev \
+            imagemagick \
+            libmagickcore-6.q16-6-extra \
+            libfreetype6-dev \
+            libmagickwand-dev \
+            libglpk-dev
+
+      - name: Set up Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+        with:
+          version: "latest"
+          tinytex: false
+
+      - name: Cache Quarto
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/share/quarto
+          key: ${{ steps.cache-keys.outputs.quarto-key }}
+          restore-keys: |
+            ${{ runner.os }}-quarto-
+
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      - name: Cache R environment
+        uses: actions/cache@v4
+        with:
+          path: renv/library/R-4.5.1/x86_64-pc-linux-gnu/
+          key: ${{ steps.cache-keys.outputs.r-key }}
+          restore-keys: ${{ runner.os }}-renv-
+
+      - name: Restore R environment
+        run: |
+          Rscript -e "install.packages('renv'); 
+          renv::restore()"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Cache Python packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install Python dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Create setup completion artifact
+        run: |
+          echo "Setup completed at $(date)" > setup_complete.txt
+          echo "R packages: $(Rscript -e 'cat(length(installed.packages()[,1]))')" >> setup_complete.txt
+          echo "Python packages: $(pip list | wc -l)" >> setup_complete.txt
+
+      - name: Upload setup artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: setup-complete
+          path: setup_complete.txt
+          retention-days: 1          
