@@ -6,4 +6,4 @@ _site/
 .Rbuildignore
 /_freeze/
 /site_libs/
-workflow.setup
+workflow_setup
