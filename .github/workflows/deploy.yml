@@ -1,28 +1,49 @@
 name: Deploy Blog
-
 on: 
   workflow_run:
     workflows: ["Quarto Blog Auto-Render and Deploy"]
     types: [completed]
+    branches: [master]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     env:
       NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_BLOG_TOKEN }}
       NETLIFY_SITE_ID: ${{ secrets.NETLIFY_BLOG_ID }}
       GITHUB_PAT: ${{ secrets.BLOG_TOKEN }}
-
     steps:
-      - name: Download site artifact
-        uses: actions/download-artifact@v4
+      - name: Download artifact from workflow run
+        uses: actions/github-script@v7
         with:
-          name: site
-
+          script: |
+            let allArtifacts = await github.rest.actions.listWorkflowRunArtifacts({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               run_id: context.payload.workflow_run.id,
+            });
+            let matchArtifact = allArtifacts.data.artifacts.filter((artifact) => {
+              return artifact.name == "site"
+            })[0];
+            let download = await github.rest.actions.downloadArtifact({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               artifact_id: matchArtifact.id,
+               archive_format: 'zip',
+            });
+            let fs = require('fs');
+            fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/site.zip`, Buffer.from(download.data));
+            
+      - name: Extract artifact
+        run: |
+          unzip site.zip
+          ls -la
+          
       - name: Deploy to Netlify
         uses: nwtgck/actions-netlify@v3.0
         with:
-          publish-dir: './site'
+          publish-dir: '.'
           production-branch: master
           github-token: ${{ secrets.BLOG_TOKEN }}
           deploy-message: "Auto Deploy - ${{ github.sha }}"
