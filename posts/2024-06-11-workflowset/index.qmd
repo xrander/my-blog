@@ -1,7 +1,7 @@
 ---
 title: "Managing Workflowset Models"
 subtitle: "Using **option-add** to Tune Different Model of Workflowset"
-date: "2024-06-11"
+date: "2024-05-06"
 categories: [Machine Learning, Tuning]
 cache: true
 code-fold: true

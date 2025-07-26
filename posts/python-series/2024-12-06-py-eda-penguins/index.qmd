@@ -1,9 +1,8 @@
 ---
 title: "Palmers Penguin EDA with Python"
 subtitle: "Artwork by \\@allison_horst"
-date: "2024-12-06"
+date: "2025-2-06"
 categories: [Python, exploratory data analysis]
-code-fold: false
 code-copy: hover
 jupyter: python3
 code-summary: "Show the code"

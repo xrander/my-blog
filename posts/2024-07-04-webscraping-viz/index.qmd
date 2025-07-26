@@ -1,7 +1,7 @@
 ---
 title: "Webscraping and Visualizing the Top CryptoCurrencies"
 subtitle: "Top Cryptocurrencies According to Price and Market Cap"
-date: "2024-07-4"
+date: "2024-06-07"
 categories: [Webscraping, Data Visualization]
 code-fold: true
 code-copy: hover

@@ -1,7 +1,7 @@
 ---
 title: "Effect of Different Insecticides on Insects"
 author: "Olamide Adu"
-date: "2025-05-21"
+date: "2025-03-21"
 image: "https://images.pexels.com/photos/32893669/pexels-photo-32893669.jpeg"
 image-alt: An insect on a green leaf, emphasizing the importance of pest control in agricultural and ecological contexts.
 description: "Analyzing the effectiveness of insecticides"

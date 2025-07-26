@@ -1,6 +1,6 @@
 ---
 title: "Prediction of Fire Occurrence in Algeria's Forest"
-date: "2024-08-4"
+date: "2024-07-4"
 categories: [Machine Learning, Logistic Regression, PCA]
 code-fold: true
 code-copy: hover

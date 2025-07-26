@@ -1,6 +1,6 @@
 ---
 title: "Bean Type Classification Using Decision Trees"
-date: "2024-10-12"
+date: "2024-12-12"
 categories: [Machine Learning, Decision Trees, Tuning]
 code-fold: false
 code-copy: hover

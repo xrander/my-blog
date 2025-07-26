@@ -1,7 +1,7 @@
 ---
 title: "Sugi or Hinoki?"
 subtitle: "Forest Type Classification using K-Nearest Neighbors"
-date: "2024-10-10"
+date: "2024-11-10"
 categories: [Machine Learning, Nearest Neighbor]
 code-fold: true
 code-copy: hover
