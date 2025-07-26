@@ -1,0 +1,457 @@
+---
+title: "How old is that Possum?"
+subtitle: "Using Linear Regression to Predict the Age of Possum"
+categories: [Machine Learning, Linear Regression]
+code-fold: true
+code-copy: hover
+code-summary: "Show the code"
+image: image.jpg
+footer: "Image from freepik.com"
+date: 2024-08-20
+---
+
+# Introduction
+
+This project aims to predict the age of possums collected from three different sites in Australia using linear regression.. The sites are Victoria, New South Wales and Queensland. New South Wales and Queensland are compressed into a single category "Others". The data is available in the DAAG R package developed by @maindonald2015package.
+
+![Cute Possum](cute-possum.jpg){width=40%}
+
+The data is having the following properties:
+
+S/N|Variable name | Definition |
+|:-----|:------:|:-------|
+|1. |case | Observation number|
+|2. |site | The site number where the possum was trapped.|
+|3. |Pop | The site as Vic (Victoria) or Other (New South Wales and Queensland)|
+|4. |sex | Gender, either m (male) or f (female).|
+|5. |age | Age of possum|
+|6. |hdlngth | Head length, in mm.|
+|7. |skullw | Skull width, in mm.|
+|8. |totlngth | Total length, in cm.|
+|9. |taill | Tail length, in cm.|
+|10. |footlgth | Foot length in mm|
+|11. |earconch | Ear conch length in mm|
+|12. |eye | distance from medial canthus to lateral canthus of right eye|
+|13. |chest | chest girth (in cm)|
+|14. |belly | belly girth (in cm)|
+
+```{r}
+#| message: false
+#| warning: false
+pacman::p_load(tidyverse, GGally, knitr, ggthemr, tidymodels, themis)
+ggthemr("grape")
+```
+
+## Loading the data
+```{r}
+psm <- DAAG::possum |> janitor::clean_names() |> 
+  remove_rownames() |> as_tibble()
+```
+
+After getting any data, the first thing to do is trying to understand the data
+
+```{r}
+#| label: tbl-summary
+#| tbl-cap: Summary statistics of possum data
+#| tbl-subcap: true
+
+skimr::skim_without_charts(psm)
+```
+
+@tbl-summary-1 shows that data was collected on `{r} dim(psm)[1]` possum's. There are 2 categorical variables, `pop` and `sex`, but this should be three as site should also be a categorical variable (check below to see transformation of this variable). The `case` variable is not needed and can be removed. There are missing data in `age` and `footlgth` variables, @tbl-summary-2. We can remove this missing data points as it's not a lot, @fig-missing.
+
+```{r}
+#| label: fig-missing
+visdat::vis_miss(psm)
+```
+
+
+```{r}
+#| label: get-comp-data
+
+psm <- psm |> 
+  drop_na() |> 
+  select(-case) |> 
+  mutate(
+    site = factor(
+      site, 
+      levels= 1:7,
+      labels = c("Cambarville", "Bellbird", "Whian Whian",
+                "Byrangery", "Conondale", "Allyn River", "Bulburin")
+    )
+  )
+```
+
+# Exploratory Data Analysis
+To understand the data, we do an EDA for targets and predictors.
+
+## Univariate Analysis - Target
+```{r}
+#| label: tbl-mct-age
+#| tbl-cap: "Descriptive Statistics for Possum Age"
+
+psm |> 
+  summarize(
+    median_age = median(age),
+    mean_age = round(mean(age), 2),
+    minimum_age = min(age),
+    maximum_age = max(age)
+  ) |> kable(
+    col.names = c("Median", "Mean", "Min", "Max"),
+    align = "lccr",
+    caption = "Measure of Central Tendency for Age"
+  )
+```
+
+@tbl-mct-age shows a spread mean and median value for age which might indicates that the distribution is skewed or bimodal, see @fig-age.
+
+```{r}
+#| label: fig-age
+#| fig-cap: Distribution of Age variable
+psm |> 
+  ggplot(aes(age)) +
+  geom_density(col = "#ab2493") +
+  labs(
+    x = "Age",
+    y = "Density",
+    title = "Age variable showing a bimodal distribution"
+  )
+```
+
+## Univariate Analysis of Features
+
+### Factors
+
+#### Regions and Sites (Trap Locations)
+
+```{r}
+#| label: fig-pop-reg
+#| fig-cap: "Registered Possum Population Record" 
+#| fig-subcap: true
+#| layout-ncol: 2
+
+psm |> 
+  mutate(
+    pop = case_when(
+      pop == "Vic" ~ "Victoria",
+      .default = "Others"
+    )
+  ) |> 
+  ggplot(aes(pop)) +
+  geom_bar(fill = "cadetblue4") +
+  expand_limits(y = c(0, 70)) +
+  labs(
+    x = "Population",
+    y = "Frequency",
+    title = "Population of Registered Possums According to Regions"
+  ) +
+  theme(plot.title = element_text(face = "bold", hjust = .5))
+
+psm |> 
+  count(site) |> 
+  arrange(n) |> 
+  ggplot(aes(n, fct_reorder(site, n))) +
+  geom_bar(
+    stat = "identity",
+    fill = "coral2"
+  ) +
+  labs(
+    y = "Sites",
+    x = "Count",
+    title = "Population of Registered Possums According to Sites"
+  ) +
+  theme(
+    plot.title = element_text(face = "bold", hjust = .5)
+  )
+```
+
+More possums were recorded at the region labelled **Other** @fig-pop-reg. We should recall that **Other** is the combination of records from New South Wales and Queensland. For the sites where trap where placed within the regions, **Cambarville** have the highest record of possums with more than half the second site, **Bulburin**.
+
+### Numerical Variables
+
+```{r}
+#| label: tbl-desc-stat
+#| tbl-cap: "Measure of Central Tendency for Numerical Variable"
+
+psm_long <- psm |> 
+  pivot_longer(
+    cols = hdlngth:belly,
+    names_to = "variables",
+    values_to = "values"
+  )
+
+psm_long |> 
+  summarize(
+    .by = variables,
+    mean = mean(values),
+    median = median(values),
+    minimum = min(values),
+    maximum = max(values)
+  ) |> 
+  kable(
+    col.names = c("Variable", "Mean", "Median", "Minimum", "Maximum"),
+    align = "lcccr"
+  )
+```
+@tbl-desc-stat shows the measure of central tendency. The difference between median and mean is minimal indicating a normal distribution.
+
+```{r}
+#| label: fig-num-dist
+#| fig-cap: "Numerical variable distribution"
+
+additional_colors <- c("#af4242", "#535364", "#FFC300")
+set_swatch(c(unique(swatch()), additional_colors))
+
+psm_long |> 
+  ggplot(aes(values, col = variables)) +
+  geom_density() +
+  scale_color_discrete() +
+  facet_wrap(~variables, scales = "free") +
+  theme(legend.position = "none")
+```
+
+All the numerical variables are normally distributed @fig-num-dist. `earconch`, `footlgth`, `taill`, and `totlngth` are bimodals.
+
+## Multivariate Analysis
+
+```{r}
+psm |>
+  mutate(
+    pop = case_when(
+      pop == "Vic" ~ "Victoria",
+      .default = "Others"
+    )
+  ) |> 
+  ggplot(aes(site, age, fill = pop, col = "#000")) +
+  geom_violin(inherit.aes = FALSE, aes(site, age)) +
+  geom_boxplot(position = "dodge", width = .2) +
+  geom_jitter(size = .5) +
+  facet_wrap(~pop, scales = "free") +
+  coord_flip() +
+  theme(legend.position = "none")
+```
+
+### Correlation Matrix
+```{r}
+#| warning: false
+#| message: false
+#| label: fig-cor-mat
+#| fig-cap: "Correlation Matrix"
+
+ggcorr(
+  psm,
+  geom = "text",
+  low = "#219123",
+  mid = "#e09263",
+  high = "#8f0123"
+)
+```
+
+The correlation of the variables to `age` is low with the maximum correlation being with `belly`, @fig-cor-mat. However, there's high correlation between the predictors and to prevent collinearity we could consider employing Principal Component Analysis to transform correlated predictors to uncorrelated predictor. More information on the relationships existing between the variables can be seen in @fig-pairs.
+```{r}
+#| cache: true
+#| message: false
+#| warning: false
+#| label: fig-pairs
+#| fig-cap: "Generalized pairs plot"
+ggpairs(psm)
+```
+
+
+# Modeling
+
+## Data Sharing
+@fig-age shows how older possums from age 8 to 9 are not well represented in the data. A stratified data sharing technique will be employed to account for less represented age data point.
+
+```{r}
+set.seed(124)
+psm_split <- initial_split(psm, prop = .75, strata = age)
+psm_train <- training(psm_split)
+```
+
+If we check @fig-train, possums that are 8 and 9 years old are represented.
+```{r}
+#| label: fig-train
+#| fig-cap: "Age data point frequency in training data"
+psm_train |> 
+  count(age) |> 
+  ggplot(aes(factor(age), n)) +
+  geom_col() +
+  geom_text(
+    aes(label = n),
+    nudge_y = .5,
+    col = "red"
+  ) +
+  labs(
+    x = "Age",
+    y = "Count",
+    title = "Age Frequency in Training Data"
+  )
+```
+
+To prevent data leaking, the data will be resampled to have a validation-training data in 10 folds using the k-folds resampling.
+
+```{r}
+set.seed(124)
+psm_folds <- vfold_cv(psm_train, v = 10)
+```
+
+## Model Specification
+We will use linear regression to predict the age of possums
+```{r}
+lm_spec <- linear_reg() |> 
+  set_engine("lm")
+lm_spec |> translate()
+```
+
+## Feature engineering
+Three preprocessing will be added to formular specification. These are:
+
+-   Normalizing, centering and scaling numerical variables
+-   PCA to reduce collinearity between numeric variables
+-   Creating dummy variables for categorical data.
+
+These preprocesses are added as presented down to the last step which is creating dummy variables for categorical data.
+
+```{r}
+psm_rec_1 <- recipe(age ~ ., data = psm_train)
+
+psm_rec_2 <- psm_rec_1 |> 
+  step_normalize(all_numeric_predictors()) |> 
+  step_center(all_numeric_predictors()) |> 
+  step_scale(all_numeric_predictors())
+
+psm_rec_3 <- psm_rec_2 |> 
+  step_pca(all_numeric_predictors())
+
+psm_rec_4 <- psm_rec_3 |>
+  step_dummy(all_factor_predictors()) 
+```
+
+
+The result from applying the whole steps is shown in @tbl-preproc-table
+
+```{r}
+#| label: tbl-preproc-table
+#| tbl-cap: "Data look after preprocessing"
+
+psm_rec_4 |> 
+  prep() |> 
+  juice() |> 
+  head() |> 
+  kable()
+```
+
+
+The numerical predictors has been reduced to 5 variables.
+
+## Model Workflow
+```{r}
+psm_wf_set <- workflow_set(
+  preproc = list(
+    "formula" = psm_rec_1,
+    "normalized" = psm_rec_2, 
+    "pca" = psm_rec_3,
+    "dummy" = psm_rec_4
+  ),
+  models = list("ols" = lm_spec),
+  cross = TRUE
+)
+
+psm_wf_set
+```
+
+### Fitting the model
+
+```{r}
+#| message: false
+#| warning: false
+#| label: tbl-mod-metric
+#| tbl-cap: Model metric
+
+psm_mod <- psm_wf_set |> 
+  workflow_map(
+    "fit_resamples",
+    resamples = psm_folds,
+    seed = 124
+)
+
+collect_metrics(psm_mod) |> kable()
+```
+
+@tbl-mod-metric shows no difference in the model between `dummy_ols` and `pca_ols` which is different from using the formula without preprocessing, `formula_ols` and `normalized_ols`. This presented visually in @fig-mod-metric
+
+```{r}
+#| label: fig-mod-metric
+#| fig-cap: Model evaluation using RMSE for each preprocessor
+
+
+collect_metrics(psm_mod) |> 
+  filter(.metric == "rmse") |> 
+  select(wflow_id, mean, std_err) |> 
+  mutate(
+    ymax = mean + std_err,
+    ymin = mean - std_err
+  ) |> 
+  ggplot(aes(wflow_id, mean, col = wflow_id)) +
+  geom_pointrange(aes(ymin = ymin, ymax =ymax)) +
+  labs(
+    x = "Preproc",
+    title = "RMSE of Possum Linear Regression Model for 3 Preprocessor"
+  ) +
+  theme(legend.position = "none")
+```
+We can use either of `pca_ols` or `dummy_ols` as they have the lowest mean.
+
+```{r}
+psm_pca_mod <- psm_mod |> 
+  extract_workflow(id = "pca_ols")
+
+psm_pca_mod 
+```
+
+```{r}
+#| warning: false
+#| message: false
+psm_model <- last_fit(
+  psm_pca_mod,
+  split = psm_split
+)
+```
+```{r}
+
+psm_model |> 
+  collect_predictions() |> 
+  select("prediction" =.pred, age) |> 
+  mutate(
+    prediction = ceiling(prediction),
+    residual = age - prediction
+  ) |> 
+  ggplot(
+    aes(age, residual)
+  ) +
+  geom_point() +
+  geom_hline(aes(yintercept = 0), col = "gray3") +
+  ggtitle("Residual")
+```
+
+While the points are fairly distributed along the y axis and x axis, the effect of having little representative from the population for old-aged possum, age 9 and 8 can be see. The lack of points on the lower-right side of the plot is a good of indication.
+
+## Feature Importance
+The features contributing the most to the model are shown in @fig-vip
+
+```{r}
+#| label: fig-vip
+#| fig-cap: PC1, and Byrangery sites are the most important variables.
+
+psm_model |>
+  extract_fit_parsnip() |> 
+  vip::vip(
+    num_features = 10,
+    geom = "col"
+  ) +
+  ggtitle("Feature Importance")
+```
+
+## Summary
+While this a good use of linear regression, the robustness of the model would have been helped if underrepresented data points are available. By the time of writing this blog post, the author with intentions to use only SLR is having no feature engineering method to account for the age variable that has been discretized. A resampling technique such as Monte Carlo or bootstrapping is an approach that could help with the model rather than the use of k-fold resampling method.

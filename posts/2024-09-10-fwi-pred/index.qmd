@@ -1,0 +1,330 @@
+---
+title: "Predicting Fire Weather Index (FWI) of Algeria's Forest"
+date: "2024-09-10"
+categories: [Machine Learning, Tuning, Regularization, Linear Regression]
+code-fold: true
+code-copy: hover
+code-summary: "Show the code"
+image: image.jpg
+draft: false
+cache: true
+---
+
+# Introduction
+This project is a recycle of the [prediction of fire occurrence in Algeria's forest](https://blog.olamideadu.com/posts/algeria-fwi-prediction/) with a little twist. Instead of predicting fire occurrence, this project will predict the forest Fire Weather Index (FWI). Also different from the former project is the algorithm used. The former project used logistic regression with a principal component analysis preprocessing to reduce multicollinearity between the features. This project uses a regularized regression to predict the FWI of the forest. 
+
+## Objective
+The objective of this project involve:
+
+-   Developing a FWI model. 
+-   Evaluating which of the regularized regression will preform best. (significant difference in performance is not the goal but rather getting the best performance).
+
+## Data
+Data used for this project is exactly the same as the data used in the prediction of fire occurrence project, check [here](https://blog.olamideadu.com/posts/algeria-fwi-prediction/) for the data definition. To get more understanding of the data, and the correlation between the different variables, check the posts, as I will dive in to model development for this project.
+
+The processed and clean data is already made available and will be imported. Prior that, we have to load the necessary library for this analysis.
+
+```{r}
+pacman::p_load(nanoparquet, tidymodels, knitr, ggthemr)
+ggthemr(palette = "earth", layout = "minimal")
+```
+
+
+```{r}
+algeria_ff <- read_parquet("data/algeria.parquet")
+```
+
+# Modelling
+We will dive to model development straight away. We begin with sharing the data, creating resamples and setting the model specification before feature engineering and finally model development.
+## Data Sharing
+The data will be splitted to a 70-30 proportion. 70% for training and 30% for testing.
+
+```{r}
+set.seed(123)
+algeria_split <-initial_split(algeria_ff, prop = .7, strata = fwi)
+algeria_train <- training(algeria_split)
+```
+
+Due to the size of the data `{r} dim(algeria_ff)[1]` rows, a bootstrap resampling technique will be employed.
+
+```{r}
+set.seed(123)
+algeria_bstrap <- bootstraps(algeria_train, strata = fwi)
+```
+
+## Model Specification
+
+We do not know the penalty for to use for our regularized regression, so we tune this parameter. The best value for the elastic-net is also unknown and will also be tuned.
+```{r}
+lasso_spec <- linear_reg(
+  penalty = tune(),
+  mixture = 1
+) |> 
+  set_engine("glmnet")
+
+ridge_spec <- linear_reg(
+  penalty = tune(),
+  mixture = 0
+) |> 
+  set_engine("glmnet")
+
+elastic_spec <- linear_reg(
+  penalty = tune(),
+  mixture = tune()
+) |> 
+  set_engine("glmnet")
+```
+
+## Feature engineering
+Preprocessing steps carried before except using pca will be employed here.
+```{r}
+algeria_rec <- recipe(fwi ~ ., data = algeria_train) |> 
+  step_zv(all_numeric_predictors()) |> 
+  step_nzv(all_numeric_predictors()) |> 
+  step_YeoJohnson(all_numeric_predictors()) |> 
+  step_scale(all_numeric_predictors()) |> 
+  step_dummy(all_factor_predictors())
+
+algeria_rec
+```
+
+The data after undergoing feature engineering is shown in @tbl-preproc:
+```{r}
+#| label: tbl-preproc
+#| tbl-cap: Data preview after preprocessing
+set.seed(123)
+algeria_rec |> 
+  prep() |> 
+  juice() |> 
+  car::some() |> 
+  kable()
+```
+
+## Tune Grid
+In the models specified earlier we have one to two parameters we have to tune. These are the parameters with `tune()` in front of them.
+
+```{r}
+set.seed(123)
+
+tune_elastic <- extract_parameter_set_dials(elastic_spec) |> 
+  grid_regular(
+    levels = 25
+  )
+
+tune_lasso <- extract_parameter_set_dials(lasso_spec) |> 
+  grid_regular(levels =  20)
+
+tune_ridge <- extract_parameter_set_dials(ridge_spec) |> 
+  grid_random(size = 20)
+```
+
+We set control to save prediction and the workflow.
+
+```{r}
+grid_control <-control_grid(
+  save_pred = TRUE,
+  save_workflow = TRUE
+)
+```
+
+## Workflow {#sec-workflow}
+A workflow object for each model specification will be made
+
+```{r}
+elastic_wf <- workflow() |> 
+  add_recipe(algeria_rec) |> 
+  add_model(elastic_spec)
+
+lasso_wf <- workflow() |> 
+  add_recipe(algeria_rec) |> 
+  add_model(lasso_spec)
+
+ridge_wf <- workflow() |> 
+  add_recipe(algeria_rec) |> 
+  add_model(ridge_spec)
+```
+
+Below is a breakdown of the process from model specification to feature engineering tied together.
+```{r}
+elastic_wf
+```
+
+## Tuning
+Now we tune the parameter(s) of each models
+
+```{r}
+elastic_tune <- tune_grid(
+  elastic_wf,
+  resamples = algeria_bstrap,
+  grid = tune_elastic,
+  control = grid_control
+)
+
+lasso_tune <- tune_grid(
+  lasso_wf,
+  resamples = algeria_bstrap,
+  grid = tune_lasso,
+  control = grid_control
+)
+
+ridge_tune <- tune_grid(
+  ridge_wf,
+  resamples = algeria_bstrap,
+  grid = tune_ridge,
+  control = grid_control
+)
+```
+
+### Tune Performance
+Let's see the performance of the regularized parameters.
+
+```{r}
+#| label: fig-performance
+#| fig-cap: Regularization Performance
+#| fig-align: center
+#| warning: false
+#| message: false
+
+elastic_tune |> 
+  collect_metrics() |>
+  mutate(
+    model = "elastic"
+  ) |> 
+  bind_rows(
+    lasso_tune |> 
+      collect_metrics() |> 
+      mutate(
+        model = "lasso"
+      )
+  ) |> 
+  bind_rows(
+    ridge_tune |> 
+      collect_metrics() |> 
+      mutate(
+        model = "ridge"
+      )
+  ) |> 
+  ggplot(aes(penalty, mean, color = model)) +
+  geom_point() +
+  geom_smooth(
+    se = FALSE,
+    method = "loess",
+    formula = "y ~ x"
+  ) + 
+  facet_wrap(~.metric, nrow = 2, scales = "free") +
+  theme_bw()
+
+```
+
+### Final workflow {#set-fw}
+As shown in @fig-performance, the elastic-net regularized model performed the best. We can pick the best model from this and get the final model.
+
+```{r}
+#| label: tbl-final-wf
+
+best_tune <- elastic_tune |> 
+  select_best(metric = "rmse")
+
+final_wf <- finalize_workflow(
+  x = elastic_wf,
+  parameters = best_tune
+)  
+
+final_wf
+```
+
+## Feature Importance
+
+
+in the above  output we parameters fitted accordingly and can note that the tune parameter in @sec-workflow has been replace accordingly. Before We finally fit the model to the whole of the data. we can investigate to see the most important variables
+
+```{r}
+library(vip)
+
+vip(final_wf |> 
+      fit(algeria_train))
+```
+
+## Final Fit
+```{r}
+last_fit <- final_wf |> 
+  last_fit(split = algeria_split)
+```
+
+@fig-elastic shows how the penalty, aka 𝜆 from 0 to infinity.
+
+```{r}
+#| label: fig-elastic
+#| fig-cap: Coeﬃcients for our elastic-net regression model as 𝜆 grows from 0 → ∞
+#| fig-align: center
+
+additional_colors <- c("#af4242", "#535364", "#FFC300", "#e09263", "#123367")
+set_swatch(c(unique(swatch()), additional_colors))
+
+
+extract_fit_parsnip(last_fit) |> 
+  autoplot() +
+  labs(
+    x = "Lambda",
+    y = "Coefficients"
+  ) +
+  theme_bw()
+```
+### Model Eval
+
+```{r}
+last_fit |> 
+  collect_metrics() |> 
+  kable()
+```
+
+
+With a RMSE of 3.38 the model prediction of the forest fire weather index is reliable as the model can also explain about 86% of the whole data.
+
+## Conclusion
+This project compared three regularized models, and used it as an alternative of creating a model without a pca preprocessing step, as regularized models penalize the coefficient of features pushing them towards zero or making them exactly zero (lasso regression). The model helped minimize the impact of multicollinearity existing within the data.
+
+
+## Reflection
+I tried using `workflow_map()` to tune the three models together combined in a `workflow_set()`. When metrics where collected to evaluate the models, the tuning parameters were absent and instead only results where returned. You can run the code below to confirm this.
+
+```{r}
+#| eval: false
+
+algerian_wf_set <- workflow_set(
+  preproc = list(rec = algeria_rec),
+  models = list(
+    lasso = lasso_spec,
+    ridge = ridge_spec,
+    elastic = elastic_spec
+  ),
+  cross = TRUE
+ ) |>
+  option_add(
+     id = "rec_elastic",
+     grid = tune_elastic
+  ) |> 
+  option_add(
+    id = "rec_lasso",
+    grid = tune_lasso
+  ) |> 
+  option_add(
+    id = "rec_ridge",
+    grid = tune_ridge
+  )
+
+tune_res <- workflow_map(
+  algerian_wf_set,
+  resamples = algeria_bstrap,
+  verbose = TRUE,
+  seed = 123,
+  fn = "tune_grid",
+  grid = 20,
+  control = grid_control
+)
+
+tune_res |> 
+  collect_metrics()
+```
+
+

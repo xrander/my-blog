@@ -1,8 +1,0 @@
----
-title: "Colliniearity and Logistic Regression of Online Sales Data"
-author: "Olamide Adu"
-date: "2024-05-21"
-draft: True
----
-
-# This is a draft
