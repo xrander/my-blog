@@ -9,7 +9,7 @@ listing:
   categories: true
   fields: [image, date, title, description, categories, author, reading-time]
   sort-ui: false
-  filter-ui: false
+  filter-ui: true
   image-placeholder: "image/badger.png"
   feed: true
 page-layout: article

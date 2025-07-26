@@ -21,7 +21,7 @@ about:
 Olamide Adu is the founder and academic lead of EU StudyAssist. He is a freelance Data Scientist with a background in Sustainable Forest and Nature Management. In 2023, he completed the Erasmus Mundus Joint Master's Degree in Sustainable Forest and Nature Management (EMJMD SUFONAMA) at the Swedish University of Agricultural Sciences. A passionate data scientist with a love for growth and continuous learning, he is particularly proficient in the R and Python programming language.
 
 ## Professional Experience
-- **EU StudyAssist** | Academic Lead | August 2023 - Present
+- **EU StudyAssist** | Academic Lead | April 2024 - Present
 
 - **Lakshyaa Infotech** | Consulting RShiny App Developer | October 2024 - March 2025
 
